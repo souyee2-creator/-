@@ -1,7 +1,5 @@
-import React, { useState, useEffect, ReactNode, useRef } from 'react';
-import { 
-  MessageCircle, Settings, Book, Palette, Heart, MapPin, Upload 
-} from 'lucide-react'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // --- App 引入 ---
@@ -11,14 +9,61 @@ import { DiaryApp } from './apps/diary';
 import { BeautifyApp } from './apps/beautify';
 import { CouplesApp } from './apps/couples';
 
-// 1. 交互式个人名片组件
+// ─── 字体注入：确保衬线字体生效 ───
+const editorialStyle = `
+  .editorial-root * { box-sizing: border-box; }
+  .editorial-root { font-family: Georgia, 'Times New Roman', serif; }
+  .ef-serif { font-family: Georgia, 'Times New Roman', serif; }
+  .ef-rule { height: 1px; background: #111; width: 100%; }
+  .ef-rule-thin { height: 0.5px; background: #bbb; width: 100%; }
+  .ef-app-icon {
+    width: 64px; height: 64px;
+    border: 1px solid #111;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fafaf8;
+    transition: background 0.12s, color 0.12s;
+    cursor: pointer;
+  }
+  .ef-app-icon:hover { background: #111; color: #fafaf8; }
+  .ef-app-icon:hover .ef-symbol { color: #fafaf8; }
+  .ef-symbol {
+    font-size: 22px;
+    color: #111;
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1;
+    user-select: none;
+  }
+  .ef-dock-icon {
+    width: 48px; height: 48px;
+    border: 1px solid #111;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fafaf8;
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .ef-dock-icon:active { background: #111; }
+  .ef-dock-icon:active .ef-symbol { color: #fafaf8; }
+  .ef-input-edit {
+    font-family: Georgia, 'Times New Roman', serif;
+    border: none;
+    border-bottom: 1px solid #111;
+    outline: none;
+    background: transparent;
+    text-align: center;
+    width: 100%;
+  }
+`;
+
+// ─── 1. 个人名片 ───────────────────────────────────────────────
 const HeroCard = () => {
   const [profile, setProfile] = useState({
     name: 'Sylvia',
     id: 'souyee494',
     bio: '" 人生小满胜万全 "',
     location: '冰岛',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvia'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvia',
   });
 
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -28,131 +73,354 @@ const HeroCard = () => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfile(prev => ({ ...prev, avatar: reader.result as string }));
-      };
+      reader.onloadend = () =>
+        setProfile((prev) => ({ ...prev, avatar: reader.result as string }));
       reader.readAsDataURL(file);
     }
   };
 
   const handleUpdate = (field: string, value: string) => {
-    if (value.trim() !== "") {
-      setProfile(prev => ({ ...prev, [field]: value }));
-    }
+    if (value.trim() !== '') setProfile((prev) => ({ ...prev, [field]: value }));
     setEditingField(null);
   };
 
+  const now = new Date();
+  const dateStr = now
+    .toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
+    .toUpperCase();
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="w-[90%] max-w-md relative mt-12 mb-10"
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      style={{
+        width: '90%',
+        maxWidth: 400,
+        marginTop: 20,
+        marginBottom: 28,
+        fontFamily: 'Georgia, "Times New Roman", serif',
+      }}
     >
-      <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" className="hidden" />
-      <div className="backdrop-blur-2xl bg-white/30 border border-white/40 rounded-[2.5rem] p-8 pt-16 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative text-center space-y-4">
-        <div 
-          onClick={() => fileInputRef.current?.click()}
-          className="absolute -top-10 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border-[6px] border-[#F5F5F7] bg-gray-200 shadow-xl cursor-pointer overflow-hidden group"
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleAvatarChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+
+      {/* Masthead rule top */}
+      <div style={{ height: 2, background: '#111', marginBottom: 4 }} />
+
+      {/* Kicker */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          marginBottom: 4,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 8,
+            letterSpacing: '0.38em',
+            color: '#aaa',
+            textTransform: 'uppercase',
+            fontFamily: 'Georgia, serif',
+          }}
         >
-          <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover group-hover:opacity-60 transition-opacity" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 text-white">
-            <Upload size={20} />
+          SOUYEE PHONE
+        </span>
+        <span
+          style={{
+            fontSize: 8,
+            color: '#ccc',
+            fontStyle: 'italic',
+            fontFamily: 'Georgia, serif',
+          }}
+        >
+          {dateStr}
+        </span>
+      </div>
+
+      {/* Thin rule */}
+      <div style={{ height: 1, background: '#111', marginBottom: 12 }} />
+
+      {/* Card body */}
+      <div
+        style={{
+          border: '1px solid #111',
+          padding: '20px 24px 18px',
+          background: '#fafaf8',
+          position: 'relative',
+        }}
+      >
+        {/* Avatar — square crop, top-center, overlapping */}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          style={{
+            position: 'absolute',
+            top: -28,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 56,
+            height: 56,
+            border: '2px solid #111',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            background: '#e8e6e1',
+          }}
+        >
+          <img
+            src={profile.avatar}
+            alt="avatar"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.35)',
+              opacity: 0,
+              transition: 'opacity 0.15s',
+            }}
+            className="avatar-hover-overlay"
+          >
+            <Upload size={14} color="#fff" />
           </div>
         </div>
 
-        <div>
+        {/* Spacer for avatar */}
+        <div style={{ height: 34 }} />
+
+        {/* Name */}
+        <div style={{ textAlign: 'center', marginBottom: 6 }}>
           {editingField === 'name' ? (
-            <input 
+            <input
               autoFocus
-              className="bg-black/5 border-none text-black text-2xl font-semibold text-center rounded-lg outline-none w-full px-2"
+              className="ef-input-edit"
+              style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}
               defaultValue={profile.name}
               onBlur={(e) => handleUpdate('name', e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleUpdate('name', e.currentTarget.value)}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && handleUpdate('name', e.currentTarget.value)
+              }
             />
           ) : (
-            <h2 onClick={() => setEditingField('name')} className="text-2xl font-semibold text-black/80 cursor-pointer">{profile.name}</h2>
+            <h2
+              onClick={() => setEditingField('name')}
+              style={{
+                margin: 0,
+                fontSize: 28,
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                color: '#111',
+                cursor: 'pointer',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              {profile.name}
+            </h2>
           )}
-          <div className="mt-1">
-            {editingField === 'id' ? (
-              <input 
-                autoFocus
-                className="bg-black/5 border-none text-black/60 text-[9px] uppercase tracking-[0.3em] text-center rounded outline-none w-3/4 mx-auto block"
-                defaultValue={profile.id}
-                onBlur={(e) => handleUpdate('id', e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleUpdate('id', e.currentTarget.value)}
-              />
-            ) : (
-              <p onClick={() => setEditingField('id')} className="text-[9px] uppercase tracking-[0.3em] text-black/20 cursor-pointer font-medium">{profile.id}</p>
-            )}
-          </div>
+
+          {/* ID */}
+          {editingField === 'id' ? (
+            <input
+              autoFocus
+              className="ef-input-edit"
+              style={{
+                fontSize: 9,
+                letterSpacing: '0.3em',
+                textTransform: 'uppercase',
+                color: '#888',
+                marginTop: 4,
+              }}
+              defaultValue={profile.id}
+              onBlur={(e) => handleUpdate('id', e.target.value)}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && handleUpdate('id', e.currentTarget.value)
+              }
+            />
+          ) : (
+            <p
+              onClick={() => setEditingField('id')}
+              style={{
+                margin: '4px 0 0',
+                fontSize: 9,
+                letterSpacing: '0.32em',
+                textTransform: 'uppercase',
+                color: '#bbb',
+                cursor: 'pointer',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              {profile.id}
+            </p>
+          )}
         </div>
 
-        <div className="px-4">
+        {/* Thin rule */}
+        <div style={{ height: 1, background: '#e0ddd7', margin: '10px 0' }} />
+
+        {/* Bio */}
+        <div style={{ textAlign: 'center', padding: '0 8px', marginBottom: 10 }}>
           {editingField === 'bio' ? (
-            <textarea 
+            <textarea
               autoFocus
-              className="bg-black/5 border-none text-black text-sm text-center rounded-lg outline-none w-full resize-none p-2"
+              className="ef-input-edit"
+              style={{
+                fontSize: 12,
+                fontStyle: 'italic',
+                resize: 'none',
+                lineHeight: 1.6,
+                color: '#555',
+              }}
               defaultValue={profile.bio}
               onBlur={(e) => handleUpdate('bio', e.target.value)}
-              onKeyDown={(e) => { if(e.key === 'Enter') handleUpdate('bio', e.currentTarget.value); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleUpdate('bio', e.currentTarget.value);
+              }}
             />
           ) : (
-            <p onClick={() => setEditingField('bio')} className="text-sm text-black/50 font-light italic cursor-pointer leading-relaxed">{profile.bio}</p>
+            <p
+              onClick={() => setEditingField('bio')}
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontStyle: 'italic',
+                color: '#666',
+                lineHeight: 1.7,
+                cursor: 'pointer',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              {profile.bio}
+            </p>
           )}
         </div>
 
-        <div className="flex justify-center">
+        {/* Location */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           {editingField === 'location' ? (
-            <input 
+            <input
               autoFocus
-              className="bg-black/5 border-none text-black text-[10px] text-center rounded-full outline-none px-4 py-1"
+              className="ef-input-edit"
+              style={{ fontSize: 10, letterSpacing: '0.15em', color: '#888', width: 'auto' }}
               defaultValue={profile.location}
               onBlur={(e) => handleUpdate('location', e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleUpdate('location', e.currentTarget.value)}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && handleUpdate('location', e.currentTarget.value)
+              }
             />
           ) : (
-            <div onClick={() => setEditingField('location')} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/3 border border-black/5 cursor-pointer text-black/30">
-              <MapPin size={10} />
-              <span className="text-[10px] tracking-wider font-medium">{profile.location}</span>
+            <div
+              onClick={() => setEditingField('location')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '3px 10px',
+                border: '0.75px solid #ccc',
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontSize: 9, color: '#999', fontFamily: 'Georgia, serif' }}>◎</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  letterSpacing: '0.18em',
+                  color: '#999',
+                  textTransform: 'uppercase',
+                  fontFamily: 'Georgia, serif',
+                }}
+              >
+                {profile.location}
+              </span>
             </div>
           )}
         </div>
       </div>
+
+      {/* Bottom rule */}
+      <div style={{ height: 1, background: '#111', marginTop: 0 }} />
     </motion.div>
   );
 };
 
-// 2. App图标组件
+// ─── 2. App 图标 ───────────────────────────────────────────────
 interface AppIconProps {
-  key?: string | number;
-  icon: ReactNode;
+  symbol: string;
   label: string;
-  color: string;
+  labelZh: string;
   onClick: () => void;
+  delay?: number;
 }
 
-const AppIcon = ({ icon, label, color, onClick }: AppIconProps) => (
-  <motion.div 
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={(e) => { e.stopPropagation(); onClick(); }}
-    className="flex flex-col items-center gap-2 cursor-pointer group"
+const AppIcon = ({ symbol, label, labelZh, onClick, delay = 0 }: AppIconProps) => (
+  <motion.div
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay, ease: 'easeOut' }}
+    whileTap={{ scale: 0.94 }}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick();
+    }}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 5,
+      cursor: 'pointer',
+    }}
   >
-    <div className={`w-16 h-16 rounded-3xl ${color} flex items-center justify-center shadow-lg border border-white/20`}>
-      {React.cloneElement(icon as React.ReactElement<any>, { className: "text-white w-8 h-8" })}
+    <div className="ef-app-icon">
+      <span className="ef-symbol">{symbol}</span>
     </div>
-    <span className="text-black/40 text-[10px] font-medium tracking-tight">{label}</span>
+    <span
+      style={{
+        fontSize: 7.5,
+        letterSpacing: '0.2em',
+        textTransform: 'uppercase',
+        color: '#333',
+        textAlign: 'center',
+        fontFamily: 'Georgia, serif',
+        lineHeight: 1.3,
+      }}
+    >
+      {label}
+    </span>
+    <span
+      style={{
+        fontSize: 8,
+        color: '#aaa',
+        fontStyle: 'italic',
+        fontFamily: 'Georgia, serif',
+        marginTop: -2,
+      }}
+    >
+      {labelZh}
+    </span>
   </motion.div>
 );
 
-// 3. 主程序
+// ─── 3. 主程序 ─────────────────────────────────────────────────
 export default function App() {
-  const [wallpaper, setWallpaper] = useState<string>('#F5F5F7');
+  const [wallpaper, setWallpaper] = useState<string>('#fafaf8');
   const [activeApp, setActiveApp] = useState<string | null>(null);
 
-  // 🔐 API 配置逻辑
-  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('starry_os_api_key') || '');
-  const [baseUrl, setBaseUrl] = useState<string>(() => localStorage.getItem('starry_os_base_url') || 'https://api.openai.com/v1');
+  const [apiKey, setApiKey] = useState<string>(
+    () => localStorage.getItem('starry_os_api_key') || ''
+  );
+  const [baseUrl, setBaseUrl] = useState<string>(
+    () =>
+      localStorage.getItem('starry_os_base_url') || 'https://api.openai.com/v1'
+  );
 
   useEffect(() => {
     localStorage.setItem('starry_os_api_key', apiKey);
@@ -162,57 +430,160 @@ export default function App() {
     localStorage.setItem('starry_os_base_url', baseUrl);
   }, [baseUrl]);
 
+  // 每个 app 对应的几何 Unicode 符号 + 双语名
   const apps = [
-    { id: 'wechat', label: '微信', icon: <MessageCircle />, color: 'bg-[#28C445]' },
-    { id: 'settings', label: '设置', icon: <Settings />, color: 'bg-[#555]' },
-    { id: 'diary', label: '日记', icon: <Book />, color: 'bg-[#4A90E2]' },
-    { id: 'beautify', label: '美化', icon: <Palette />, color: 'bg-[#F06292]' },
-    { id: 'couples', label: '情侣空间', icon: <Heart />, color: 'bg-[#FF5252]' },
+    { id: 'wechat',   symbol: '○',  label: 'Messages', labelZh: '微信' },
+    { id: 'settings', symbol: '◎',  label: 'Settings', labelZh: '设置' },
+    { id: 'diary',    symbol: '§',  label: 'Journal',  labelZh: '日记' },
+    { id: 'beautify', symbol: '◆',  label: 'Beautify', labelZh: '美化' },
+    { id: 'couples',  symbol: '♡',  label: 'Couple',   labelZh: '情侣' },
   ];
 
+  const isImageWallpaper =
+    wallpaper.startsWith('http') || wallpaper.startsWith('data');
+
   return (
-    <div 
-      className="fixed inset-0 overflow-hidden select-none transition-all duration-700" 
-      onClick={() => setActiveApp(null)}
-      style={{ background: wallpaper.startsWith('http') || wallpaper.startsWith('data') ? `url(${wallpaper}) center/cover no-repeat` : wallpaper }}
-    >
-      {/* 主屏幕内容，顶部留出原生状态栏高度 */}
+    <>
+      <style>{editorialStyle}</style>
       <div
-        className="h-full w-full flex flex-col relative z-10"
-        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        className="editorial-root"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          overflow: 'hidden',
+          userSelect: 'none',
+          transition: 'background 0.7s',
+          background: isImageWallpaper
+            ? `url(${wallpaper}) center/cover no-repeat`
+            : wallpaper,
+        }}
+        onClick={() => setActiveApp(null)}
       >
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col items-center">
-          <HeroCard />
-          <div className="grid grid-cols-4 gap-x-4 gap-y-8 px-8 w-full max-w-sm">
-            {apps.map((app) => (
-              <AppIcon key={app.id} icon={app.icon} label={app.label} color={app.color} onClick={() => setActiveApp(app.id)} />
-            ))}
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            zIndex: 10,
+            paddingTop: 'env(safe-area-inset-top)',
+          }}
+        >
+          {/* ── Main content ── */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              overflowY: 'auto',
+            }}
+          >
+            <HeroCard />
+
+            {/* App grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '20px 12px',
+                padding: '0 28px',
+                width: '100%',
+                maxWidth: 360,
+              }}
+            >
+              {apps.map((app, i) => (
+                <AppIcon
+                  key={app.id}
+                  symbol={app.symbol}
+                  label={app.label}
+                  labelZh={app.labelZh}
+                  onClick={() => setActiveApp(app.id)}
+                  delay={0.05 * i}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* ── Bottom Dock ── */}
+          <div
+            style={{
+              marginBottom: 32,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              width: '85%',
+              maxWidth: 340,
+            }}
+          >
+            {/* Top rule of dock */}
+            <div style={{ height: 1, background: '#111', marginBottom: 14 }} />
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+              }}
+            >
+              {apps.slice(0, 4).map((app) => (
+                <div
+                  key={`dock-${app.id}`}
+                  className="ef-dock-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveApp(app.id);
+                  }}
+                >
+                  <span className="ef-symbol" style={{ fontSize: 18 }}>
+                    {app.symbol}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom rule */}
+            <div style={{ height: 0.5, background: '#ccc', marginTop: 14 }} />
           </div>
         </div>
 
-        {/* Bottom Dock */}
-        <div className="mb-10 mx-auto w-[85%] max-w-sm h-20 bg-black/4 backdrop-blur-3xl rounded-[2.5rem] flex items-center justify-around px-6 border border-black/2">
-          {apps.slice(0, 4).map((app) => (
-            <div key={`dock-${app.id}`} onClick={(e) => { e.stopPropagation(); setActiveApp(app.id); }} className={`w-12 h-12 rounded-2xl ${app.color} flex items-center justify-center cursor-pointer shadow-sm active:scale-90 transition-transform`}>
-              {React.cloneElement(app.icon as React.ReactElement<any>, { size: 24, className: "text-white" })}
-            </div>
-          ))}
-        </div>
+        {/* ── App overlays (unchanged) ── */}
+        <AnimatePresence>
+          {activeApp === 'wechat' && (
+            <WeChatApp
+              onClose={() => setActiveApp(null)}
+              {...({ apiKey, baseUrl } as any)}
+            />
+          )}
+          {activeApp === 'settings' && (
+            <SettingsApp
+              onClose={() => setActiveApp(null)}
+              {...({
+                apiKey,
+                onUpdateApiKey: setApiKey,
+                baseUrl,
+                onUpdateBaseUrl: setBaseUrl,
+              } as any)}
+            />
+          )}
+          {activeApp === 'diary' && (
+            <DiaryApp
+              onClose={() => setActiveApp(null)}
+              {...({ apiKey } as any)}
+            />
+          )}
+          {activeApp === 'beautify' && (
+            <BeautifyApp
+              onClose={() => setActiveApp(null)}
+              onSetWallpaper={setWallpaper}
+              currentWallpaper={wallpaper}
+            />
+          )}
+          {activeApp === 'couples' && (
+            <CouplesApp onClose={() => setActiveApp(null)} />
+          )}
+        </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {activeApp === 'wechat' && <WeChatApp onClose={() => setActiveApp(null)} {...{ apiKey, baseUrl } as any} />}
-        {activeApp === 'settings' && (
-          <SettingsApp 
-            onClose={() => setActiveApp(null)}
-            {...{ apiKey, onUpdateApiKey: setApiKey, baseUrl, onUpdateBaseUrl: setBaseUrl } as any}
-          />
-        )}
-        {activeApp === 'diary' && <DiaryApp onClose={() => setActiveApp(null)} {...{ apiKey } as any} />}
-        {activeApp === 'beautify' && <BeautifyApp onClose={() => setActiveApp(null)} onSetWallpaper={setWallpaper} currentWallpaper={wallpaper} />}
-        {activeApp === 'couples' && <CouplesApp onClose={() => setActiveApp(null)} />}
-      </AnimatePresence>
-    </div>
+    </>
   );
 }
