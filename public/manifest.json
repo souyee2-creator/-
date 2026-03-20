@@ -2,7 +2,7 @@
   "name": "SOUYEE Phone",
   "short_name": "小随机",
   "start_url": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
