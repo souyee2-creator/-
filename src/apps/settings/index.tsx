@@ -11,7 +11,7 @@ interface ApiPreset {
   temperature: number;
 }
 
-export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const SettingsApp: React.FC<{ onClose: () => void; showStatusBar: boolean; onToggleStatusBar: () => void }> = ({ onClose, showStatusBar, onToggleStatusBar }) => {
   const [presets, setPresets] = useState<ApiPreset[]>(() => {
     try {
       const saved = localStorage.getItem('api_presets');
@@ -81,7 +81,6 @@ export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     }
     localStorage.setItem('starry_os_config', JSON.stringify({ baseUrl, apiKey, model: selectedModel, temperature }));
     setStatus({ type: 'success', msg: '配置已保存' });
-    setTimeout(onClose, 800);
   };
 
   const saveAsPreset = () => {
@@ -159,10 +158,10 @@ export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <motion.div
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+      initial={{ scale: 0.8, opacity: 0, borderRadius: '2rem' }}
+      animate={{ scale: 1, opacity: 1, borderRadius: '0' }}
+      exit={{ scale: 0.8, opacity: 0, borderRadius: '2rem' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       className="fixed inset-0 z-50 bg-white flex flex-col text-left overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
@@ -212,6 +211,29 @@ export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       {/* ── Scrollable Body ── */}
       <div className="flex-1 overflow-y-auto border-t border-gray-200">
+
+        {/* DISPLAY */}
+        <SectionHeader en="Display" zh="显示" />
+        <div className="px-6 pb-5">
+          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div>
+              <p className="text-[11px] font-black tracking-[0.15em] uppercase text-gray-900">Status Bar &nbsp;状态栏</p>
+              <p className="text-xs text-gray-400 mt-0.5">显示顶部时间与信号图标</p>
+            </div>
+            <button
+              onClick={onToggleStatusBar}
+              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${showStatusBar ? 'bg-gray-900' : 'bg-gray-200'}`}
+            >
+              <motion.div
+                animate={{ x: showStatusBar ? 24 : 2 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+              />
+            </button>
+          </div>
+        </div>
+
+        <Divider />
 
         {/* PRESETS */}
         <SectionHeader en="Presets" zh="API 预设" />

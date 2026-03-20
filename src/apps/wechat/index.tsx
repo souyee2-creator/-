@@ -121,7 +121,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       className="fixed inset-0 z-50 bg-[#fcfcfc] flex flex-col overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 flex items-center justify-between z-10" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(env(safe-area-inset-top) + 50px)' }}>
+      <div className="bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 flex items-center justify-between z-10" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 44px)', height: 'calc(env(safe-area-inset-top) + 94px)' }}>
         <div className="flex items-center gap-2">
           <button onClick={onClose} className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors">
             <ChevronLeft size={24} className="text-white" />

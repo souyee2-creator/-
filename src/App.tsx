@@ -17,7 +17,7 @@ const HeroCard = () => {
   const [profile, setProfile] = useState({
     name: 'Sylvia',
     id: 'souyee494',
-    bio: '“ 人生小满胜万全 ”',
+    bio: '" 人生小满胜万全 "',
     location: '冰岛',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvia'
   });
@@ -112,7 +112,7 @@ const HeroCard = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleUpdate('location', e.currentTarget.value)}
             />
           ) : (
-            <div onClick={() => setEditingField('location')} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.05] cursor-pointer text-black/30">
+            <div onClick={() => setEditingField('location')} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/3 border border-black/5 cursor-pointer text-black/30">
               <MapPin size={10} />
               <span className="text-[10px] tracking-wider font-medium">{profile.location}</span>
             </div>
@@ -125,7 +125,7 @@ const HeroCard = () => {
 
 // 2. App图标组件
 interface AppIconProps {
-  key?: string | number;   // ✨ 就是这一行！加上它，红线立刻消失
+  key?: string | number;
   icon: ReactNode;
   label: string;
   color: string;
@@ -140,13 +140,37 @@ const AppIcon = ({ icon, label, color, onClick }: AppIconProps) => (
     className="flex flex-col items-center gap-2 cursor-pointer group"
   >
     <div className={`w-16 h-16 rounded-3xl ${color} flex items-center justify-center shadow-lg border border-white/20`}>
-      {React.cloneElement(icon as React.ReactElement, { className: "text-white w-8 h-8" })}
+      {React.cloneElement(icon as React.ReactElement<any>, { className: "text-white w-8 h-8" })}
     </div>
     <span className="text-black/40 text-[10px] font-medium tracking-tight">{label}</span>
   </motion.div>
 );
 
-// 3. 主程序
+// 3. 全局状态栏组件（悬浮在所有 App 最顶层）
+interface GlobalStatusBarProps {
+  time: string;
+}
+
+const GlobalStatusBar = ({ time }: GlobalStatusBarProps) => (
+  <div
+    className="fixed left-0 right-0 top-0 z-9999 flex justify-between items-center px-8 pointer-events-none"
+    style={{
+      paddingTop: 'calc(env(safe-area-inset-top) + 10px)',
+      paddingBottom: '10px',
+    }}
+  >
+    <span className="text-[11px] tracking-tight font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
+      {time}
+    </span>
+    <div className="flex items-center gap-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
+      <Signal size={14} />
+      <Wifi size={14} />
+      <Battery size={16} />
+    </div>
+  </div>
+);
+
+// 4. 主程序
 export default function App() {
   const [wallpaper, setWallpaper] = useState<string>('#F5F5F7');
   const [activeApp, setActiveApp] = useState<string | null>(null);
@@ -155,6 +179,19 @@ export default function App() {
   // 🔐 API 配置逻辑
   const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('starry_os_api_key') || '');
   const [baseUrl, setBaseUrl] = useState<string>(() => localStorage.getItem('starry_os_base_url') || 'https://api.openai.com/v1');
+
+  // 🔲 状态栏开关
+  const [showStatusBar, setShowStatusBar] = useState<boolean>(() => {
+    const saved = localStorage.getItem('starry_os_show_statusbar');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const toggleStatusBar = () => {
+    setShowStatusBar(prev => {
+      localStorage.setItem('starry_os_show_statusbar', String(!prev));
+      return !prev;
+    });
+  };
 
   useEffect(() => {
     localStorage.setItem('starry_os_api_key', apiKey);
@@ -185,15 +222,14 @@ export default function App() {
       onClick={() => setActiveApp(null)}
       style={{ background: wallpaper.startsWith('http') || wallpaper.startsWith('data') ? `url(${wallpaper}) center/cover no-repeat` : wallpaper }}
     >
-      <div className="h-full w-full flex flex-col relative z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        {/* Status Bar */}
-        <div className="w-full px-8 py-4 flex justify-between items-center text-black/40 text-[11px] tracking-tight font-bold">
-          <span>{formatTime(currentTime)}</span>
-          <div className="flex items-center gap-2">
-            <Signal size={14} /> <Wifi size={14} /> <Battery size={16} />
-          </div>
-        </div>
+      {/* ✅ 全局状态栏：固定在最顶层，所有 App 都能看到 */}
+      {showStatusBar && <GlobalStatusBar time={formatTime(currentTime)} />}
 
+      {/* 主屏幕内容 */}
+      <div
+        className="h-full w-full flex flex-col relative z-10"
+        style={{ paddingTop: showStatusBar ? 'calc(env(safe-area-inset-top) + 44px)' : 'env(safe-area-inset-top)' }}
+      >
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center">
           <HeroCard />
@@ -205,27 +241,26 @@ export default function App() {
         </div>
 
         {/* Bottom Dock */}
-        <div className="mb-10 mx-auto w-[85%] max-w-sm h-20 bg-black/[0.04] backdrop-blur-3xl rounded-[2.5rem] flex items-center justify-around px-6 border border-black/[0.02]">
+        <div className="mb-10 mx-auto w-[85%] max-w-sm h-20 bg-black/4 backdrop-blur-3xl rounded-[2.5rem] flex items-center justify-around px-6 border border-black/2">
           {apps.slice(0, 4).map((app) => (
             <div key={`dock-${app.id}`} onClick={(e) => { e.stopPropagation(); setActiveApp(app.id); }} className={`w-12 h-12 rounded-2xl ${app.color} flex items-center justify-center cursor-pointer shadow-sm active:scale-90 transition-transform`}>
-              {React.cloneElement(app.icon as React.ReactElement, { size: 24, className: "text-white" })}
+              {React.cloneElement(app.icon as React.ReactElement<any>, { size: 24, className: "text-white" })}
             </div>
           ))}
         </div>
       </div>
 
       <AnimatePresence>
-        {activeApp === 'wechat' && <WeChatApp onClose={() => setActiveApp(null)} apiKey={apiKey} baseUrl={baseUrl} />}
+        {activeApp === 'wechat' && <WeChatApp onClose={() => setActiveApp(null)} {...{ apiKey, baseUrl } as any} />}
         {activeApp === 'settings' && (
           <SettingsApp 
-            onClose={() => setActiveApp(null)} 
-            apiKey={apiKey} 
-            onUpdateApiKey={setApiKey} 
-            baseUrl={baseUrl} 
-            onUpdateBaseUrl={setBaseUrl} 
+            onClose={() => setActiveApp(null)}
+            showStatusBar={showStatusBar}
+            onToggleStatusBar={toggleStatusBar}
+            {...{ apiKey, onUpdateApiKey: setApiKey, baseUrl, onUpdateBaseUrl: setBaseUrl } as any}
           />
         )}
-        {activeApp === 'diary' && <DiaryApp onClose={() => setActiveApp(null)} apiKey={apiKey} />}
+        {activeApp === 'diary' && <DiaryApp onClose={() => setActiveApp(null)} {...{ apiKey } as any} />}
         {activeApp === 'beautify' && <BeautifyApp onClose={() => setActiveApp(null)} onSetWallpaper={setWallpaper} currentWallpaper={wallpaper} />}
         {activeApp === 'couples' && <CouplesApp onClose={() => setActiveApp(null)} />}
       </AnimatePresence>
