@@ -11,7 +11,7 @@ interface ApiPreset {
   temperature: number;
 }
 
-export const SettingsApp: React.FC<{ onClose: () => void; showStatusBar: boolean; onToggleStatusBar: () => void }> = ({ onClose, showStatusBar, onToggleStatusBar }) => {
+export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [presets, setPresets] = useState<ApiPreset[]>(() => {
     try {
       const saved = localStorage.getItem('api_presets');
@@ -165,15 +165,11 @@ export const SettingsApp: React.FC<{ onClose: () => void; showStatusBar: boolean
       className="fixed inset-0 z-50 bg-white flex flex-col text-left overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* ── Status Bar placeholder ── */}
-      <div className="h-11 flex items-center justify-between px-6 shrink-0">
-        <span className="text-xs font-bold text-gray-900 tabular-nums">
-          {new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
-        </span>
-      </div>
+      {/* ── Status Bar placeholder（留出原生状态栏高度） ── */}
+      <div style={{ height: 'env(safe-area-inset-top)' }} className="shrink-0" />
 
       {/* ── Nav ── */}
-      <div className="px-6 pb-4 flex items-center gap-3 shrink-0">
+      <div className="px-6 pb-4 pt-3 flex items-center gap-3 shrink-0">
         <button
           onClick={onClose}
           className="flex items-center gap-1.5 text-[10px] font-black tracking-widest uppercase text-gray-500 hover:text-gray-900 transition-colors"
@@ -211,29 +207,6 @@ export const SettingsApp: React.FC<{ onClose: () => void; showStatusBar: boolean
 
       {/* ── Scrollable Body ── */}
       <div className="flex-1 overflow-y-auto border-t border-gray-200">
-
-        {/* DISPLAY */}
-        <SectionHeader en="Display" zh="显示" />
-        <div className="px-6 pb-5">
-          <div className="flex items-center justify-between py-3 border-b border-gray-100">
-            <div>
-              <p className="text-[11px] font-black tracking-[0.15em] uppercase text-gray-900">Status Bar &nbsp;状态栏</p>
-              <p className="text-xs text-gray-400 mt-0.5">显示顶部时间与信号图标</p>
-            </div>
-            <button
-              onClick={onToggleStatusBar}
-              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${showStatusBar ? 'bg-gray-900' : 'bg-gray-200'}`}
-            >
-              <motion.div
-                animate={{ x: showStatusBar ? 24 : 2 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
-              />
-            </button>
-          </div>
-        </div>
-
-        <Divider />
 
         {/* PRESETS */}
         <SectionHeader en="Presets" zh="API 预设" />

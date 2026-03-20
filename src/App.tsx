@@ -1,7 +1,6 @@
 import React, { useState, useEffect, ReactNode, useRef } from 'react';
 import { 
-  MessageCircle, Settings, Book, Palette, Heart, 
-  Battery, Wifi, Signal, MapPin, Upload 
+  MessageCircle, Settings, Book, Palette, Heart, MapPin, Upload 
 } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -146,52 +145,14 @@ const AppIcon = ({ icon, label, color, onClick }: AppIconProps) => (
   </motion.div>
 );
 
-// 3. 全局状态栏组件（悬浮在所有 App 最顶层）
-interface GlobalStatusBarProps {
-  time: string;
-}
-
-const GlobalStatusBar = ({ time }: GlobalStatusBarProps) => (
-  <div
-    className="fixed left-0 right-0 top-0 z-9999 flex justify-between items-center px-8 pointer-events-none"
-    style={{
-      paddingTop: 'calc(env(safe-area-inset-top) + 10px)',
-      paddingBottom: '10px',
-    }}
-  >
-    <span className="text-[11px] tracking-tight font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
-      {time}
-    </span>
-    <div className="flex items-center gap-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
-      <Signal size={14} />
-      <Wifi size={14} />
-      <Battery size={16} />
-    </div>
-  </div>
-);
-
-// 4. 主程序
+// 3. 主程序
 export default function App() {
   const [wallpaper, setWallpaper] = useState<string>('#F5F5F7');
   const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   // 🔐 API 配置逻辑
   const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('starry_os_api_key') || '');
   const [baseUrl, setBaseUrl] = useState<string>(() => localStorage.getItem('starry_os_base_url') || 'https://api.openai.com/v1');
-
-  // 🔲 状态栏开关
-  const [showStatusBar, setShowStatusBar] = useState<boolean>(() => {
-    const saved = localStorage.getItem('starry_os_show_statusbar');
-    return saved === null ? true : saved === 'true';
-  });
-
-  const toggleStatusBar = () => {
-    setShowStatusBar(prev => {
-      localStorage.setItem('starry_os_show_statusbar', String(!prev));
-      return !prev;
-    });
-  };
 
   useEffect(() => {
     localStorage.setItem('starry_os_api_key', apiKey);
@@ -201,11 +162,6 @@ export default function App() {
     localStorage.setItem('starry_os_base_url', baseUrl);
   }, [baseUrl]);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const apps = [
     { id: 'wechat', label: '微信', icon: <MessageCircle />, color: 'bg-[#28C445]' },
     { id: 'settings', label: '设置', icon: <Settings />, color: 'bg-[#555]' },
@@ -214,21 +170,16 @@ export default function App() {
     { id: 'couples', label: '情侣空间', icon: <Heart />, color: 'bg-[#FF5252]' },
   ];
 
-  const formatTime = (date: Date) => date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
-
   return (
     <div 
       className="fixed inset-0 overflow-hidden select-none transition-all duration-700" 
       onClick={() => setActiveApp(null)}
       style={{ background: wallpaper.startsWith('http') || wallpaper.startsWith('data') ? `url(${wallpaper}) center/cover no-repeat` : wallpaper }}
     >
-      {/* ✅ 全局状态栏：固定在最顶层，所有 App 都能看到 */}
-      {showStatusBar && <GlobalStatusBar time={formatTime(currentTime)} />}
-
-      {/* 主屏幕内容 */}
+      {/* 主屏幕内容，顶部留出原生状态栏高度 */}
       <div
         className="h-full w-full flex flex-col relative z-10"
-        style={{ paddingTop: showStatusBar ? 'calc(env(safe-area-inset-top) + 44px)' : 'env(safe-area-inset-top)' }}
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center">
@@ -255,8 +206,6 @@ export default function App() {
         {activeApp === 'settings' && (
           <SettingsApp 
             onClose={() => setActiveApp(null)}
-            showStatusBar={showStatusBar}
-            onToggleStatusBar={toggleStatusBar}
             {...{ apiKey, onUpdateApiKey: setApiKey, baseUrl, onUpdateBaseUrl: setBaseUrl } as any}
           />
         )}
