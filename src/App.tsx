@@ -162,11 +162,11 @@ const HeroCard = () => {
           onClick={() => fileInputRef.current?.click()}
           style={{
             position: 'absolute',
-            top: -28,
+            top: -38,
             left: '50%',
             transform: 'translateX(-50%)',
-            width: 56,
-            height: 56,
+            width: 76,
+            height: 76,
             border: '2px solid #111',
             overflow: 'hidden',
             cursor: 'pointer',
@@ -196,7 +196,7 @@ const HeroCard = () => {
         </div>
 
         {/* Spacer for avatar */}
-        <div style={{ height: 34 }} />
+        <div style={{ height: 44 }} />
 
         {/* Name */}
         <div style={{ textAlign: 'center', marginBottom: 6 }}>
