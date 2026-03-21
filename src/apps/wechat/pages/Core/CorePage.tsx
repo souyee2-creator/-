@@ -10,7 +10,7 @@ interface CorePageProps {
   onRemoveFavorite: (id: string) => void;
 }
 
-const PROFILE_KEY = 'starry_os_desktop_profile';
+const PROFILE_KEY = 'starry_os_core_identity';
 
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 

@@ -285,24 +285,13 @@ export const MasksPage: React.FC<MasksPageProps> = ({ onBack }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fafaf8', ...S.serif }}>
 
-      {/* Header */}
-      <div style={{ padding: '16px 24px 0', flexShrink: 0 }}>
-        <div style={S.rule} />
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '8px 0 4px' }}>
-          <button
-            onClick={onBack}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#999', ...S.serif }}
-          >
-            <span style={{ fontSize: 13, color: '#888' }}>‹</span> Back
-          </button>
-          <span style={{ fontSize: 8, letterSpacing: '0.36em', textTransform: 'uppercase', color: '#ccc', fontStyle: 'italic', ...S.serif }}>
-            Masks / Persona
-          </span>
-        </div>
-        <h1 style={{ margin: '2px 0 8px', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1, color: '#111' }}>
-          个人设定.
-        </h1>
-        <div style={S.rule} />
+      {/* Header — matches CollectionsPage */}
+      <div className="px-6 pt-12 pb-6 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-black/2" style={{ flexShrink: 0 }}>
+        <button onClick={onBack} className="p-2 -ml-2 hover:bg-black/5 rounded-full transition-colors">
+          <span style={{ fontSize: 22, color: '#111', lineHeight: 1 }}>‹</span>
+        </button>
+        <h2 className="text-[15px] font-black tracking-[0.2em] uppercase text-black">Masks</h2>
+        <div style={{ width: 32 }} />
       </div>
 
       {/* Scroll body */}
