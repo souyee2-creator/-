@@ -112,7 +112,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     (char.remark?.trim() || char.realName?.trim() || '?').charAt(0).toUpperCase();
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#fafaf8', ...ef.serif }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#ffffff', ...ef.serif }}>
       <div style={{ maxWidth: 440, margin: '0 auto' }}>
 
         {/* ── Add button row ── */}
@@ -123,7 +123,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
             style={{
               width: '100%',
               background: '#111',
-              color: '#fafaf8',
+              color: '#ffffff',
               border: 'none',
               padding: '14px 20px',
               display: 'flex',
@@ -205,7 +205,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
               transition={{ type: 'spring', damping: 32, stiffness: 300 }}
               style={{
                 position: 'relative', width: '100%', maxWidth: 480,
-                background: '#fafaf8', maxHeight: '90vh',
+                background: '#ffffff', maxHeight: '90vh',
                 display: 'flex', flexDirection: 'column', ...ef.serif,
               }}
             >
@@ -295,7 +295,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
               <div style={{ padding: '16px 24px 32px', borderTop: '1px solid #111' }}>
                 <button onClick={handleSave}
                   style={{
-                    width: '100%', background: '#111', color: '#fafaf8', border: 'none',
+                    width: '100%', background: '#111', color: '#ffffff', border: 'none',
                     padding: '14px', cursor: 'pointer', fontSize: 10,
                     letterSpacing: '0.3em', textTransform: 'uppercase', ...ef.serif,
                   }}>
@@ -315,7 +315,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
               onClick={() => setIsDeleteConfirmOpen(false)}
               style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              style={{ position: 'relative', width: '100%', maxWidth: 320, background: '#fafaf8', padding: '28px 24px', ...ef.serif }}>
+              style={{ position: 'relative', width: '100%', maxWidth: 320, background: '#ffffff', padding: '28px 24px', ...ef.serif }}>
               <div style={ef.rule} />
               <div style={{ padding: '16px 0 20px', textAlign: 'center' }}>
                 <Trash2 size={28} color="#c00" style={{ marginBottom: 12 }} />

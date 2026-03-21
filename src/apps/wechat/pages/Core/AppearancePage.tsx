@@ -33,7 +33,7 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
   themeDraftCss: '',
 };
 
-const STORAGE_KEY = 'starry_appearance_global';
+const STORAGE_KEY = 'souyee_appearance_global';
 
 export const loadAppearance = (): AppearanceSettings => {
   try {

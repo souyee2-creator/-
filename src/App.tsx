@@ -57,8 +57,8 @@ const editorialStyle = `
 `;
 
 // ─── 存储 Key 常量 ─────────────────────────────────────────────
-const PROFILE_KEY = 'starry_os_desktop_profile';
-const WALLPAPER_KEY = 'starry_os_desktop_wallpaper';
+const PROFILE_KEY = 'souyee_os_desktop_profile';
+const WALLPAPER_KEY = 'souyee_os_desktop_wallpaper';
 
 const DEFAULT_PROFILE = {
   name: 'Sylvia',
@@ -440,19 +440,19 @@ export default function App() {
   const [activeApp, setActiveApp] = useState<string | null>(null);
 
   const [apiKey, setApiKey] = useState<string>(
-    () => localStorage.getItem('starry_os_api_key') || ''
+    () => localStorage.getItem('souyee_os_api_key') || ''
   );
   const [baseUrl, setBaseUrl] = useState<string>(
     () =>
-      localStorage.getItem('starry_os_base_url') || 'https://api.openai.com/v1'
+      localStorage.getItem('souyee_os_base_url') || 'https://api.openai.com/v1'
   );
 
   useEffect(() => {
-    localStorage.setItem('starry_os_api_key', apiKey);
+    localStorage.setItem('souyee_os_api_key', apiKey);
   }, [apiKey]);
 
   useEffect(() => {
-    localStorage.setItem('starry_os_base_url', baseUrl);
+    localStorage.setItem('souyee_os_base_url', baseUrl);
   }, [baseUrl]);
 
   // 每个 app 对应的几何 Unicode 符号 + 双语名

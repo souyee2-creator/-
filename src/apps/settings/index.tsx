@@ -79,7 +79,7 @@ export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       setStatus({ type: 'error', msg: '请先选择模型' });
       return;
     }
-    localStorage.setItem('starry_os_config', JSON.stringify({ baseUrl, apiKey, model: selectedModel, temperature }));
+    localStorage.setItem('souyee_os_config', JSON.stringify({ baseUrl, apiKey, model: selectedModel, temperature }));
     setStatus({ type: 'success', msg: '配置已保存' });
   };
 
@@ -96,7 +96,7 @@ export const SettingsApp: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const updated = [...presets, newP];
     setPresets(updated);
     localStorage.setItem('api_presets', JSON.stringify(updated));
-    localStorage.setItem('starry_os_config', JSON.stringify(newP));
+    localStorage.setItem('souyee_os_config', JSON.stringify(newP));
     setShowNameInput(false);
     setNewPresetName('');
     setStatus({ type: 'success', msg: '方案已存档' });

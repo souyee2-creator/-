@@ -23,7 +23,7 @@ export interface CssPreset {
   css: string;
 }
 
-/** Global appearance settings — stored in localStorage under 'starry_appearance_global' */
+/** Global appearance settings — stored in localStorage under 'souyee_appearance_global' */
 export interface AppearanceSettings {
   bgImage: string | null;
   bubblePresets: CssPreset[];
@@ -34,7 +34,7 @@ export interface AppearanceSettings {
   themeDraftCss: string;
 }
 
-/** Per-contact appearance override — stored in localStorage under 'starry_appearance_contact_{id}' */
+/** Per-contact appearance override — stored in localStorage under 'souyee_appearance_contact_{id}' */
 export interface ContactAppearance {
   override: boolean;       // false = inherit global
   bgImage: string | null;

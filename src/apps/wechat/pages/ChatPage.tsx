@@ -108,24 +108,24 @@ const DEFAULT_CONTACT_APPEARANCE: ContactAppearance = {
   activeBubblePresetId: null,
 };
 
-const COMBINED_PRESETS_KEY = 'starry_appearance_combined_presets';
+const COMBINED_PRESETS_KEY = 'souyee_appearance_combined_presets';
 
 const loadGlobalAppearance = () => {
   try {
-    const raw = localStorage.getItem('starry_appearance_global');
+    const raw = localStorage.getItem('souyee_appearance_global');
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 };
 
 const loadContactAppearance = (contactId: string): ContactAppearance => {
   try {
-    const raw = localStorage.getItem(`starry_appearance_contact_${contactId}`);
+    const raw = localStorage.getItem(`souyee_appearance_contact_${contactId}`);
     return raw ? { ...DEFAULT_CONTACT_APPEARANCE, ...JSON.parse(raw) } : DEFAULT_CONTACT_APPEARANCE;
   } catch { return DEFAULT_CONTACT_APPEARANCE; }
 };
 
 const saveContactAppearance = (contactId: string, s: ContactAppearance) => {
-  try { localStorage.setItem(`starry_appearance_contact_${contactId}`, JSON.stringify(s)); } catch {}
+  try { localStorage.setItem(`souyee_appearance_contact_${contactId}`, JSON.stringify(s)); } catch {}
 };
 
 const loadCombinedPresets = (): CombinedPreset[] => {
@@ -2531,7 +2531,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
     : (globalApp?.themeDraftCss ?? '');
 
   // 新增状态
-  const innerVoiceKey = contact.id ? `starry_inner_voice_${contact.id}` : null;
+  const innerVoiceKey = contact.id ? `souyee_inner_voice_${contact.id}` : null;
   const [charStateHistory, setCharStateHistory] = useState<Array<CharState & { timestamp: string; round: number }>>(() => {
     try {
       if (!innerVoiceKey) return [];
@@ -2556,7 +2556,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   const roundRef = useRef(charStateHistory.length); // 从已有轮数续编
 
   // 从 localStorage 加载对话参数设置
-  const settingsKey = `starry_chat_settings_${contact.id}`;
+  const settingsKey = `_chat_settings_${contact.id}`;
   const [chatSettings, setChatSettings] = useState<ChatSettings>(() => {
     try {
       const saved = localStorage.getItem(settingsKey);
@@ -2758,7 +2758,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
       callLogRef.current.push({ sender: 'me', senderName: '我', text, time });
     }
     if (contact.isSystem) return;
-    const configStr = localStorage.getItem('starry_os_config');
+    const configStr = localStorage.getItem('souyee_os_config');
     if (!configStr) return;
     const config = JSON.parse(configStr);
     try {
@@ -2947,7 +2947,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
 
   const triggerAIResponse = async (currentMessages: Message[]) => {
     if (isAiThinking || contact.isSystem) return;
-    const configStr = localStorage.getItem('starry_os_config');
+    const configStr = localStorage.getItem('souyee_os_config');
     if (!configStr) { showFeedback('请先配置 API Key'); return; }
     const config = JSON.parse(configStr);
 

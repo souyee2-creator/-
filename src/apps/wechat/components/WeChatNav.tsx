@@ -21,7 +21,7 @@ export const WeChatNav: React.FC<WeChatNavProps> = ({ activeTab, setActiveTab })
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 14px)',
         paddingTop: 0,
         zIndex: 10,
-        background: '#fafaf8',
+        background: '#ffffff',
       }}
     >
       {/* Top rule */}
@@ -63,7 +63,7 @@ export const WeChatNav: React.FC<WeChatNavProps> = ({ activeTab, setActiveTab })
                 <span
                   style={{
                     fontSize: 18,
-                    color: isActive ? '#fafaf8' : '#999',
+                    color: isActive ? '#ffffff' : '#999',
                     fontFamily: 'Georgia, "Times New Roman", serif',
                     lineHeight: 1,
                     transition: 'color 0.15s',
@@ -76,7 +76,7 @@ export const WeChatNav: React.FC<WeChatNavProps> = ({ activeTab, setActiveTab })
                     fontSize: 7.5,
                     letterSpacing: '0.22em',
                     textTransform: 'uppercase',
-                    color: isActive ? '#fafaf8' : '#aaa',
+                    color: isActive ? '#ffffff' : '#aaa',
                     fontFamily: 'Georgia, "Times New Roman", serif',
                     fontWeight: isActive ? 700 : 400,
                     transition: 'color 0.15s',

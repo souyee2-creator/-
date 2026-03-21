@@ -10,7 +10,7 @@ interface CorePageProps {
   onRemoveFavorite: (id: string) => void;
 }
 
-const PROFILE_KEY = 'starry_os_core_identity';
+const PROFILE_KEY = 'souyee_os_core_identity';
 
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
@@ -155,7 +155,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           {/* Footer */}
           <div style={{ marginTop: 36, paddingTop: 16, borderTop: '1px solid #eee', textAlign: 'center' }}>
             <span style={{ fontSize: 8, letterSpacing: '0.36em', textTransform: 'uppercase', color: '#ddd', fontFamily: 'Georgia, serif' }}>
-              V 1.0.2 — STARRY
+              V 1.0.2 — SOUYEE
             </span>
           </div>
         </div>

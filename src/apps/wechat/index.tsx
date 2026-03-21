@@ -13,8 +13,8 @@ interface WeChatAppProps {
   onClose: () => void;
 }
 
-const STORAGE_KEY = 'starry_os_wechat_characters';
-const FAVORITES_KEY = 'starry_os_wechat_favorites';
+const STORAGE_KEY = 'souyee_os_wechat_characters';
+const FAVORITES_KEY = 'souyee_os_wechat_favorites';
 
 export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('signals');

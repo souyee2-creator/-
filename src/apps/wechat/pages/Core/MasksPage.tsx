@@ -14,7 +14,7 @@ export interface Mask {
 
 // ─── Storage ──────────────────────────────────────────────────────────────────
 
-const MASKS_KEY = 'starry_os_masks';
+const MASKS_KEY = 'souyee_os_masks';
 
 const loadMasks = (): Mask[] => {
   try {
@@ -99,7 +99,7 @@ const MaskFormModal: React.FC<MaskFormModalProps> = ({ initial, onSave, onDelete
         transition={{ type: 'spring', damping: 32, stiffness: 300 }}
         style={{
           position: 'relative', width: '100%', maxWidth: 480,
-          background: '#fafaf8', maxHeight: '92vh',
+          background: '#ffffff', maxHeight: '92vh',
           display: 'flex', flexDirection: 'column', ...S.serif,
         }}
       >
@@ -202,7 +202,7 @@ const MaskFormModal: React.FC<MaskFormModalProps> = ({ initial, onSave, onDelete
           <button
             onClick={handleSave}
             style={{
-              width: '100%', background: '#111', color: '#fafaf8', border: 'none',
+              width: '100%', background: '#111', color: '#ffffff', border: 'none',
               padding: 14, cursor: 'pointer', fontSize: 10,
               letterSpacing: '0.3em', textTransform: 'uppercase', ...S.serif,
             }}
@@ -225,7 +225,7 @@ const MaskFormModal: React.FC<MaskFormModalProps> = ({ initial, onSave, onDelete
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              style={{ width: '100%', maxWidth: 320, background: '#fafaf8', padding: '28px 24px', ...S.serif }}
+              style={{ width: '100%', maxWidth: 320, background: '#ffffff', padding: '28px 24px', ...S.serif }}
             >
               <div style={S.rule} />
               <div style={{ padding: '16px 0 20px', textAlign: 'center' }}>
@@ -283,7 +283,7 @@ export const MasksPage: React.FC<MasksPageProps> = ({ onBack }) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fafaf8', ...S.serif }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#ffffff', ...S.serif }}>
 
       {/* Header — matches CollectionsPage */}
       <div className="px-6 pt-12 pb-6 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-black/2" style={{ flexShrink: 0 }}>
@@ -303,7 +303,7 @@ export const MasksPage: React.FC<MasksPageProps> = ({ onBack }) => {
             whileTap={{ scale: 0.97 }}
             onClick={() => setModal('create')}
             style={{
-              width: '100%', background: '#111', color: '#fafaf8',
+              width: '100%', background: '#111', color: '#ffffff',
               border: 'none', padding: '14px 20px',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               cursor: 'pointer', marginBottom: 20, ...S.serif,
