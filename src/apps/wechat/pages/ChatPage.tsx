@@ -2376,7 +2376,7 @@ const RevokeViewer = ({ msg, onClose }: any) => (
     <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="p-6">
         <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2"><Eye size={18} className="text-amber-500" /> 原内容查看</h3>
-        <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 text-gray-700 leading-relaxed wrap-break-word">{msg.text}</div>
+        <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 text-gray-700 leading-relaxed break-words">{msg.text}</div>
       </div>
       <button onClick={onClose} className="w-full py-4 bg-gray-50 border-t border-gray-100 font-bold text-gray-500">我知道了</button>
     </motion.div>
@@ -3911,7 +3911,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
               onClick={() => setShowInnerVoice(v => !v)}
-              style={{ background: showInnerVoice ? '#111' : 'none', border: '1px solid #111', cursor: 'pointer', padding: '5px 7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
+              style={{ background: showInnerVoice ? '#111' : 'none', border: 'none', cursor: 'pointer', padding: '5px 7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
               title="查看心声"
             >
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -4408,8 +4408,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               </AnimatePresence>
 
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', gap: 8 }}>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#aaa', flexShrink: 0 }}><Smile size={20} /></button>
-                <div style={{ flex: 1, border: '1px solid #ddd', padding: '7px 12px', display: 'flex', alignItems: 'center', minHeight: 36, background: '#fff' }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#111', flexShrink: 0 }}><Smile size={20} /></button>
+                <div style={{ flex: 1, border: '1px solid #111', padding: '7px 12px', display: 'flex', alignItems: 'center', minHeight: 36, background: '#fff' }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
@@ -4423,7 +4423,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#aaa' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#111' }}
                     onClick={() => setShowPlusPanel(v => !v)}
                   >
                     <motion.div animate={{ rotate: showPlusPanel ? 45 : 0 }} transition={{ type: 'spring', stiffness: 380, damping: 26 }}>
@@ -4442,9 +4442,9 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     disabled={isAiThinking}
                     style={{
                       background: (inputText.trim() || quotingMsg) ? '#111' : 'transparent',
-                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#bbb',
+                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#111',
                       border: '1px solid',
-                      borderColor: (inputText.trim() || quotingMsg) ? '#111' : '#ddd',
+                      borderColor: (inputText.trim() || quotingMsg) ? '#111' : '#111',
                       padding: '6px 14px',
                       fontFamily: 'Georgia, serif',
                       fontSize: 12,
