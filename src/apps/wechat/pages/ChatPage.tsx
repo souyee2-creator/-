@@ -2376,7 +2376,7 @@ const RevokeViewer = ({ msg, onClose }: any) => (
     <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="p-6">
         <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2"><Eye size={18} className="text-amber-500" /> 原内容查看</h3>
-        <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 text-gray-700 leading-relaxed break-words">{msg.text}</div>
+        <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 text-gray-700 leading-relaxed wrap-break-word">{msg.text}</div>
       </div>
       <button onClick={onClose} className="w-full py-4 bg-gray-50 border-t border-gray-100 font-bold text-gray-500">我知道了</button>
     </motion.div>
@@ -3174,6 +3174,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             },
             ...currentMessages
               .slice(-chatSettings.contextSize)
+              .filter(m => !m.isRevoked)
               .map(m => {
                 if (m.isSystemNotice) return { role: 'user' as 'user', content: m.text };
                 if (m.isRevoked) return { role: (m.sender === 'me' ? 'user' : 'assistant') as 'user' | 'assistant', content: '(已撤回)' };
