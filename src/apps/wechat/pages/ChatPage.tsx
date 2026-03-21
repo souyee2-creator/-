@@ -3052,6 +3052,25 @@ export const ChatPage: React.FC<ChatPageProps> = ({
     if (!configStr) { showFeedback('请先配置 API Key'); return; }
     const config = JSON.parse(configStr);
 
+    // 读取当前激活的面具
+    const activeMaskId = chatSettings.activeMaskId || '';
+    let maskPrompt = '';
+    if (activeMaskId) {
+      try {
+        const masksRaw = localStorage.getItem('souyee_os_masks');
+        const masks = masksRaw ? JSON.parse(masksRaw) : [];
+        const mask = masks.find((m: { id: string; name: string; persona: string }) => m.id === activeMaskId);
+        if (mask) {
+          maskPrompt = `【与你对话的用户正在使用以下身份】
+姓名：${mask.name}
+人设：${mask.persona || '（无特别设定）'}
+请在整个对话中，将对方视为"${mask.name}"并根据其人设与之互动。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        }
+      } catch { /* 读取失败则忽略 */ }
+    }
+
     setIsAiThinking(true);
     setIsTyping(true);
 
@@ -3067,7 +3086,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
           messages: [
             {
               role: "system",
-              content: `你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
+              content: `${maskPrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【★ 输出格式——最高优先级，每次回复必须严格遵守 ★】
@@ -3868,9 +3887,16 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         <div className="mt-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl px-4 flex items-center justify-between h-14">
           <div className="flex items-center gap-1">
             <button onClick={onBack} className="p-2 -ml-2"><ChevronLeft size={24} className="text-white" /></button>
-            <h2 className="text-lg font-medium text-white truncate w-35">
-              {isAiThinking ? "对方正在输入..." : contact.name}
-            </h2>
+            <div className="flex flex-col justify-center">
+              <h2 className="text-[15px] font-bold text-white truncate w-35 leading-tight" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.01em' }}>
+                {contact.name}
+              </h2>
+              {isAiThinking && (
+                <span className="text-[10px] text-white/45 leading-tight tracking-widest uppercase" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.18em' }}>
+                  正在输入中…
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-1">
             {/* 心声按钮：始终白色 */}
@@ -4027,17 +4053,24 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 setTransferActionMsgId(msg.id);
                               }
                             }}
-                            className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative rounded-2xl text-[15px] leading-relaxed shadow-sm transition-all ${
-                              msg.isImage ? 'p-0 overflow-hidden' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden' : 'p-3'
+                            className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${
+                              msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
                             } ${
                               (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
-                                ? 'border-0 shadow-none'
+                                ? ''
                                 : msg.sender === 'me'
-                                  ? 'bg-black text-white rounded-tr-none'
-                                  : 'bg-white text-black border border-black/10 rounded-tl-none'
+                                  ? 'bg-black text-white'
+                                  : 'bg-white text-black'
                             } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${
                               isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
                             }`}
+                            style={
+                              (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage)
+                                ? {}
+                                : msg.sender === 'me'
+                                  ? { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: '14px 4px 14px 14px', boxShadow: 'none' }
+                                  : { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: '4px 14px 14px 14px', border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }
+                            }
                           >
                             {msg.isForwardRecord ? (
                               /* ── 合并转发卡片 ── */
@@ -4278,12 +4311,32 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
         {/* 正在输入 */}
         {isTyping && (
-          <div className="flex gap-3">
-            <div className="w-9 h-9 rounded-xl border border-black/5 overflow-hidden">{renderAvatar(false)}</div>
-            <div className="bg-white border border-black/10 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1.5 items-center">
-              <span className="w-1.5 h-1.5 bg-black/20 rounded-full animate-pulse" />
-              <span className="w-1.5 h-1.5 bg-black/20 rounded-full animate-pulse [animation-delay:0.2s]" />
-              <span className="w-1.5 h-1.5 bg-black/20 rounded-full animate-pulse [animation-delay:0.4s]" />
+          <div className="flex gap-3 items-end">
+            <div className="w-9 h-9 rounded-xl border border-black/5 overflow-hidden shrink-0">{renderAvatar(false)}</div>
+            <div style={{
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.10)',
+              borderRadius: '4px 16px 16px 16px',
+              padding: '10px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+            }}>
+              <style>{`
+                @keyframes typingDot {
+                  0%, 60%, 100% { opacity: 0.18; transform: scaleY(0.7); }
+                  30% { opacity: 1; transform: scaleY(1); }
+                }
+              `}</style>
+              {[0, 0.16, 0.32].map((delay, i) => (
+                <div key={i} style={{
+                  width: '5px', height: '5px',
+                  background: '#111',
+                  borderRadius: '1px',
+                  animation: `typingDot 1.1s ${delay}s ease-in-out infinite`,
+                }} />
+              ))}
             </div>
           </div>
         )}
