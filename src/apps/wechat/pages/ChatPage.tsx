@@ -1004,7 +1004,7 @@ const CallOverlay = ({
     : <span className="text-white font-bold text-4xl">{contact.initials || contact.name[0]}</span>;
 
   const renderCallMessages = (glass = false) => (
-    <div ref={scrollRef} className="flex flex-col gap-2 overflow-y-auto px-3 py-2" style={{ maxHeight: 200 }}>
+    <div ref={scrollRef} className="flex flex-col gap-2 overflow-y-auto px-4 py-2" style={{ minHeight: '100%' }}>
       {callMessages.map(m => (
         m.isAction ? (
           // 场景/动作描写：居中斜体灰字，无气泡
@@ -1169,7 +1169,7 @@ const CallOverlay = ({
       </div>
 
       {/* 消息区：撑满顶栏和底部操作区之间的空间 */}
-      <div className="absolute left-0 right-0 z-10 overflow-y-auto" style={{ top: 130, bottom: 155 }}>
+      <div className="absolute left-0 right-0 z-10 overflow-y-auto" style={{ top: 185, bottom: 155 }}>
         {renderCallMessages(true)}
       </div>
 
@@ -3976,15 +3976,27 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             onReject={handleHangUp}
           />
         )}
-        {activeCall?.phase === 'connected' && (
-          <CallOverlay
-            mode={activeCall.mode}
-            contact={contact}
-            onHangUp={handleHangUp}
-            onSend={handleCallSend}
-            onReply={handleCallReply}
-          />
-        )}
+        {activeCall?.phase === 'connected' && (() => {
+          let myAvatar: string | undefined;
+          try {
+            const activeMaskId = chatSettings.activeMaskId || '';
+            if (activeMaskId) {
+              const masks = JSON.parse(localStorage.getItem('souyee_os_masks') || '[]');
+              const mask = masks.find((m: { id: string; avatar: string }) => m.id === activeMaskId);
+              if (mask?.avatar) myAvatar = mask.avatar;
+            }
+          } catch {}
+          return (
+            <CallOverlay
+              mode={activeCall.mode}
+              contact={contact}
+              onHangUp={handleHangUp}
+              onSend={handleCallSend}
+              onReply={handleCallReply}
+              myAvatar={myAvatar}
+            />
+          );
+        })()}
       </AnimatePresence>
 
       {/* 心声卡片 */}
