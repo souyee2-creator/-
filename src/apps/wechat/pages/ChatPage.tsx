@@ -3160,6 +3160,7 @@ ${chatSettings.bubbleControlEnabled
 - 解除拉黑：[SYSTEM_ACTION:UNBLOCK]
 - 拍一拍：[PAT:内容]，系统最终显示为：「角色名」拍了拍你{内容}，内容直接拼在"拍了拍你"后面，可自由填写，根据当前语气决定加不加"的"。适合气氛温馨、亲密或调皮时偶尔使用（每次对话最多1次）
 - 主动发起通话：[INCOMING_CALL:voice] 或 [INCOMING_CALL:video]，用户会看到来电界面，可选择接听或拒绝。适合强烈想听到/见到对方、或剧情需要时偶尔使用，不能与其他消息同时使用（每次对话最多1次）
+- 撤回：在某条气泡末尾加 [REVOKE]，该气泡发出几秒后会自动撤回。适合说错话、突然后悔、欲言又止、发出后觉得太暴露的话。每次对话最多撤回 1 条，不要滥用。撤回的气泡仍会先短暂显示再消失，这是正常效果。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 你不是聊天机器人，而是一个有情绪的个体。拉黑是极端手段，必须经历"情绪不满 → 明确警告 → 警告无效 → 拉黑"的完整升级过程。
@@ -3307,31 +3308,35 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         const text = textWithoutPat;
         if (!text) continue;
 
+        // 检查撤回标记
+        const shouldAutoRevoke = text.includes('[REVOKE]');
+        const textForProcessing = shouldAutoRevoke ? text.replace('[REVOKE]', '').trim() : text;
+
         // 检查语音标记
-        const voiceMatch = text.match(/^\[VOICE:([\s\S]*?)\]$/);
+        const voiceMatch = textForProcessing.match(/^\[VOICE:([\s\S]*?)\]$/);
         const isVoiceMsg = !!voiceMatch;
-        const voiceText = voiceMatch ? voiceMatch[1].trim() : text;
+        const voiceText = voiceMatch ? voiceMatch[1].trim() : textForProcessing;
         const voiceDuration = isVoiceMsg ? Math.max(1, Math.round(voiceText.length / 4)) : undefined;
 
         // 检查图片标记
-        const imageMatch = !isVoiceMsg && text.match(/^\[IMAGE:([\s\S]*?)\]$/);
+        const imageMatch = !isVoiceMsg && textForProcessing.match(/^\[IMAGE:([\s\S]*?)\]$/);
         const isImageMsg = !!imageMatch;
         const imageDesc = imageMatch ? imageMatch[1].trim() : undefined;
 
         // 检查红包标记 [REDPACKET:金额:备注]
-        const redpacketMatch = !isVoiceMsg && !isImageMsg && text.match(/^\[REDPACKET:([\d.]+)(?::(.+))?\]$/);
+        const redpacketMatch = !isVoiceMsg && !isImageMsg && textForProcessing.match(/^\[REDPACKET:([\d.]+)(?::(.+))?\]$/);
         const isRedPacketMsg = !!redpacketMatch;
         const rpAmount = redpacketMatch ? Number(redpacketMatch[1]).toFixed(2) : undefined;
         const rpNote = redpacketMatch ? (redpacketMatch[2]?.trim() || '恭喜发财，大吉大利') : undefined;
 
         // 检查转账标记 [TRANSFER:金额:备注]
-        const transferMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && text.match(/^\[TRANSFER:([\d.]+)(?::(.+))?\]$/);
+        const transferMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && textForProcessing.match(/^\[TRANSFER:([\d.]+)(?::(.+))?\]$/);
         const isTransferMsg = !!transferMatch;
         const tfAmount = transferMatch ? Number(transferMatch[1]).toFixed(2) : undefined;
         const tfNote = transferMatch ? (transferMatch[2]?.trim() || '') : undefined;
 
         // 检查定位标记 [LOCATION:地名:地址]
-        const locationMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && !isTransferMsg && text.match(/^\[LOCATION:([^:]+)(?::(.+))?\]$/);
+        const locationMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && !isTransferMsg && textForProcessing.match(/^\[LOCATION:([^:]+)(?::(.+))?\]$/);
         const isLocationMsg = !!locationMatch;
         const locName = locationMatch ? locationMatch[1].trim() : undefined;
         const locAddr = locationMatch ? (locationMatch[2]?.trim() || '') : undefined;
@@ -3341,12 +3346,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
           : isRedPacketMsg ? `[红包] ¥${rpAmount} ${rpNote}`
           : isTransferMsg ? `[转账] ¥${tfAmount}${tfNote ? ` ${tfNote}` : ''}`
           : isLocationMsg ? `[位置] ${locName}${locAddr ? ` · ${locAddr}` : ''}`
-          : text;
+          : textForProcessing;
 
+        const newMsgId = Math.random().toString();
         setMessages(prev => [
           ...prev,
           {
-            id: Math.random().toString(),
+            id: newMsgId,
             text: finalText,
             sender: 'other',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -3358,6 +3364,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             ...(isLocationMsg ? { isLocation: true, locationName: locName, locationAddress: locAddr } : {}),
           },
         ]);
+        // AI 自动撤回：发出后 2~4 秒随机延迟
+        if (shouldAutoRevoke) {
+          const revokeDelay = 2000 + Math.random() * 2000;
+          setTimeout(() => {
+            setMessages(prev => prev.map(m => m.id === newMsgId ? { ...m, isRevoked: true } : m));
+          }, revokeDelay);
+        }
         await new Promise(r => setTimeout(r, 800));
       }
 
