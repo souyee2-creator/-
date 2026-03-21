@@ -138,9 +138,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     {profile.name ? `${profile.name}.` : '点击设置昵称'}
                   </h2>
                 )}
-                <p style={{ margin: '6px 0 0', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ccc', fontFamily: 'Georgia, serif' }}>
-                  点击头像或昵称可修改
-                </p>
+
               </div>
             </div>
             <div style={ef.rule} />
@@ -168,7 +166,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: '#fafaf8' }}
+            style={{ position: 'fixed', inset: 0, zIndex: 100, overflow: 'hidden', background: '#fafaf8' }}
           >
             <MasksPage onBack={() => setShowMasks(false)} />
           </motion.div>
