@@ -3883,34 +3883,43 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </AnimatePresence>
 
       {/* 顶部导航 */}
-      <div className="px-4 pt-4 z-20">
-        <div className="mt-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl px-4 flex items-center justify-between h-14">
-          <div className="flex items-center gap-1">
-            <button onClick={onBack} className="p-2 -ml-2"><ChevronLeft size={24} className="text-white" /></button>
-            <div className="flex flex-col justify-center">
-              <h2 className="text-[15px] font-bold text-white truncate w-35 leading-tight" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.01em' }}>
+      <div style={{
+        background: '#ffffff',
+        paddingTop: 'env(safe-area-inset-top)',
+        borderBottom: '2px solid #111',
+        zIndex: 20,
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 50, paddingLeft: 4, paddingRight: 8 }}>
+          {/* 左：返回 + 名字 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 8px', color: '#111', display: 'flex', alignItems: 'center' }}>
+              <ChevronLeft size={22} />
+            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#111', fontFamily: 'Georgia, serif', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
                 {contact.name}
-              </h2>
+              </span>
               {isAiThinking && (
-                <span className="text-[10px] text-white/45 leading-tight tracking-widest uppercase" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.18em' }}>
+                <span style={{ fontSize: 9, color: '#aaa', fontFamily: 'Georgia, serif', letterSpacing: '0.2em', textTransform: 'uppercase', lineHeight: 1.4 }}>
                   正在输入中…
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            {/* 心声按钮：始终白色 */}
+          {/* 右：心声 + 更多 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
               onClick={() => setShowInnerVoice(v => !v)}
-              className={`p-2 rounded-xl transition-all active:scale-90 ${showInnerVoice ? 'bg-white/15' : ''}`}
+              style={{ background: showInnerVoice ? '#111' : 'none', border: '1px solid #111', cursor: 'pointer', padding: '5px 7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
               title="查看心声"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>
-            <button onClick={() => setShowSettings(true)} className="p-2 active:scale-90 transition-transform">
-              <MoreHorizontal size={24} className="text-white" />
+            <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px 6px', color: '#111', display: 'flex', alignItems: 'center' }}>
+              <MoreHorizontal size={20} />
             </button>
           </div>
         </div>
@@ -3918,13 +3927,11 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         {/* 黑名单提示 */}
         <AnimatePresence>
           {isBlacklisted && (
-            <motion.div initial={{ opacity: 0, y: -10, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: -10, height: 0 }} className="overflow-hidden mt-3">
-              <div className="bg-black/5 border border-black/5 rounded-xl py-2.5 flex items-center justify-center gap-2">
-                <Ban size={14} className="text-black/40" />
-                <span className="text-[11px] font-bold text-black/40">
-                  {blockedBy === 'other'
-                    ? '对方已将你拉入黑名单，你发送的消息将被标记'
-                    : '已将对方加入黑名单，对方发来的消息将被标记'}
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
+              <div style={{ borderTop: '1px solid #eee', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <Ban size={12} style={{ color: '#bbb' }} />
+                <span style={{ fontSize: 10, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+                  {blockedBy === 'other' ? '对方已将你拉入黑名单' : '已将对方加入黑名单'}
                 </span>
               </div>
             </motion.div>
@@ -4343,88 +4350,84 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </div>
 
       {/* 输入框区域 / 多选工具栏 */}
-      <div className="px-3 pb-4 pt-1.5 relative">
+      <div style={{ borderTop: '1px solid #111', background: '#ffffff', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
         <AnimatePresence mode="wait">
           {isMultiSelect ? (
             <motion.div
               key="multiselect-bar"
               initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl"
+              style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
               <button
                 onClick={exitMultiSelect}
-                className="flex items-center gap-1.5 text-white/60 active:text-white/40 transition-colors px-2 py-1"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: '#aaa', fontFamily: 'Georgia, serif', fontSize: 12, letterSpacing: '0.1em' }}
               >
-                <X size={16} />
-                <span className="text-sm font-bold">取消</span>
+                <X size={15} />
+                取消
               </button>
-              <span className="text-white/50 text-sm font-bold">
+              <span style={{ fontSize: 11, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>
                 {selectedMsgIds.size > 0 ? `已选 ${selectedMsgIds.size} 条` : '点击消息以选择'}
               </span>
-              <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button
                   onClick={() => { if (selectedMsgIds.size > 0) setShowContactPicker(true); }}
                   disabled={selectedMsgIds.size === 0}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-sm transition-all ${
-                    selectedMsgIds.size > 0
-                      ? 'bg-white/15 text-white active:scale-95'
-                      : 'bg-white/10 text-white/20 cursor-not-allowed'
-                  }`}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: selectedMsgIds.size > 0 ? '#111' : '#eee', border: 'none', cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: 'Georgia, serif', fontSize: 11, letterSpacing: '0.1em' }}
                 >
-                  <Share2 size={15} />
-                  <span>转发</span>
+                  <Share2 size={13} />
+                  转发
                 </button>
                 <button
                   onClick={() => { if (selectedMsgIds.size > 0) setShowBatchDeleteConfirm(true); }}
                   disabled={selectedMsgIds.size === 0}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-sm transition-all ${
-                    selectedMsgIds.size > 0
-                      ? 'bg-red-500/90 text-white active:scale-95'
-                      : 'bg-white/10 text-white/20 cursor-not-allowed'
-                  }`}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: selectedMsgIds.size > 0 ? '#c00' : '#eee', border: 'none', cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: 'Georgia, serif', fontSize: 11, letterSpacing: '0.1em' }}
                 >
-                  <Trash2 size={15} />
-                  <span>删除</span>
+                  <Trash2 size={13} />
+                  删除
                 </button>
               </div>
             </motion.div>
           ) : (
-            <motion.div key="input-bar" initial={{ y: 0 }} animate={{ y: 0 }}>
+            <motion.div key="input-bar" style={{ position: 'relative' }}>
               <AnimatePresence>
                 {quotingMsg && (
                   <motion.div
                     initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }}
-                    className="absolute -top-9.5 left-6 right-6 bg-white border border-black/5 rounded-t-xl px-3 py-2 flex items-center justify-between shadow-sm z-10"
+                    style={{ borderBottom: '1px solid #eee', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fafafa' }}
                   >
-                    <div className="flex-1 min-w-0 border-l-2 border-black/10 pl-2">
-                      <span className="text-[10px] font-black text-black/30 block">引用 {quotingMsg.sender === 'me' ? '我' : contact.name}</span>
-                      <span className="text-xs text-black/60 truncate block">{quotingMsg.text}</span>
+                    <div style={{ flex: 1, minWidth: 0, borderLeft: '2px solid #111', paddingLeft: 8 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block' }}>
+                        引用 {quotingMsg.sender === 'me' ? '我' : contact.name}
+                      </span>
+                      <span style={{ fontSize: 12, color: '#666', fontFamily: 'Georgia, serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{quotingMsg.text}</span>
                     </div>
-                    <button onClick={() => setQuotingMsg(null)} className="p-1"><X size={14} className="text-black/40" /></button>
+                    <button onClick={() => setQuotingMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#ccc' }}><X size={14} /></button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <div className={`bg-black/80 backdrop-blur-xl border border-white/10 p-1.5 flex items-center gap-1.5 shadow-2xl ${quotingMsg ? 'rounded-b-2xl' : (showPlusPanel ? 'rounded-t-2xl border-b-0' : 'rounded-2xl')}`}>
-                <button className="p-1.5"><Smile size={20} className="text-white" /></button>
-                <div className="flex-1 rounded-xl px-3 py-1.5 min-h-9 flex items-center bg-white/5 border border-white/5">
+              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', gap: 8 }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#aaa', flexShrink: 0 }}><Smile size={20} /></button>
+                <div style={{ flex: 1, border: '1px solid #ddd', padding: '7px 12px', display: 'flex', alignItems: 'center', minHeight: 36, background: '#fff' }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="输入消息..."
-                    className="w-full bg-transparent outline-none text-white text-[15px] placeholder:text-white/20 resize-none py-0.5"
+                    placeholder="输入消息…"
+                    style={{ width: '100%', background: 'transparent', outline: 'none', border: 'none', fontSize: 15, color: '#111', resize: 'none', fontFamily: 'Georgia, serif', padding: '1px 0', lineHeight: 1.5 }}
+                    className="placeholder:text-black/20"
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                   />
                 </div>
-                <div className="flex items-center gap-1">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
-                    className="p-1.5 transition-transform active:scale-90"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#aaa' }}
                     onClick={() => setShowPlusPanel(v => !v)}
                   >
                     <motion.div animate={{ rotate: showPlusPanel ? 45 : 0 }} transition={{ type: 'spring', stiffness: 380, damping: 26 }}>
-                      <Plus size={20} className="text-white" />
+                      <Plus size={20} />
                     </motion.div>
                   </button>
                   <button
@@ -4437,9 +4440,20 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       }
                     }}
                     disabled={isAiThinking}
-                    className={`${(inputText.trim() || quotingMsg) ? 'bg-white text-black' : 'bg-white/20 text-white'} 
-                    ${isAiThinking ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'} 
-                    px-4 py-1.5 rounded-xl font-bold text-sm transition-all`}
+                    style={{
+                      background: (inputText.trim() || quotingMsg) ? '#111' : 'transparent',
+                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#bbb',
+                      border: '1px solid',
+                      borderColor: (inputText.trim() || quotingMsg) ? '#111' : '#ddd',
+                      padding: '6px 14px',
+                      fontFamily: 'Georgia, serif',
+                      fontSize: 12,
+                      letterSpacing: '0.1em',
+                      cursor: isAiThinking ? 'not-allowed' : 'pointer',
+                      opacity: isAiThinking ? 0.5 : 1,
+                      transition: 'all 0.15s',
+                      whiteSpace: 'nowrap',
+                    }}
                   >
                     {(inputText.trim() || quotingMsg) ? '发送' : (isAiThinking ? '回复中' : '回复')}
                   </button>
@@ -4455,10 +4469,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    className="overflow-hidden bg-black/80 backdrop-blur-xl border border-white/10 border-t-0 rounded-b-2xl shadow-2xl"
+                    style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}
                   >
-                    {/* 第一行：语音 图片 红包 转账 */}
-                    <div className="grid grid-cols-4 gap-0 px-3 pt-4 pb-1">
+                    {/* 第一行 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '16px 8px 4px' }}>
                       {([
                         { icon: <Mic size={20} strokeWidth={1.5} />, label: '语音', action: 'voice' },
                         { icon: <ImageIcon size={20} strokeWidth={1.5} />, label: '图片', action: 'image' },
@@ -4468,34 +4482,23 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         <button
                           key={item.label}
                           onClick={() => {
-                            if (item.action === 'voice') {
-                              setShowPlusPanel(false);
-                              setShowVoiceModal(true);
-                            } else if (item.action === 'image') {
-                              setShowPlusPanel(false);
-                              setShowImagePicker(true);
-                            } else if (item.action === 'redpacket') {
-                              setShowPlusPanel(false);
-                              setShowRedPacketModal(true);
-                            } else if (item.action === 'transfer') {
-                              setShowPlusPanel(false);
-                              setShowTransferModal(true);
-                            } else {
-                              setShowPlusPanel(false);
-                              showFeedback(`${item.label}功能暂未开放`);
-                            }
+                            if (item.action === 'voice') { setShowPlusPanel(false); setShowVoiceModal(true); }
+                            else if (item.action === 'image') { setShowPlusPanel(false); setShowImagePicker(true); }
+                            else if (item.action === 'redpacket') { setShowPlusPanel(false); setShowRedPacketModal(true); }
+                            else if (item.action === 'transfer') { setShowPlusPanel(false); setShowTransferModal(true); }
+                            else { setShowPlusPanel(false); showFeedback(`${item.label}功能暂未开放`); }
                           }}
-                          className="flex flex-col items-center gap-2 py-3 active:scale-90 transition-transform"
+                          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div className="w-12 h-12 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center text-white">
+                          <div style={{ width: 48, height: 48, border: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#fff', transition: 'background 0.12s' }}>
                             {item.icon}
                           </div>
-                          <span className="text-white text-[10px] font-medium tracking-wide">{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#888', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
-                    {/* 第二行：定位 语音 视频（左对齐） */}
-                    <div className="grid grid-cols-4 gap-0 px-3 pb-3 pt-0">
+                    {/* 第二行 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '4px 8px 16px' }}>
                       {([
                         { icon: <MapPin size={20} strokeWidth={1.5} />, label: '定位', action: 'location' },
                         { icon: <PhoneCall size={20} strokeWidth={1.5} />, label: '语音通话', action: 'voice_call' },
@@ -4504,23 +4507,17 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         <button
                           key={item.label}
                           onClick={() => {
-                            if (item.action === 'location') {
-                              setShowPlusPanel(false);
-                              setShowLocationModal(true);
-                            } else if (item.action === 'voice_call') {
-                              startCall('voice');
-                            } else if (item.action === 'video_call') {
-                              startCall('video');
-                            } else {
-                              setShowPlusPanel(false); showFeedback(`${item.label}功能暂未开放`);
-                            }
+                            if (item.action === 'location') { setShowPlusPanel(false); setShowLocationModal(true); }
+                            else if (item.action === 'voice_call') { startCall('voice'); }
+                            else if (item.action === 'video_call') { startCall('video'); }
+                            else { setShowPlusPanel(false); showFeedback(`${item.label}功能暂未开放`); }
                           }}
-                          className="flex flex-col items-center gap-2 py-3 active:scale-90 transition-transform"
+                          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div className="w-12 h-12 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center text-white">
+                          <div style={{ width: 48, height: 48, border: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#fff' }}>
                             {item.icon}
                           </div>
-                          <span className="text-white text-[10px] font-medium tracking-wide">{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#888', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>

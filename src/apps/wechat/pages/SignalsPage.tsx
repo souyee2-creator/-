@@ -7,11 +7,7 @@ interface SignalsPageProps {
 }
 
 export const SignalsPage: React.FC<SignalsPageProps> = ({ characters, onChatClick }) => {
-  const systemContacts = [
-    { id: 'system-1', name: '系统提醒', avatar: '🔔', lastMsg: '您的系统已更新至最新版本。', time: '昨天', isSystem: true },
-  ];
-
-  const aiContacts = characters.map(char => ({
+  const allContacts = characters.map(char => ({
     id: char.id,
     name: char.remark || char.realName,
     avatar: char.avatar,
@@ -24,8 +20,6 @@ export const SignalsPage: React.FC<SignalsPageProps> = ({ characters, onChatClic
     personality: char.personality,
     messages: char.messages
   }));
-
-  const allContacts = [...aiContacts, ...systemContacts];
 
   return (
     <div className="flex-1 overflow-y-auto">
