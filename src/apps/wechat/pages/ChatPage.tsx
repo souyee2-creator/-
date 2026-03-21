@@ -934,7 +934,7 @@ const CallOverlay = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isCamOff, setIsCamOff] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [callMessages, setCallMessages] = useState<{ id: string; text: string; isMe: boolean; isThinking?: boolean }[]>([]);
+  const [callMessages, setCallMessages] = useState<{ id: string; text: string; isMe: boolean; isThinking?: boolean; isAction?: boolean }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputTextRef = useRef('');
@@ -963,6 +963,12 @@ const CallOverlay = ({
         return [...filtered, { id: Math.random().toString(36).slice(2), text, isMe: false }];
       });
     };
+    (window as any).__callShowAction = (text: string) => {
+      setCallMessages(prev => {
+        const filtered = prev.filter(m => !m.isThinking);
+        return [...filtered, { id: Math.random().toString(36).slice(2), text, isMe: false, isAction: true }];
+      });
+    };
     (window as any).__callSetThinking = (on: boolean) => {
       setCallMessages(prev => {
         const filtered = prev.filter(m => !m.isThinking);
@@ -972,6 +978,7 @@ const CallOverlay = ({
     };
     return () => {
       delete (window as any).__callShowBubble;
+      delete (window as any).__callShowAction;
       delete (window as any).__callSetThinking;
     };
   }, []);
@@ -994,22 +1001,31 @@ const CallOverlay = ({
     ? <img src={contact.avatar} className="w-full h-full object-cover" alt="" />
     : <span className="text-white font-bold text-4xl">{contact.initials || contact.name[0]}</span>;
 
-  const MessageList = ({ glass = false }: { glass?: boolean }) => (
+  const renderCallMessages = (glass = false) => (
     <div ref={scrollRef} className="flex flex-col gap-2 overflow-y-auto px-3 py-2" style={{ maxHeight: 200 }}>
       {callMessages.map(m => (
-        <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
-          <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
-            m.isMe
-              ? 'bg-white/20 text-white rounded-br-sm'
-              : glass
-              ? 'bg-black/45 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10'
-              : 'bg-white/10 text-white/85 rounded-bl-sm border border-white/8'
-          } ${m.isThinking ? 'animate-pulse' : ''}`}>
-            {m.isThinking
-              ? <span className="tracking-widest text-white/50 text-[16px]">···</span>
-              : m.text}
+        m.isAction ? (
+          // 场景/动作描写：居中斜体灰字，无气泡
+          <div key={m.id} className="flex justify-center px-2 py-1">
+            <p className="text-center text-white/45 text-[12px] italic leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+              {m.text}
+            </p>
           </div>
-        </div>
+        ) : (
+          <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
+              m.isMe
+                ? 'bg-white/20 text-white rounded-br-sm'
+                : glass
+                ? 'bg-black/45 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10'
+                : 'bg-white/10 text-white/85 rounded-bl-sm border border-white/8'
+            }`}>
+              {m.isThinking
+                ? <span className="tracking-widest text-white/50 text-[16px]">···</span>
+                : m.text}
+            </div>
+          </div>
+        )
       ))}
     </div>
   );
@@ -1041,7 +1057,7 @@ const CallOverlay = ({
           <p className="text-white/65 text-[22px] font-semibold tabular-nums tracking-wide">{fmt(elapsed)}</p>
         </div>
         <div className="flex-1 min-h-0 mx-3 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
-          <MessageList />
+          {renderCallMessages()}
         </div>
         <div className="px-4 pb-10 pt-3 flex flex-col gap-3 shrink-0">
           <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border bg-white/10 backdrop-blur-sm border-white/12">
@@ -1104,7 +1120,7 @@ const CallOverlay = ({
       </div>
       <div className="absolute left-3 right-3 z-10 rounded-2xl overflow-hidden"
         style={{ bottom: 178, maxHeight: 200, background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)' }}>
-        <MessageList glass />
+        {renderCallMessages(true)}
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 pt-3 flex flex-col gap-3"
         style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)' }}>
@@ -2880,7 +2896,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({
         body: JSON.stringify({
           model: config.model,
           messages: [
-            { role: 'system', content: `你正在和用户进行${activeCall?.mode === 'video' ? '视频' : '语音'}通话。你是${contact.name}，性格：${contact.personality || '普通'}。请口语化回复，不要任何格式标记。如果想说多句话，用 || 隔开每句，每句简短自然。如果你在通话中因情绪或剧情需要主动挂断，在回复末尾加 [SYSTEM_ACTION:HANG_UP]，加了之后本条回复的文字依然正常显示，挂断在文字说完后发生。` },
+            { role: 'system', content: `你正在和用户进行${activeCall?.mode === 'video' ? '视频' : '语音'}通话。你是${contact.name}，性格：${contact.personality || '普通'}。请口语化回复。如果想说多句话，用 || 隔开每句，每句简短自然。${activeCall?.mode === 'video' ? `
+你可以穿插场景/动作描写，格式：[ACTION:描写内容]，用 || 与对话气泡拼接。描写用第三人称，写你此刻的神态、动作、画面细节，20~50字，像小说旁白。例如：[ACTION:他懒洋洋地靠在椅背上，屏幕的光打在他脸上，眼神却一直没离开过镜头。] || 终于想起来找我了？
+每轮最多 1 条动作描写，不要每次都加，在情绪或画面有意思的时候再用。` : ''}
+如果你在通话中因情绪或剧情需要主动挂断，在回复末尾加 [SYSTEM_ACTION:HANG_UP]，加了之后本条回复的文字依然正常显示，挂断在文字说完后发生。` },
             ...firstMessage,
           ],
         }),
@@ -2915,16 +2934,31 @@ export const ChatPage: React.FC<ChatPageProps> = ({
         return;
       }
 
-      const clean = rawCallReply.replace(/\[[\s\S]*?\]/g, '').trim();
+      // 先提取 ACTION 描写，再清除其他系统标记
+      const actionRe = /\[ACTION:([\s\S]*?)\]/g;
+      const rawWithoutHangup = rawCallReply.replace(HANG_UP_SIGNAL, '');
+      
+      // 把整段按 || 切开，保留 ACTION 标记位置
+      const allParts = rawWithoutHangup.split('||').map((s: string) => s.trim()).filter(Boolean);
+      
       (window as any).__callSetThinking?.(false);
-      if (!clean) return;
-      const parts = clean.split('||').map((s: string) => s.trim()).filter(Boolean);
+      if (!allParts.length) return;
+
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      parts.forEach((part: string, i: number) => {
+      allParts.forEach((part: string, i: number) => {
         setTimeout(() => {
-          callLogRef.current.push({ sender: 'other', senderName: contact.name, text: part, time });
-          (window as any).__callShowBubble?.(part);
-        }, i * 600);
+          const actionMatch = part.match(/^\[ACTION:([\s\S]*?)\]$/);
+          if (actionMatch) {
+            // 场景描写气泡
+            (window as any).__callShowAction?.(actionMatch[1].trim());
+          } else {
+            // 普通对话，去掉残留标记
+            const cleanPart = part.replace(/\[[\s\S]*?\]/g, '').trim();
+            if (!cleanPart) return;
+            callLogRef.current.push({ sender: 'other', senderName: contact.name, text: cleanPart, time });
+            (window as any).__callShowBubble?.(cleanPart);
+          }
+        }, i * 700);
       });
     } catch {
       (window as any).__callSetThinking?.(false);
@@ -3047,7 +3081,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   };
 
   const triggerAIResponse = async (currentMessages: Message[]) => {
-    if (isAiThinking || contact.isSystem) return;
+    if (isAiThinking || contact.isSystem || activeCall) return;
     const configStr = localStorage.getItem('souyee_os_config');
     if (!configStr) { showFeedback('请先配置 API Key'); return; }
     const config = JSON.parse(configStr);
