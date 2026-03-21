@@ -923,12 +923,14 @@ const CallOverlay = ({
   onHangUp,
   onSend,
   onReply,
+  myAvatar,
 }: {
   mode: 'voice' | 'video';
   contact: { name: string; avatar: string; initials?: string };
   onHangUp: () => void;
   onSend: (text: string) => void;
   onReply: (text: string) => void;
+  myAvatar?: string;
 }) => {
   const [elapsed, setElapsed] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
@@ -1032,66 +1034,103 @@ const CallOverlay = ({
 
   if (mode === 'voice') {
     return (
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-500 flex flex-col"
-        style={{ background: 'linear-gradient(160deg, #0f0f0f 0%, #1a1a2e 50%, #0f0f0f 100%)' }}
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-500 flex flex-col overflow-hidden"
+    >
+      {/* 背景：头像裁剪填满，无模糊，只留轻遮罩 */}
+      <div className="absolute inset-0">
+        {contact.avatar
+          ? <img src={contact.avatar} className="w-full h-full object-cover" alt="" />
+          : <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f0f 100%)' }}>
+              <span className="text-white/15 font-bold text-[140px] select-none">{contact.initials || contact.name[0]}</span>
+            </div>}
+        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.38)' }} />
+      </div>
+
+      {/* 顶部渐变 + 名字计时 */}
+      <div className="absolute top-0 left-0 right-0 z-10 px-5 pt-12 pb-4"
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)' }}>
+        <p className="text-white/45 text-[11px] font-bold tracking-[0.28em] uppercase">视频通话</p>
+        <h2 className="text-white text-[22px] font-bold tracking-tight mt-0.5">{contact.name}</h2>
+        <p className="text-white/65 text-[20px] font-semibold tabular-nums mt-1">{fmt(elapsed)}</p>
+      </div>
+
+      {/* ME 小窗口：右上角，z 层高于消息区 */}
+      <div className="absolute top-14 right-4 z-30">
+        <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl bg-zinc-900 flex items-center justify-center">
+          {isCamOff
+            ? <VideoOff size={20} className="text-white/30" />
+            : myAvatar
+              ? <img src={myAvatar} className="w-full h-full object-cover" alt="me" />
+              : <div className="w-full h-full bg-black flex items-center justify-center text-white/40 text-[10px] font-bold">ME</div>
+          }
+        </div>
+      </div>
+
+      {/* 消息区：ME小窗口下方到输入栏上方，可滚动 */}
+      <div
+        ref={scrollRef}
+        className="absolute left-0 right-0 z-10 overflow-y-auto flex flex-col gap-2 px-3 py-2"
+        style={{ top: 185, bottom: 155 }}
       >
-        <div className="flex flex-col items-center pt-16 pb-2">
-          <p className="text-white/35 text-[11px] font-bold tracking-[0.28em] uppercase mb-1">语音通话</p>
-          <h2 className="text-white text-[26px] font-bold tracking-tight">{contact.name}</h2>
-        </div>
-        <div className="flex flex-col items-center py-3 gap-3">
-          <div className="relative flex items-center justify-center">
-            {[1, 2, 3].map(i => (
-              <motion.div key={i} className="absolute rounded-full border border-white/10"
-                animate={{ scale: [1, 1.6 + i * 0.3], opacity: [0.4, 0] }}
-                transition={{ duration: 2.4, delay: i * 0.6, repeat: Infinity, ease: 'easeOut' }}
-                style={{ width: 80, height: 80 }}
-              />
-            ))}
-            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 shadow-2xl bg-white/10 z-10 flex items-center justify-center">
-              {renderAvatar()}
+        {callMessages.map(m => (
+          m.isAction ? (
+            <div key={m.id} className="flex justify-center px-2 py-1">
+              <p className="text-center text-white/50 text-[12px] italic leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                {m.text}
+              </p>
             </div>
-          </div>
-          <p className="text-white/65 text-[22px] font-semibold tabular-nums tracking-wide">{fmt(elapsed)}</p>
-        </div>
-        <div className="flex-1 min-h-0 mx-3 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
-          {renderCallMessages()}
-        </div>
-        <div className="px-4 pb-10 pt-3 flex flex-col gap-3 shrink-0">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border bg-white/10 backdrop-blur-sm border-white/12">
-            <input ref={inputRef} value={inputText} onChange={e => setInputText(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendOnly(); } }}
-              placeholder="说点什么…"
-              className="flex-1 bg-transparent outline-none text-white text-[14px] placeholder:text-white/30 min-w-0"
-            />
-            <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/15 text-white shrink-0">发送</button>
-            <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white text-black shrink-0">回复</button>
-          </div>
-          <div className="flex items-center justify-center gap-10">
-            <button onClick={() => setIsMuted(v => !v)} className="flex flex-col items-center gap-2">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-white text-black' : 'bg-white/12 text-white'}`}>
-                {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+          ) : (
+            <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
+                m.isMe
+                  ? 'bg-white/20 text-white rounded-br-sm'
+                  : 'bg-black/45 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10'
+              }`}>
+                {m.isThinking
+                  ? <span className="tracking-widest text-white/50 text-[16px]">···</span>
+                  : m.text}
               </div>
-              <span className="text-white/35 text-[10px] font-bold">{isMuted ? '已静音' : '静音'}</span>
-            </button>
-            <button onClick={onHangUp} className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30 active:scale-95 transition-transform">
-                <PhoneOff size={26} className="text-white" />
-              </div>
-              <span className="text-white/35 text-[10px] font-bold">挂断</span>
-            </button>
-            <button className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center bg-white/12 text-white">
-                <Volume2 size={22} />
-              </div>
-              <span className="text-white/35 text-[10px] font-bold">扬声器</span>
-            </button>
-          </div>
+            </div>
+          )
+        ))}
+      </div>
+
+      {/* 底部操作区：透明无遮罩 */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 pt-3 flex flex-col gap-3">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <input ref={inputRef} value={inputText} onChange={e => setInputText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendOnly(); } }}
+            placeholder="说点什么…"
+            className="flex-1 bg-transparent outline-none text-white text-[14px] placeholder:text-white/30 min-w-0"
+          />
+          <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/20 text-white shrink-0">发送</button>
+          <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white text-black shrink-0">回复</button>
         </div>
-      </motion.div>
-    );
+        <div className="flex items-center justify-center gap-8">
+          <button onClick={() => setIsMuted(v => !v)} className="flex flex-col items-center gap-2">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-white text-black' : 'bg-white/15 text-white'}`}>
+              {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+            </div>
+            <span className="text-white/45 text-[10px] font-bold">{isMuted ? '已静音' : '静音'}</span>
+          </button>
+          <button onClick={onHangUp} className="flex flex-col items-center gap-2">
+            <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-xl shadow-red-500/30 active:scale-95 transition-transform">
+              <PhoneOff size={26} className="text-white" />
+            </div>
+            <span className="text-white/45 text-[10px] font-bold">挂断</span>
+          </button>
+          <button onClick={() => setIsCamOff(v => !v)} className="flex flex-col items-center gap-2">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isCamOff ? 'bg-white text-black' : 'bg-white/15 text-white'}`}>
+              {isCamOff ? <VideoOff size={22} /> : <Video size={22} />}
+            </div>
+            <span className="text-white/45 text-[10px] font-bold">{isCamOff ? '已关闭' : '摄像头'}</span>
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
   }
 
   return (
@@ -1112,7 +1151,12 @@ const CallOverlay = ({
       {/* 自己的小窗口 */}
       <div className="absolute top-14 right-4 z-20">
         <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl bg-zinc-900 flex items-center justify-center">
-          {isCamOff ? <VideoOff size={20} className="text-white/30" /> : <div className="w-full h-full bg-black flex items-center justify-center text-white/40 text-[10px] font-bold">ME</div>}
+          {isCamOff
+            ? <VideoOff size={20} className="text-white/30" />
+            : myAvatar
+              ? <img src={myAvatar} className="w-full h-full object-cover" alt="me" />
+              : <div className="w-full h-full bg-black flex items-center justify-center text-white/40 text-[10px] font-bold">ME</div>
+          }
         </div>
       </div>
 
