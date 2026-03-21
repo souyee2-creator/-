@@ -1016,12 +1016,14 @@ const CallOverlay = ({
         ) : (
           <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
-              m.isMe
-                ? 'bg-white/20 text-white rounded-br-sm'
-                : glass
-                ? 'bg-black/45 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10'
-                : 'bg-white/10 text-white/85 rounded-bl-sm border border-white/8'
-            }`}>
+                m.isMe
+                  ? 'rounded-br-sm'
+                  : 'rounded-bl-sm'
+              }`} style={
+                m.isMe
+                  ? { background: 'rgba(0,0,0,0.82)', color: '#ffffff' }
+                  : { background: 'rgba(255,255,255,0.88)', color: '#111111', backdropFilter: 'blur(8px)' }
+              }>
               {m.isThinking
                 ? <span className="tracking-widest text-white/50 text-[16px]">···</span>
                 : m.text}
@@ -1084,10 +1086,12 @@ const CallOverlay = ({
           ) : (
             <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
+                m.isMe ? 'rounded-br-sm' : 'rounded-bl-sm'
+              }`} style={
                 m.isMe
-                  ? 'bg-white/20 text-white rounded-br-sm'
-                  : 'bg-black/45 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10'
-              }`}>
+                  ? { background: 'rgba(0,0,0,0.82)', color: '#ffffff' }
+                  : { background: 'rgba(255,255,255,0.88)', color: '#111111', backdropFilter: 'blur(8px)' }
+              }>
                 {m.isThinking
                   ? <span className="tracking-widest text-white/50 text-[16px]">···</span>
                   : m.text}
@@ -3542,13 +3546,61 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
   };
 
   // ── 用户接听 char 发起的来电 ──
+  // char 主动打来接听后触发 AI 先开口，直接传入 mode 避免闭包问题
+  const handleCallReplyDirect = async (callMode: 'voice' | 'video') => {
+    if (contact.isSystem) return;
+    const configStr = localStorage.getItem('souyee_os_config');
+    if (!configStr) return;
+    const config = JSON.parse(configStr);
+    try {
+      (window as any).__callSetThinking?.(true);
+      const baseUrl = config.baseUrl.replace(/\/+$/, '');
+      const fullUrl = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl}/chat/completions`;
+      const res = await fetch(fullUrl, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: config.model,
+          messages: [
+            { role: 'system', content: `你正在和用户进行${callMode === 'video' ? '视频' : '语音'}通话。你是${contact.name}，性格：${contact.personality || '普通'}。请口语化回复。如果想说多句话，用 || 隔开每句，每句简短自然。${callMode === 'video' ? `\n你可以穿插场景/动作描写，格式：[ACTION:描写内容]，用 || 与对话气泡拼接。描写用第三人称，20~50字，像小说旁白。每轮最多 1 条，不要每次都加。` : ''}\n如果你在通话中因情绪或剧情需要主动挂断，在回复末尾加 [SYSTEM_ACTION:HANG_UP]。` },
+            { role: 'user', content: `（你（${contact.name}）主动打来了这通${callMode === 'video' ? '视频' : '语音'}电话，对方刚接听，请先开口说第一句话）` },
+          ],
+        }),
+      });
+      if (!res.ok) { (window as any).__callSetThinking?.(false); return; }
+      const data = await res.json();
+      const rawReply = data.choices?.[0]?.message?.content || '';
+      (window as any).__callSetThinking?.(false);
+      const allParts = rawReply.replace(HANG_UP_SIGNAL, '').split('||').map((s: string) => s.trim()).filter(Boolean);
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      allParts.forEach((part: string, i: number) => {
+        setTimeout(() => {
+          const actionMatch = part.match(/^\[ACTION:([\s\S]*?)\]$/);
+          if (actionMatch) {
+            (window as any).__callShowAction?.(actionMatch[1].trim());
+          } else {
+            const cleanPart = part.replace(/\[[\s\S]*?\]/g, '').trim();
+            if (!cleanPart) return;
+            callLogRef.current.push({ sender: 'other', senderName: contact.name, text: cleanPart, time });
+            (window as any).__callShowBubble?.(cleanPart);
+          }
+        }, i * 700);
+      });
+    } catch {
+      (window as any).__callSetThinking?.(false);
+    }
+  };
   const handleAcceptCall = () => {
     if (!activeCall) return;
+    const isOtherInitiated = activeCall.initiator === 'other';
+    const callMode = activeCall.mode;
     setActiveCall(prev => prev ? { ...prev, phase: 'connected', connectedAt: Date.now() } : null);
-    // char 先开口：注入隐藏上下文让 AI 知道是自己打过来的
-    setTimeout(() => {
-      handleCallReply('');
-    }, 800);
+    if (isOtherInitiated) {
+      // 延长等待确保 CallOverlay 已挂载并注册了 __callShowBubble
+      setTimeout(() => {
+        handleCallReplyDirect(callMode);
+      }, 1200);
+    }
   };
 
   // ── 用户拒接 char 发起的来电 ──
