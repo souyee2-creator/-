@@ -21,12 +21,12 @@ const editorialStyle = `
     border: 1px solid #111;
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    background: #fafaf8;
+    background: #ffffff;
     transition: background 0.12s, color 0.12s;
     cursor: pointer;
   }
-  .ef-app-icon:hover { background: #111; color: #fafaf8; }
-  .ef-app-icon:hover .ef-symbol { color: #fafaf8; }
+  .ef-app-icon:hover { background: #111; color: #ffffff; }
+  .ef-app-icon:hover .ef-symbol { color: #ffffff; }
   .ef-symbol {
     font-size: 22px;
     color: #111;
@@ -39,12 +39,12 @@ const editorialStyle = `
     border: 1px solid #111;
     border-radius: 4px;
     display: flex; align-items: center; justify-content: center;
-    background: #fafaf8;
+    background: #ffffff;
     transition: background 0.12s;
     cursor: pointer;
   }
   .ef-dock-icon:active { background: #111; }
-  .ef-dock-icon:active .ef-symbol { color: #fafaf8; }
+  .ef-dock-icon:active .ef-symbol { color: #ffffff; }
   .ef-input-edit {
     font-family: Georgia, 'Times New Roman', serif;
     border: none;
@@ -171,7 +171,7 @@ const HeroCard = () => {
         style={{
           border: '1px solid #111',
           padding: '20px 24px 18px',
-          background: '#fafaf8',
+          background: '#ffffff',
           position: 'relative',
         }}
       >
@@ -430,7 +430,7 @@ const AppIcon = ({ symbol, label, labelZh, onClick, delay = 0 }: AppIconProps) =
 // ─── 3. 主程序 ─────────────────────────────────────────────────
 export default function App() {
   const [wallpaper, setWallpaper] = useState<string>(
-    () => localStorage.getItem(WALLPAPER_KEY) || '#fafaf8'
+    () => localStorage.getItem(WALLPAPER_KEY) || '#ffffff'
   );
 
   // 壁纸变化时持久化

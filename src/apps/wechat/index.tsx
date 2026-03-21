@@ -113,7 +113,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
         position: 'fixed',
         inset: 0,
         zIndex: 50,
-        background: '#fafaf8',
+        background: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -121,10 +121,10 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* ── Editorial top bar ── */}
-      <div
+      {/* ── Editorial top bar（core tab 时隐藏） ── */}
+      {activeTab !== 'core' && <div
         style={{
-          background: '#fafaf8',
+          background: '#ffffff',
           paddingTop: 'calc(env(safe-area-inset-top) + 12px)',
           paddingLeft: 24,
           paddingRight: 24,
@@ -189,7 +189,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
 
         {/* Bottom rule */}
         <div style={{ height: 1, background: '#111' }} />
-      </div>
+      </div>}
 
       {/* ── Page content ── */}
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
