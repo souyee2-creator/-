@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Sparkles, UserPlus, X, Image as ImageIcon, Check, AlertCircle, Pencil, Trash2 } from 'lucide-react';
+import { X, Image as ImageIcon, AlertCircle, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AICharacter } from '../types';
 
@@ -10,23 +10,46 @@ interface SoulsPageProps {
   onDeleteCharacter: (id: string) => void;
 }
 
-export const SoulsPage: React.FC<SoulsPageProps> = ({ 
-  characters, 
-  onAddCharacter, 
-  onUpdateCharacter, 
-  onDeleteCharacter 
+const ef: Record<string, React.CSSProperties> = {
+  serif: { fontFamily: 'Georgia, "Times New Roman", serif' },
+  label: {
+    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontSize: 9,
+    letterSpacing: '0.28em',
+    textTransform: 'uppercase' as const,
+    color: '#aaa',
+    display: 'block',
+    marginBottom: 6,
+  },
+  input: {
+    fontFamily: 'Georgia, "Times New Roman", serif',
+    width: '100%',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '1px solid #ccc',
+    outline: 'none',
+    fontSize: 14,
+    color: '#111',
+    padding: '6px 0',
+  },
+  rule: { height: 1, background: '#111', width: '100%' },
+  ruleThin: { height: '0.5px', background: '#ddd', width: '100%' },
+};
+
+export const SoulsPage: React.FC<SoulsPageProps> = ({
+  characters,
+  onAddCharacter,
+  onUpdateCharacter,
+  onDeleteCharacter,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [editingChar, setEditingChar] = useState<AICharacter | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState<Partial<AICharacter>>({
-    avatar: '',
-    realName: '',
-    remark: '',
-    personality: '',
+    avatar: '', realName: '', remark: '', personality: '',
   });
 
   const openCreateModal = () => {
@@ -45,9 +68,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result as string });
-      };
+      reader.onloadend = () => setFormData({ ...formData, avatar: reader.result as string });
       reader.readAsDataURL(file);
     }
   };
@@ -58,7 +79,6 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
       setTimeout(() => setError(null), 3000);
       return;
     }
-
     if (editingChar) {
       onUpdateCharacter({
         ...editingChar,
@@ -68,17 +88,15 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
         personality: formData.personality.trim(),
       });
     } else {
-      const character: AICharacter = {
+      onAddCharacter({
         id: Date.now().toString(),
         avatar: formData.avatar || '',
         realName: formData.realName.trim(),
         remark: formData.remark?.trim() || '',
         personality: formData.personality.trim(),
         createdAt: Date.now(),
-      };
-      onAddCharacter(character);
+      });
     }
-
     setIsModalOpen(false);
   };
 
@@ -90,192 +108,197 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     }
   };
 
-  const getDefaultAvatar = (char: Partial<AICharacter>) => {
-    const text = char.remark?.trim() || char.realName?.trim() || '?';
-    return text.charAt(0).toUpperCase();
-  };
+  const getInitial = (char: Partial<AICharacter>) =>
+    (char.remark?.trim() || char.realName?.trim() || '?').charAt(0).toUpperCase();
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      <div className="max-w-md mx-auto space-y-4">
-        {/* Add Contact Card */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={openCreateModal}
-          className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl cursor-pointer flex items-center justify-between group overflow-hidden relative"
-        >
-          <div className="relative z-10">
-            <h3 className="text-white text-xl font-bold mb-1 tracking-tight">添加联系人</h3>
-            <p className="text-white/40 text-xs uppercase tracking-widest font-medium">Create AI Soul</p>
-          </div>
-          <div className="bg-white text-black p-3 rounded-xl relative z-10 shadow-lg">
-            <UserPlus size={24} />
-          </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-        </motion.div>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#fafaf8', ...ef.serif }}>
+      <div style={{ maxWidth: 440, margin: '0 auto' }}>
 
-        {/* Character List */}
-        <div className="grid grid-cols-1 gap-3">
-          {characters.map((char) => (
-            <div key={char.id} className="bg-black/5 rounded-2xl p-4 border border-black/5 flex items-center gap-4 hover:bg-black/10 transition-all">
-              {char.avatar ? (
-                <img src={char.avatar} alt={char.realName} className="w-12 h-12 rounded-xl object-cover border border-black/5 shadow-sm" referrerPolicy="no-referrer" />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-black/5 border border-black/5 flex items-center justify-center text-black/30 font-bold text-xl shadow-inner">
-                  {getDefaultAvatar(char)}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-black truncate">
-                  {char.remark || char.realName}
-                </h4>
-              </div>
-              <button 
-                onClick={() => openEditModal(char)}
-                className="p-2.5 hover:bg-black/5 rounded-xl transition-colors text-black/30 hover:text-black"
-              >
-                <Pencil size={18} />
-              </button>
-            </div>
-          ))}
-          
-          {characters.length === 0 && (
-            <div className="py-12 flex flex-col items-center justify-center text-black/20">
-              <Sparkles size={40} className="mb-3 opacity-20" />
-              <p className="text-sm font-medium tracking-wide uppercase">No Souls Found</p>
-            </div>
-          )}
+        {/* ── Add button row ── */}
+        <div style={{ marginBottom: 20 }}>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={openCreateModal}
+            style={{
+              width: '100%',
+              background: '#111',
+              color: '#fafaf8',
+              border: 'none',
+              padding: '14px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+              ...ef.serif,
+            }}
+          >
+            <span style={{ fontSize: 13, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+              添加联系人
+            </span>
+            <span style={{ fontSize: 22, lineHeight: 1, fontWeight: 300 }}>+</span>
+          </motion.button>
         </div>
+
+        {/* ── Character list ── */}
+        <div style={ef.rule} />
+        {characters.length === 0 ? (
+          <div style={{ padding: '48px 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.3em', color: '#ccc', textTransform: 'uppercase', ...ef.serif }}>
+              No Souls Found
+            </p>
+          </div>
+        ) : (
+          characters.map((char, i) => (
+            <React.Fragment key={char.id}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0' }}>
+                {/* Avatar */}
+                <div style={{
+                  width: 44, height: 44, flexShrink: 0,
+                  border: '1px solid #111', overflow: 'hidden',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: '#eee',
+                }}>
+                  {char.avatar
+                    ? <img src={char.avatar} alt={char.realName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                    : <span style={{ fontSize: 18, color: '#999', ...ef.serif }}>{getInitial(char)}</span>
+                  }
+                </div>
+
+                {/* Name */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111', ...ef.serif, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {char.remark || char.realName}
+                  </p>
+                  {char.remark && (
+                    <p style={{ margin: '2px 0 0', fontSize: 9, color: '#bbb', letterSpacing: '0.18em', textTransform: 'uppercase', ...ef.serif }}>
+                      {char.realName}
+                    </p>
+                  )}
+                </div>
+
+                {/* Edit button */}
+                <button
+                  onClick={() => openEditModal(char)}
+                  style={{ background: 'none', border: '1px solid #ddd', padding: '5px 10px', cursor: 'pointer', color: '#999', ...ef.serif, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase' }}
+                >
+                  Edit
+                </button>
+              </div>
+              <div style={ef.ruleThin} />
+            </React.Fragment>
+          ))
+        )}
       </div>
 
-      {/* Creation/Edit Modal */}
+      {/* ── Create / Edit Modal ── */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4">
+          <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }}
             />
             <motion.div
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              className="relative w-full max-w-md bg-white border border-black/5 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+              style={{
+                position: 'relative', width: '100%', maxWidth: 480,
+                background: '#fafaf8', maxHeight: '90vh',
+                display: 'flex', flexDirection: 'column', ...ef.serif,
+              }}
             >
-              {/* Modal Header */}
-              <div className="px-6 py-5 flex justify-between items-center border-b border-black/5">
-                <h3 className="text-lg font-bold text-black tracking-tight">
-                  {editingChar ? '编辑 AI 角色' : '创建 AI 角色'}
-                </h3>
-                <div className="flex items-center gap-2">
-                  {editingChar && (
-                    <button 
-                      onClick={() => setIsDeleteConfirmOpen(true)}
-                      className="p-2 hover:bg-red-500/10 text-red-500 rounded-xl transition-colors"
-                      title="删除角色"
-                    >
-                      <Trash2 size={20} />
+              {/* Modal header */}
+              <div style={{ padding: '16px 24px 0' }}>
+                <div style={ef.rule} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0 4px' }}>
+                  <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#999' }}>
+                    {editingChar ? 'Edit Soul' : 'New Soul'}
+                  </span>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {editingChar && (
+                      <button onClick={() => setIsDeleteConfirmOpen(true)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#c00', ...ef.serif }}>
+                        Delete
+                      </button>
+                    )}
+                    <button onClick={() => setIsModalOpen(false)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', lineHeight: 1 }}>
+                      <X size={18} />
                     </button>
-                  )}
-                  <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-black/5 rounded-xl transition-colors">
-                    <X size={20} className="text-black/50" />
-                  </button>
+                  </div>
                 </div>
+                <h2 style={{ margin: '0 0 8px', fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', color: '#111' }}>
+                  {editingChar ? (editingChar.remark || editingChar.realName) : '创建角色'}.
+                </h2>
+                <div style={ef.rule} />
               </div>
 
-              {/* Modal Content */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Avatar Selection */}
-                <div className="flex flex-col items-center gap-3">
-                  <div 
+              {/* Modal body */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+                {/* Avatar */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 rounded-2xl bg-black/5 flex items-center justify-center text-4xl shadow-inner border border-black/5 relative group cursor-pointer overflow-hidden"
+                    style={{
+                      width: 80, height: 80, border: '1px solid #111',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', overflow: 'hidden', background: '#eee', position: 'relative',
+                    }}
                   >
-                    {formData.avatar ? (
-                      <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center text-black/20">
-                        <span className="text-3xl font-bold">{getDefaultAvatar(formData)}</span>
-                        <span className="text-[10px] mt-1 font-bold uppercase tracking-tighter">Upload</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <ImageIcon size={24} className="text-white" />
-                    </div>
+                    {formData.avatar
+                      ? <img src={formData.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                          <ImageIcon size={20} color="#bbb" />
+                          <span style={{ fontSize: 8, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#bbb', ...ef.serif }}>Upload</span>
+                        </div>
+                    }
                   </div>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileChange} 
-                    accept="image/*" 
-                    className="hidden" 
-                  />
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
                 </div>
 
-                {/* Error Message */}
+                {/* Error */}
                 <AnimatePresence>
                   {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-red-500/10 text-red-500 p-3 rounded-xl border border-red-500/20 flex items-center gap-2 text-sm"
-                    >
-                      <AlertCircle size={16} />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '10px 14px', border: '1px solid #c00', color: '#c00', fontSize: 12, ...ef.serif }}>
+                      <AlertCircle size={14} />
                       {error}
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Form Fields */}
-                <div className="space-y-5">
+                {/* Fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div>
-                    <label className="block text-[10px] font-bold text-black/30 uppercase tracking-widest mb-2 ml-1">
-                      真实姓名 <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.realName}
-                      onChange={(e) => setFormData({ ...formData, realName: e.target.value })}
-                      placeholder="例如：星空助手"
-                      className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-3.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black/5 transition-all placeholder:text-black/20"
-                    />
+                    <label style={ef.label}>真实姓名 <span style={{ color: '#c00' }}>*</span></label>
+                    <input style={ef.input} type="text" value={formData.realName} placeholder="例如：星空助手"
+                      onChange={(e) => setFormData({ ...formData, realName: e.target.value })} />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-black/30 uppercase tracking-widest mb-2 ml-1">备注</label>
-                    <input
-                      type="text"
-                      value={formData.remark}
-                      onChange={(e) => setFormData({ ...formData, remark: e.target.value })}
-                      placeholder="例如：我的私人管家"
-                      className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-3.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black/5 transition-all placeholder:text-black/20"
-                    />
+                    <label style={ef.label}>备注</label>
+                    <input style={ef.input} type="text" value={formData.remark} placeholder="例如：我的私人管家"
+                      onChange={(e) => setFormData({ ...formData, remark: e.target.value })} />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-black/30 uppercase tracking-widest mb-2 ml-1">
-                      人设 (Personality) <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      rows={4}
-                      value={formData.personality}
+                    <label style={ef.label}>人设 (Personality) <span style={{ color: '#c00' }}>*</span></label>
+                    <textarea rows={4} value={formData.personality} placeholder="描述该角色的性格、说话方式等..."
                       onChange={(e) => setFormData({ ...formData, personality: e.target.value })}
-                      placeholder="描述该角色的性格、说话方式等..."
-                      className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-3.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black/5 transition-all resize-none placeholder:text-black/20"
-                    />
+                      style={{ ...ef.input, resize: 'none', lineHeight: 1.7 } as React.CSSProperties} />
                   </div>
                 </div>
               </div>
 
-              {/* Modal Footer */}
-              <div className="p-6 bg-black/5 border-t border-black/5">
-                <button
-                  onClick={handleSave}
-                  className="w-full bg-black text-white font-bold py-4 rounded-xl shadow-xl active:scale-95 transition-all uppercase tracking-widest text-xs"
-                >
+              {/* Modal footer */}
+              <div style={{ padding: '16px 24px 32px', borderTop: '1px solid #111' }}>
+                <button onClick={handleSave}
+                  style={{
+                    width: '100%', background: '#111', color: '#fafaf8', border: 'none',
+                    padding: '14px', cursor: 'pointer', fontSize: 10,
+                    letterSpacing: '0.3em', textTransform: 'uppercase', ...ef.serif,
+                  }}>
                   {editingChar ? '保存修改' : '确认创建'}
                 </button>
               </div>
@@ -284,39 +307,29 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Modal */}
+      {/* ── Delete Confirm Modal ── */}
       <AnimatePresence>
         {isDeleteConfirmOpen && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsDeleteConfirmOpen(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-xs bg-white border border-black/5 rounded-2xl p-6 shadow-2xl text-center"
-            >
-              <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-                <AlertCircle size={32} />
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              style={{ position: 'relative', width: '100%', maxWidth: 320, background: '#fafaf8', padding: '28px 24px', ...ef.serif }}>
+              <div style={ef.rule} />
+              <div style={{ padding: '16px 0 20px', textAlign: 'center' }}>
+                <Trash2 size={28} color="#c00" style={{ marginBottom: 12 }} />
+                <h4 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700, color: '#111' }}>确认删除？</h4>
+                <p style={{ margin: 0, fontSize: 12, color: '#aaa', lineHeight: 1.6 }}>删除后聊天记录也将无法找回。</p>
               </div>
-              <h4 className="text-lg font-bold text-black mb-2">确认删除？</h4>
-              <p className="text-sm text-black/40 mb-6">删除后聊天记录也将无法找回。</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setIsDeleteConfirmOpen(false)}
-                  className="flex-1 py-3 rounded-xl border border-black/10 text-black/60 font-medium active:bg-black/5 transition-colors text-sm"
-                >
+              <div style={ef.rule} />
+              <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+                <button onClick={() => setIsDeleteConfirmOpen(false)}
+                  style={{ flex: 1, padding: '12px', background: 'none', border: '1px solid #ccc', cursor: 'pointer', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#666', ...ef.serif }}>
                   取消
                 </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold active:bg-red-600 transition-colors text-sm shadow-lg shadow-red-500/20"
-                >
+                <button onClick={handleDelete}
+                  style={{ flex: 1, padding: '12px', background: '#c00', border: 'none', cursor: 'pointer', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff', ...ef.serif }}>
                   确认删除
                 </button>
               </div>

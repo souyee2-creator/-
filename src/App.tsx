@@ -56,18 +56,36 @@ const editorialStyle = `
   }
 `;
 
+// ─── 存储 Key 常量 ─────────────────────────────────────────────
+const PROFILE_KEY = 'starry_os_desktop_profile';
+const WALLPAPER_KEY = 'starry_os_desktop_wallpaper';
+
+const DEFAULT_PROFILE = {
+  name: 'Sylvia',
+  id: 'souyee494',
+  bio: '" 人生小满胜万全 "',
+  location: '冰岛',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvia',
+};
+
 // ─── 1. 个人名片 ───────────────────────────────────────────────
 const HeroCard = () => {
-  const [profile, setProfile] = useState({
-    name: 'Sylvia',
-    id: 'souyee494',
-    bio: '" 人生小满胜万全 "',
-    location: '冰岛',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvia',
+  const [profile, setProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      return saved ? { ...DEFAULT_PROFILE, ...JSON.parse(saved) } : DEFAULT_PROFILE;
+    } catch {
+      return DEFAULT_PROFILE;
+    }
   });
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 每次 profile 变化自动持久化
+  useEffect(() => {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  }, [profile]);
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -411,7 +429,14 @@ const AppIcon = ({ symbol, label, labelZh, onClick, delay = 0 }: AppIconProps) =
 
 // ─── 3. 主程序 ─────────────────────────────────────────────────
 export default function App() {
-  const [wallpaper, setWallpaper] = useState<string>('#fafaf8');
+  const [wallpaper, setWallpaper] = useState<string>(
+    () => localStorage.getItem(WALLPAPER_KEY) || '#fafaf8'
+  );
+
+  // 壁纸变化时持久化
+  useEffect(() => {
+    localStorage.setItem(WALLPAPER_KEY, wallpaper);
+  }, [wallpaper]);
   const [activeApp, setActiveApp] = useState<string | null>(null);
 
   const [apiKey, setApiKey] = useState<string>(
