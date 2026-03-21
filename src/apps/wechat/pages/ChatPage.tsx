@@ -1099,38 +1099,45 @@ const CallOverlay = ({
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-500 flex flex-col overflow-hidden"
     >
+      {/* 背景：头像裁剪填满，去掉模糊，只留轻遮罩 */}
       <div className="absolute inset-0">
         {contact.avatar
-          ? <img src={contact.avatar} className="w-full h-full object-cover scale-110" alt="" />
-          : <div className="w-full h-full bg-linear-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-              <span className="text-white/20 font-bold text-[120px]">{contact.initials || contact.name[0]}</span>
+          ? <img src={contact.avatar} className="w-full h-full object-cover" alt="" />
+          : <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f0f 100%)' }}>
+              <span className="text-white/15 font-bold text-[140px] select-none">{contact.initials || contact.name[0]}</span>
             </div>}
-        <div className="absolute inset-0 backdrop-blur-2xl" style={{ background: 'rgba(0,0,0,0.42)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
       </div>
+
+      {/* 自己的小窗口 */}
       <div className="absolute top-14 right-4 z-20">
         <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl bg-zinc-900 flex items-center justify-center">
           {isCamOff ? <VideoOff size={20} className="text-white/30" /> : <div className="w-full h-full bg-black flex items-center justify-center text-white/40 text-[10px] font-bold">ME</div>}
         </div>
       </div>
-      <div className="absolute top-0 left-0 right-0 z-10 px-5 pt-12 pb-4"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)' }}>
+
+      {/* 顶部：名字 + 计时 */}
+      <div className="absolute top-0 left-0 right-0 z-10 px-5 pt-12 pb-6"
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)' }}>
         <p className="text-white/45 text-[11px] font-bold tracking-[0.28em] uppercase">视频通话</p>
         <h2 className="text-white text-[22px] font-bold tracking-tight mt-0.5">{contact.name}</h2>
         <p className="text-white/65 text-[20px] font-semibold tabular-nums mt-1">{fmt(elapsed)}</p>
       </div>
-      <div className="absolute left-3 right-3 z-10 rounded-2xl overflow-hidden"
-        style={{ bottom: 178, maxHeight: 200, background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)' }}>
+
+      {/* 消息区：撑满顶栏和底部操作区之间的空间 */}
+      <div className="absolute left-0 right-0 z-10 overflow-y-auto" style={{ top: 130, bottom: 155 }}>
         {renderCallMessages(true)}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 pt-3 flex flex-col gap-3"
-        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)' }}>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border bg-black/55 backdrop-blur-xl border-white/12">
+
+      {/* 底部操作区：无背景，透明 */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 pt-3 flex flex-col gap-3">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border border-white/20 backdrop-blur-sm">
           <input ref={inputRef} value={inputText} onChange={e => setInputText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendOnly(); } }}
             placeholder="说点什么…"
             className="flex-1 bg-transparent outline-none text-white text-[14px] placeholder:text-white/30 min-w-0"
           />
-          <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/15 text-white shrink-0">发送</button>
+          <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/20 text-white shrink-0">发送</button>
           <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white text-black shrink-0">回复</button>
         </div>
         <div className="flex items-center justify-center gap-8">
