@@ -72,6 +72,7 @@ interface ChatSettings {
   bubbleControlEnabled: boolean; // 是否启用气泡数控制
   showTimestamps: boolean;       // 是否显示时间戳
   myPatTarget: string;           // 拍一拍：我拍角色的内容（如"腹肌"）
+  activeMaskId: string;          // 当前聊天使用的面具 ID（空串 = 无面具）
 }
 
 const DEFAULT_CHAT_SETTINGS: ChatSettings = {
@@ -81,6 +82,7 @@ const DEFAULT_CHAT_SETTINGS: ChatSettings = {
   bubbleControlEnabled: true,
   showTimestamps: true,
   myPatTarget: '',
+  activeMaskId: '',
 };
 
 // ─── 联系人外观（单独覆盖全局） ──────────────────────────────────────────────
@@ -1503,6 +1505,8 @@ const ContactAppearancePage = ({
 };
 
 // ─── 好友设置 Modal ──────────────────────────────────────────────────────────
+const MASKS_KEY = 'souyee_os_masks';
+
 const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
   contactName: string;
   chatSettings: any;
@@ -1510,6 +1514,17 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
   onClose: () => void;
 }) => {
   const [myPatTarget, setMyPatTarget] = useState(chatSettings.myPatTarget || '');
+  const [activeMaskId, setActiveMaskId] = useState(chatSettings.activeMaskId || '');
+
+  // 从 localStorage 读取面具列表
+  const masks: { id: string; name: string; avatar: string; persona: string }[] = React.useMemo(() => {
+    try {
+      const raw = localStorage.getItem(MASKS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, []);
+
+  const activeMask = masks.find(m => m.id === activeMaskId) ?? null;
 
   return (
     <motion.div
@@ -1532,6 +1547,92 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
         </div>
 
         <div className="px-6 pb-6 space-y-4">
+
+          {/* ── 面具选择 ── */}
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-3">
+            <div className="font-bold text-[13px] text-black/70 flex items-center gap-2">
+              <span>◈</span> 我的面具
+            </div>
+            <div className="text-[11px] text-black/35 leading-relaxed">
+              选择一个面具，AI 将以该身份认识你。
+            </div>
+
+            {masks.length === 0 ? (
+              <div className="text-[11px] text-black/30 bg-black/3 rounded-xl px-3 py-2.5">
+                暂无面具 — 前往 Core → 个人设定 创建
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {/* 无面具选项 */}
+                <button
+                  onClick={() => setActiveMaskId('')}
+                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${
+                    activeMaskId === ''
+                      ? 'bg-black text-white'
+                      : 'bg-black/3 active:bg-black/6'
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${
+                    activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-black/20 text-black/30'
+                  }`}>
+                    ∅
+                  </div>
+                  <span className={`text-[13px] font-medium ${activeMaskId === '' ? 'text-white' : 'text-black/60'}`}>
+                    不使用面具
+                  </span>
+                </button>
+
+                {/* 面具列表 */}
+                {masks.map(mask => {
+                  const isActive = activeMaskId === mask.id;
+                  const initial = mask.name.charAt(0).toUpperCase();
+                  return (
+                    <button
+                      key={mask.id}
+                      onClick={() => setActiveMaskId(mask.id)}
+                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${
+                        isActive ? 'bg-black text-white' : 'bg-black/3 active:bg-black/6'
+                      }`}
+                    >
+                      {/* 头像 */}
+                      <div className={`w-7 h-7 shrink-0 overflow-hidden border ${isActive ? 'border-white/30' : 'border-black/10'}`}
+                        style={{ borderRadius: 2 }}
+                      >
+                        {mask.avatar
+                          ? <img src={mask.avatar} alt={mask.name} className="w-full h-full object-cover" />
+                          : <div className={`w-full h-full flex items-center justify-center text-[11px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-black/10 text-black/40'}`}>
+                              {initial}
+                            </div>
+                        }
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className={`text-[13px] font-bold leading-tight ${isActive ? 'text-white' : 'text-black/75'}`}>
+                          {mask.name}
+                        </span>
+                        {mask.persona && (
+                          <span className={`text-[10px] truncate leading-tight mt-0.5 ${isActive ? 'text-white/50' : 'text-black/30'}`}>
+                            {mask.persona}
+                          </span>
+                        )}
+                      </div>
+                      {isActive && (
+                        <span className="ml-auto text-white/70 text-[16px] shrink-0">✓</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 当前状态预览 */}
+            {activeMask && (
+              <div className="text-[11px] text-black/30 bg-black/3 rounded-xl px-3 py-2 leading-relaxed">
+                当前：<span className="text-black/50 font-medium">以「{activeMask.name}」的身份与 {contactName} 聊天</span>
+              </div>
+            )}
+          </div>
+
+          {/* ── 拍一拍 ── */}
           <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-2">
             <div className="font-bold text-[13px] text-black/70 flex items-center gap-2">
               <span>👋</span> 我的拍一拍内容
@@ -1560,7 +1661,7 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
             className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors"
           >取消</button>
           <button
-            onClick={() => { onSave({ ...chatSettings, myPatTarget: myPatTarget.trim() }); onClose(); }}
+            onClick={() => { onSave({ ...chatSettings, myPatTarget: myPatTarget.trim(), activeMaskId }); onClose(); }}
             className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors"
           >保存</button>
         </div>

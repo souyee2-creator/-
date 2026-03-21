@@ -55,7 +55,7 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 );
 
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white rounded-[24px] border border-black/[0.04] shadow-sm overflow-hidden ${className}`}>
+  <div className={`bg-white rounded-3xl border border-black/4 shadow-sm overflow-hidden ${className}`}>
     {children}
   </div>
 );
@@ -77,14 +77,14 @@ const PresetSelector = ({
     <div className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-black/[0.025] rounded-2xl active:bg-black/[0.05] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-black/2.5 rounded-2xl active:bg-black/5 transition-colors"
       >
         <span className="text-sm font-bold text-black/50 truncate pr-2">
           {active ? active.name : '— 不使用预设 —'}
         </span>
         <ChevronDown
           size={14}
-          className={`text-black/25 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`text-black/25 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -97,30 +97,30 @@ const PresetSelector = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.12 }}
-              className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-2xl border border-black/[0.06] shadow-2xl z-20 overflow-hidden"
+              className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-2xl border border-black/6 shadow-2xl z-20 overflow-hidden"
             >
               <button
                 onClick={() => { onSelect(null); setOpen(false); }}
-                className="w-full px-4 py-3 flex items-center justify-between text-left active:bg-black/[0.03] transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between text-left active:bg-black/3 transition-colors"
               >
                 <span className="text-sm text-black/35 font-bold">— 不使用预设 —</span>
                 {activeId === null && <Check size={13} className="text-black/50" />}
               </button>
 
               {presets.length === 0 && (
-                <div className="border-t border-black/[0.03] px-4 py-3 text-[12px] text-black/25 text-center">
+                <div className="border-t border-black/3 px-4 py-3 text-[12px] text-black/25 text-center">
                   暂无保存的预设
                 </div>
               )}
 
               {presets.map(p => (
-                <div key={p.id} className="border-t border-black/[0.03] flex items-center">
+                <div key={p.id} className="border-t border-black/3 flex items-center">
                   <button
                     onClick={() => { onSelect(p.id); setOpen(false); }}
-                    className="flex-1 min-w-0 px-4 py-3 flex items-center justify-between gap-2 text-left active:bg-black/[0.03] transition-colors"
+                    className="flex-1 min-w-0 px-4 py-3 flex items-center justify-between gap-2 text-left active:bg-black/3 transition-colors"
                   >
                     <span className="text-sm font-bold text-black/70 truncate">{p.name}</span>
-                    {activeId === p.id && <Check size={13} className="text-black/50 flex-shrink-0" />}
+                    {activeId === p.id && <Check size={13} className="text-black/50 shrink-0" />}
                   </button>
                   <button
                     onClick={e => { e.stopPropagation(); onDelete(p.id); setOpen(false); }}
@@ -190,10 +190,10 @@ const CssEditorSection = ({
           placeholder={placeholder}
           rows={8}
           spellCheck={false}
-          className="w-full bg-black/[0.02] border border-black/[0.05] rounded-2xl px-4 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/[0.08] placeholder:text-black/15 leading-[1.7] transition-shadow"
+          className="w-full bg-black/2 border border-black/5 rounded-2xl px-4 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/8 placeholder:text-black/15 leading-[1.7] transition-shadow"
         />
 
-        <div className="mt-3 min-h-[34px] flex items-center">
+        <div className="mt-3 min-h-8.5 flex items-center">
           <AnimatePresence mode="wait">
             {saveMode ? (
               <motion.div
@@ -211,7 +211,7 @@ const CssEditorSection = ({
                     if (e.key === 'Escape') { setSaveMode(false); setPresetName(''); }
                   }}
                   placeholder="预设名称..."
-                  className="flex-1 bg-black/[0.025] border border-black/[0.05] rounded-xl px-3 py-2 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/[0.08]"
+                  className="flex-1 bg-black/2.5 border border-black/5 rounded-xl px-3 py-2 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/8"
                 />
                 <button
                   onClick={handleConfirmSave}
@@ -222,7 +222,7 @@ const CssEditorSection = ({
                 </button>
                 <button
                   onClick={() => { setSaveMode(false); setPresetName(''); }}
-                  className="px-3 py-2 bg-black/[0.04] text-black/40 rounded-xl active:scale-95 transition-all text-[13px] font-bold"
+                  className="px-3 py-2 bg-black/4 text-black/40 rounded-xl active:scale-95 transition-all text-[13px] font-bold"
                 >
                   ✕
                 </button>
@@ -270,7 +270,7 @@ const LivePreview = ({ bgImage, bubbleCss, themeCss }: {
           </div>
           <button
             onClick={() => setVisible(v => !v)}
-            className="p-2 rounded-xl bg-black/[0.03] active:bg-black/[0.06] transition-colors"
+            className="p-2 rounded-xl bg-black/3 active:bg-black/6 transition-colors"
           >
             {visible
               ? <EyeOff size={14} className="text-black/35" />
@@ -296,7 +296,7 @@ const LivePreview = ({ bgImage, bubbleCss, themeCss }: {
               `}</style>
 
               <div
-                className="ap-preview rounded-2xl overflow-hidden border border-black/[0.04]"
+                className="ap-preview rounded-2xl overflow-hidden border border-black/4"
                 style={{
                   background: bgImage
                     ? `url(${bgImage}) center/cover no-repeat`
@@ -306,13 +306,13 @@ const LivePreview = ({ bgImage, bubbleCss, themeCss }: {
               >
                 <div className="p-4 space-y-2.5">
                   <div className="flex items-end gap-2">
-                    <div className="w-7 h-7 rounded-xl bg-gray-300 flex-shrink-0" />
+                    <div className="w-7 h-7 rounded-xl bg-gray-300 shrink-0" />
                     <div className="ap-recv px-3 py-2 rounded-2xl rounded-tl-none text-[13px] max-w-[65%] leading-snug">
                       这是收到的消息。
                     </div>
                   </div>
                   <div className="flex items-end gap-2 flex-row-reverse">
-                    <div className="w-7 h-7 rounded-xl bg-black flex-shrink-0" />
+                    <div className="w-7 h-7 rounded-xl bg-black shrink-0" />
                     <div className="ap-sent px-3 py-2 rounded-2xl rounded-tr-none text-[13px] max-w-[65%] leading-snug">
                       这是发送的消息。
                     </div>
@@ -367,14 +367,14 @@ export const AppearancePage: React.FC<AppearancePageProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#FBFBFB] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-100 bg-[#FBFBFB] flex flex-col overflow-hidden">
 
       {/* Header */}
-      <div className="px-5 pt-14 pb-4 flex-shrink-0 border-b border-black/[0.03]">
+      <div className="px-5 pt-14 pb-4 shrink-0 border-b border-black/3">
         <div className="flex items-center gap-2">
           <button
             onClick={onBack}
-            className="p-2 -ml-2 rounded-2xl active:bg-black/[0.04] transition-colors"
+            className="p-2 -ml-2 rounded-2xl active:bg-black/4 transition-colors"
           >
             <ChevronLeft size={22} className="text-black/50" strokeWidth={2} />
           </button>
@@ -433,7 +433,7 @@ export const AppearancePage: React.FC<AppearancePageProps> = ({ onBack }) => {
               {settings.bgImage && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-                  className="w-full h-20 rounded-2xl border border-black/[0.05] overflow-hidden"
+                  className="w-full h-20 rounded-2xl border border-black/5 overflow-hidden"
                   style={{ background: `url(${settings.bgImage}) center/cover no-repeat` }}
                 />
               )}
@@ -448,7 +448,7 @@ export const AppearancePage: React.FC<AppearancePageProps> = ({ onBack }) => {
                 {settings.bgImage && (
                   <button
                     onClick={() => update({ bgImage: null })}
-                    className="flex items-center justify-center px-4 py-3 bg-black/[0.04] text-black/45 rounded-2xl active:bg-black/[0.08] transition-colors"
+                    className="flex items-center justify-center px-4 py-3 bg-black/4 text-black/45 rounded-2xl active:bg-black/8 transition-colors"
                   >
                     <RotateCcw size={14} />
                   </button>
