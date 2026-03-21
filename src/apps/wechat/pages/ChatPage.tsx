@@ -2758,7 +2758,24 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   };
 
   const renderAvatar = (isMe: boolean) => {
-    if (isMe) return <div className="w-full h-full bg-black flex items-center justify-center text-white font-bold text-[10px]">ME</div>;
+    if (isMe) {
+      // 读取当前激活的面具头像
+      const activeMaskId = chatSettings.activeMaskId || '';
+      if (activeMaskId) {
+        try {
+          const masksRaw = localStorage.getItem('souyee_os_masks');
+          const masks = masksRaw ? JSON.parse(masksRaw) : [];
+          const mask = masks.find((m: { id: string; avatar: string; name: string }) => m.id === activeMaskId);
+          if (mask?.avatar) {
+            return <img src={mask.avatar} className="w-full h-full object-cover" alt="me" />;
+          }
+          if (mask?.name) {
+            return <div className="w-full h-full bg-black flex items-center justify-center text-white font-bold text-[10px]">{mask.name.charAt(0)}</div>;
+          }
+        } catch { /* 读取失败则 fallback */ }
+      }
+      return <div className="w-full h-full bg-black flex items-center justify-center text-white font-bold text-[10px]">ME</div>;
+    }
     return (
       <div className="w-full h-full bg-gray-200 flex items-center justify-center overflow-hidden text-black/30 text-[10px] font-bold">
         {contact.avatar ? <img src={contact.avatar} className="w-full h-full object-cover" alt="av" /> : (contact.initials || contact.name[0])}
