@@ -4,6 +4,7 @@ import { Upload } from 'lucide-react';
 import { MasksPage } from './MasksPage';
 import { CollectionsPage, FavoriteMessage } from './CollectionsPage';
 import { AppearancePage } from './AppearancePage';
+import { EmojiManagerPage } from './EmojiManagerPage'; // ← 新增
 
 interface CorePageProps {
   favorites: FavoriteMessage[];
@@ -43,9 +44,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ symbol, label, desc, onClick }) => 
 
 export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite }) => {
   const [showCollections, setShowCollections] = useState(false);
-  const [showAppearance, setShowAppearance] = useState(false);
-  const [showMasks, setShowMasks] = useState(false);
-  const [editingName, setEditingName] = useState(false);
+  const [showAppearance,  setShowAppearance]  = useState(false);
+  const [showMasks,       setShowMasks]       = useState(false);
+  const [showEmoji,       setShowEmoji]       = useState(false); // ← 新增
+  const [editingName,     setEditingName]     = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState(() => {
@@ -78,7 +80,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
   const menuItems = [
     { symbol: '◈', label: '个人设定', desc: 'Masks / Persona',       onClick: () => setShowMasks(true) },
     { symbol: '☆', label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
-    { symbol: '☺', label: '表情管理', desc: 'Emoji / Assets',        onClick: () => console.log('表情管理') },
+    { symbol: '☺', label: '表情管理', desc: 'Emoji / Assets',        onClick: () => setShowEmoji(true) }, // ← 改这里
     { symbol: '◆', label: '界面外观', desc: 'Appearance / Theme',    onClick: () => setShowAppearance(true) },
     { symbol: '◎', label: '设置',     desc: 'Preferences / API',     onClick: () => console.log('设置') },
   ];
@@ -138,7 +140,6 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     {profile.name ? `${profile.name}.` : '点击设置昵称'}
                   </h2>
                 )}
-
               </div>
             </div>
             <div style={ef.rule} />
@@ -181,6 +182,13 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
             style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: '#ffffff' }}>
             <AppearancePage onBack={() => setShowAppearance(false)} />
+          </motion.div>
+        )}
+        {/* ↓ 新增 */}
+        {showEmoji && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
+            style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: '#ffffff' }}>
+            <EmojiManagerPage onBack={() => setShowEmoji(false)} />
           </motion.div>
         )}
       </AnimatePresence>

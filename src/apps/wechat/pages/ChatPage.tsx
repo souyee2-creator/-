@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getGroupsForContact, getImageFromIDB, EmojiGroup, EmojiItem } from '../../utils/emojiStorage';
 
 interface Message {
   id: string;
@@ -129,7 +130,7 @@ const loadContactAppearance = (contactId: string): ContactAppearance => {
 };
 
 const saveContactAppearance = (contactId: string, s: ContactAppearance) => {
-  try { localStorage.setItem(`souyee_appearance_contact_${contactId}`, JSON.stringify(s)); } catch {}
+  try { localStorage.setItem(`souyee_appearance_contact_${contactId}`, JSON.stringify(s)); } catch { }
 };
 
 const loadCombinedPresets = (): CombinedPreset[] => {
@@ -140,7 +141,7 @@ const loadCombinedPresets = (): CombinedPreset[] => {
 };
 
 const saveCombinedPresets = (presets: CombinedPreset[]) => {
-  try { localStorage.setItem(COMBINED_PRESETS_KEY, JSON.stringify(presets)); } catch {}
+  try { localStorage.setItem(COMBINED_PRESETS_KEY, JSON.stringify(presets)); } catch { }
 };
 
 interface ChatPageProps {
@@ -419,8 +420,8 @@ const InnerVoiceCard = ({
 
   const rows = latest ? [
     { icon: '💭', label: '情绪', value: `${latest.emoji}  ${latest.mood}`, color: 'text-violet-400', italic: false },
-    { icon: '✦',  label: '动作', value: latest.action,                    color: 'text-amber-400',  italic: false },
-    { icon: '♡',  label: '心声', value: latest.innerVoice,                color: 'text-rose-400',   italic: true  },
+    { icon: '✦', label: '动作', value: latest.action, color: 'text-amber-400', italic: false },
+    { icon: '♡', label: '心声', value: latest.innerVoice, color: 'text-rose-400', italic: true },
   ] : [];
 
   return (
@@ -777,9 +778,8 @@ const ForwardRecordViewer = ({
         {records.map((r, i) => (
           <div key={i} className="px-5 py-3 flex items-start gap-3 border-b border-black/3 last:border-none">
             {/* 头像占位 */}
-            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-[10px] font-bold ${
-              r.sender === 'me' ? 'bg-black text-white' : 'bg-black/7 text-black/40'
-            }`}>
+            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-[10px] font-bold ${r.sender === 'me' ? 'bg-black text-white' : 'bg-black/7 text-black/40'
+              }`}>
               {r.sender === 'me' ? 'ME' : r.senderName[0]}
             </div>
             {/* 内容 */}
@@ -1017,10 +1017,9 @@ const CallOverlay = ({
           </div>
         ) : (
           <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${
-                m.isMe
-                  ? 'rounded-br-sm'
-                  : 'rounded-bl-sm'
+            <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${m.isMe
+                ? 'rounded-br-sm'
+                : 'rounded-bl-sm'
               }`} style={
                 m.isMe
                   ? { background: 'rgba(0,0,0,0.82)', color: '#ffffff' }
@@ -1112,8 +1111,8 @@ const CallOverlay = ({
         {contact.avatar
           ? <img src={contact.avatar} className="w-full h-full object-cover" alt="" />
           : <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f0f 100%)' }}>
-              <span className="text-white/15 font-bold text-[140px] select-none">{contact.initials || contact.name[0]}</span>
-            </div>}
+            <span className="text-white/15 font-bold text-[140px] select-none">{contact.initials || contact.name[0]}</span>
+          </div>}
         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
       </div>
 
@@ -1455,11 +1454,10 @@ const ContactAppearancePage = ({
                       <button
                         key={p.id}
                         onClick={() => update({ bubbleDraftCss: p.css, activeBubblePresetId: p.id })}
-                        className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
-                          local.activeBubblePresetId === p.id
+                        className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.activeBubblePresetId === p.id
                             ? 'bg-black text-white'
                             : 'bg-black/4 text-black/50 active:bg-black/8'
-                        }`}
+                          }`}
                       >
                         {p.name}
                       </button>
@@ -1496,11 +1494,10 @@ const ContactAppearancePage = ({
                       <button
                         key={p.id}
                         onClick={() => update({ themeDraftCss: p.css })}
-                        className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
-                          local.themeDraftCss === p.css && local.themeDraftCss !== ''
+                        className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.themeDraftCss === p.css && local.themeDraftCss !== ''
                             ? 'bg-black text-white'
                             : 'bg-black/4 text-black/50 active:bg-black/8'
-                        }`}
+                          }`}
                       >
                         {p.name}
                       </button>
@@ -1602,15 +1599,13 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                 {/* 无面具选项 */}
                 <button
                   onClick={() => setActiveMaskId('')}
-                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${
-                    activeMaskId === ''
+                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${activeMaskId === ''
                       ? 'bg-black text-white'
                       : 'bg-black/3 active:bg-black/6'
-                  }`}
+                    }`}
                 >
-                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${
-                    activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-black/20 text-black/30'
-                  }`}>
+                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-black/20 text-black/30'
+                    }`}>
                     ∅
                   </div>
                   <span className={`text-[13px] font-medium ${activeMaskId === '' ? 'text-white' : 'text-black/60'}`}>
@@ -1626,9 +1621,8 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                     <button
                       key={mask.id}
                       onClick={() => setActiveMaskId(mask.id)}
-                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${
-                        isActive ? 'bg-black text-white' : 'bg-black/3 active:bg-black/6'
-                      }`}
+                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${isActive ? 'bg-black text-white' : 'bg-black/3 active:bg-black/6'
+                        }`}
                     >
                       {/* 头像 */}
                       <div className={`w-7 h-7 shrink-0 overflow-hidden border ${isActive ? 'border-white/30' : 'border-black/10'}`}
@@ -1637,8 +1631,8 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                         {mask.avatar
                           ? <img src={mask.avatar} alt={mask.name} className="w-full h-full object-cover" />
                           : <div className={`w-full h-full flex items-center justify-center text-[11px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-black/10 text-black/40'}`}>
-                              {initial}
-                            </div>
+                            {initial}
+                          </div>
                         }
                       </div>
                       <div className="flex flex-col min-w-0">
@@ -1896,11 +1890,10 @@ const ChatSettingsPage = ({
                             <button
                               key={pos}
                               onClick={() => onToggleTimestampPosition(pos)}
-                              className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
-                                chatSettings.timestampPosition === pos
+                              className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${chatSettings.timestampPosition === pos
                                   ? 'bg-black text-white'
                                   : 'bg-black/6 text-black/40 active:bg-black/12'
-                              }`}
+                                }`}
                             >
                               {pos === 'avatar' ? '头像下方' : '气泡旁边'}
                             </button>
@@ -2214,11 +2207,10 @@ const RedPacketModal = ({ senderName, onConfirm, onCancel }: {
           <button
             onClick={() => { if (isValid) onConfirm(Number(amount).toFixed(2), note.trim() || '恭喜发财，大吉大利'); }}
             disabled={!isValid}
-            className={`w-full py-4 rounded-2xl font-bold text-[16px] transition-all ${
-              isValid
+            className={`w-full py-4 rounded-2xl font-bold text-[16px] transition-all ${isValid
                 ? 'bg-[#f5c842] text-[#7a1f10] active:scale-95 shadow-lg'
                 : 'bg-white/10 text-white/25 cursor-not-allowed'
-            }`}
+              }`}
           >
             塞钱进红包
           </button>
@@ -2420,9 +2412,9 @@ const LocationModal = ({ onConfirm, onCancel }: {
           }} />
           {/* 道路模拟 */}
           <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.18 }} viewBox="0 0 300 108" preserveAspectRatio="none">
-            <path d="M0,54 Q75,40 150,54 Q225,68 300,54" stroke="#2a2118" strokeWidth="5" fill="none"/>
-            <path d="M150,0 Q158,54 150,108" stroke="#2a2118" strokeWidth="3" fill="none"/>
-            <path d="M0,82 Q90,78 150,82 Q210,86 300,80" stroke="#2a2118" strokeWidth="2" fill="none"/>
+            <path d="M0,54 Q75,40 150,54 Q225,68 300,54" stroke="#2a2118" strokeWidth="5" fill="none" />
+            <path d="M150,0 Q158,54 150,108" stroke="#2a2118" strokeWidth="3" fill="none" />
+            <path d="M0,82 Q90,78 150,82 Q210,86 300,80" stroke="#2a2118" strokeWidth="2" fill="none" />
           </svg>
           {/* Pin */}
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -70%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -2721,9 +2713,11 @@ interface ParsedAIResponse {
   shouldTransferReturn: boolean;
   incomingCall: 'voice' | 'video' | null;
   newNickname: string | null;
+  sendEmojiLabel: string | null; // AI 主动发表情的释义
 }
 
 const TRANSFER_RETURN_SIGNAL = '[SYSTEM_ACTION:TRANSFER_RETURN]';
+const SEND_EMOJI_RE = /\[SEND_EMOJI:([\s\S]*?)\]/;
 
 const parseAIResponse = (raw: string): ParsedAIResponse => {
   let text = raw;
@@ -2746,18 +2740,49 @@ const parseAIResponse = (raw: string): ParsedAIResponse => {
   const noteMatch = text.match(SET_NOTE_RE);
   const newNickname = noteMatch ? noteMatch[1].trim() : null;
 
+  const emojiMatch = text.match(SEND_EMOJI_RE);
+  const sendEmojiLabel = emojiMatch ? emojiMatch[1].trim() : null;
+
   const cleanedText = text
     .replace(BLOCK_SIGNAL, '')
     .replace(UNBLOCK_SIGNAL, '')
     .replace(TRANSFER_RETURN_SIGNAL, '')
     .replace(INCOMING_CALL_RE, '')
     .replace(SET_NOTE_RE, '')
+    .replace(SEND_EMOJI_RE, '')
     .trim();
 
-  return { cleanedText, charState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname };
+  return { cleanedText, charState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname, sendEmojiLabel };
 };
 
 // ─── 主组件 ──────────────────────────────────────────────────────────────────
+const EmojiThumbChat: React.FC<{ item: EmojiItem; onSend: () => void }> = ({ item, onSend }) => {
+  const [src, setSrc] = useState<string | null>(item.type === 'url' ? (item.url ?? null) : null);
+  const [showLabel, setShowLabel] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (item.type === 'local' && item.idbKey) getImageFromIDB(item.idbKey).then(setSrc);
+  }, [item]);
+  return (
+    <div onClick={onSend}
+      onMouseEnter={() => setShowLabel(true)} onMouseLeave={() => setShowLabel(false)}
+      onTouchStart={() => { timerRef.current = setTimeout(() => setShowLabel(true), 400); }}
+      onTouchEnd={() => { if (timerRef.current) clearTimeout(timerRef.current); }}
+      style={{ position: 'relative', width: 56, height: 56, cursor: 'pointer', flexShrink: 0 }}>
+      {src ? <img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : <div style={{ width: '100%', height: '100%', background: '#f5f5f5' }} />}
+      {showLabel && item.label && (
+        <div style={{
+          position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.75)', color: '#fff', fontSize: 9, padding: '2px 5px',
+          whiteSpace: 'nowrap', fontFamily: 'Georgia, serif', pointerEvents: 'none', zIndex: 10
+        }}>
+          {item.label}
+        </div>
+      )}
+    </div>
+  );
+};
 export const ChatPage: React.FC<ChatPageProps> = ({
   contact, onBack, onUpdateMessages, onFavorite, onDeleteContact,
   allContacts = [], onForwardToContact,
@@ -2831,7 +2856,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
 
   const saveCharNote = (data: { nickname: string; history: Array<{ nickname: string; updatedAt: string }> }) => {
     setCharNote(data);
-    try { if (charNoteKey) localStorage.setItem(charNoteKey, JSON.stringify(data)); } catch {}
+    try { if (charNoteKey) localStorage.setItem(charNoteKey, JSON.stringify(data)); } catch { }
   };
   const [charStateHistory, setCharStateHistory] = useState<Array<CharState & { timestamp: string; round: number }>>(() => {
     try {
@@ -2843,6 +2868,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   const [showSearch, setShowSearch] = useState(false);
   const [showInnerVoice, setShowInnerVoice] = useState(false);
   const [showPlusPanel, setShowPlusPanel] = useState(false);
+  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [showImageDescModal, setShowImageDescModal] = useState(false);
@@ -2894,7 +2920,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   useEffect(() => { onUpdateMessages(messages); }, [messages]);
   useEffect(() => {
     // 心声历史持久化
-    try { if (innerVoiceKey) localStorage.setItem(innerVoiceKey, JSON.stringify(charStateHistory)); } catch {}
+    try { if (innerVoiceKey) localStorage.setItem(innerVoiceKey, JSON.stringify(charStateHistory)); } catch { }
   }, [charStateHistory]);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -3097,7 +3123,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({
         body: JSON.stringify({
           model: config.model,
           messages: [
-            { role: 'system', content: `你正在和用户进行${activeCall?.mode === 'video' ? '视频' : '语音'}通话。你是${contact.name}，性格：${contact.personality || '普通'}。请口语化回复。如果想说多句话，用 || 隔开每句，每句简短自然。${activeCall?.mode === 'video' ? `
+            {
+              role: 'system', content: `你正在和用户进行${activeCall?.mode === 'video' ? '视频' : '语音'}通话。你是${contact.name}，性格：${contact.personality || '普通'}。请口语化回复。如果想说多句话，用 || 隔开每句，每句简短自然。${activeCall?.mode === 'video' ? `
 你可以穿插场景/动作描写，格式：[ACTION:描写内容]，用 || 与对话气泡拼接。描写用第三人称，写你此刻的神态、动作、画面细节，20~50字，像小说旁白。例如：[ACTION:他懒洋洋地靠在椅背上，屏幕的光打在他脸上，眼神却一直没离开过镜头。] || 终于想起来找我了？
 每轮最多 1 条动作描写，不要每次都加，在情绪或画面有意思的时候再用。` : ''}
 如果你在通话中因情绪或剧情需要主动挂断，在回复末尾加 [SYSTEM_ACTION:HANG_UP]，加了之后本条回复的文字依然正常显示，挂断在文字说完后发生。` },
@@ -3138,10 +3165,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({
       // 先提取 ACTION 描写，再清除其他系统标记
       const actionRe = /\[ACTION:([\s\S]*?)\]/g;
       const rawWithoutHangup = rawCallReply.replace(HANG_UP_SIGNAL, '');
-      
+
       // 把整段按 || 切开，保留 ACTION 标记位置
       const allParts = rawWithoutHangup.split('||').map((s: string) => s.trim()).filter(Boolean);
-      
+
       (window as any).__callSetThinking?.(false);
       if (!allParts.length) return;
 
@@ -3223,7 +3250,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
     const mood = latestState?.mood ?? '';
 
     // 负面情绪关键词 → 有概率拒接
-    const negativeKeywords = ['愤怒','生气','暴躁','焦躁','烦躁','烦','恼','恨','冷漠','冷淡','伤心','难过','崩溃','委屈','哭','忙','累','困','疲惫','不想','拒绝','沉默','冷战'];
+    const negativeKeywords = ['愤怒', '生气', '暴躁', '焦躁', '烦躁', '烦', '恼', '恨', '冷漠', '冷淡', '伤心', '难过', '崩溃', '委屈', '哭', '忙', '累', '困', '疲惫', '不想', '拒绝', '沉默', '冷战'];
     const isNegative = negativeKeywords.some(k => mood.includes(k));
 
     // 负面情绪时 55% 概率拒接，正常时 8% 概率拒接
@@ -3309,6 +3336,11 @@ export const ChatPage: React.FC<ChatPageProps> = ({
     setIsAiThinking(true);
     setIsTyping(true);
 
+    // 读取该联系人绑定的表情包标签列表，注入 system prompt
+    const emojiGroups = getGroupsForContact(contact.id);
+    const emojiLabels = emojiGroups.flatMap(g => g.emojis.map(e => e.label)).filter(Boolean);
+    const emojiLabelsStr = emojiLabels.length > 0 ? emojiLabels.join('、') : '';
+
     try {
       const baseUrl = config.baseUrl.replace(/\/+$/, '');
       const fullUrl = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl}/chat/completions`;
@@ -3330,8 +3362,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({
 
 第一部分：对话内容
 ${chatSettings.bubbleControlEnabled
-  ? `将你想说的话拆成 ${chatSettings.minBubbles}～${chatSettings.maxBubbles} 条短消息，用 || 隔开。`
-  : `将你想说的话根据语境自然拆分成若干条短消息，用 || 隔开。`}
+                  ? `将你想说的话拆成 ${chatSettings.minBubbles}～${chatSettings.maxBubbles} 条短消息，用 || 隔开。`
+                  : `将你想说的话根据语境自然拆分成若干条短消息，用 || 隔开。`}
 ❌ 错误示例：哈哈你说得对，我也觉得这样很有趣，确实是这样的。
 ✅ 正确示例：哈哈你说得对 || 我也觉得很有趣 || 确实是这样的
 规则：每条消息只说一件事，短而自然，像真人发消息一样。
@@ -3397,6 +3429,7 @@ ${chatSettings.bubbleControlEnabled
 - 主动发起通话：[INCOMING_CALL:voice] 或 [INCOMING_CALL:video]，用户会看到来电界面，可选择接听或拒绝。适合强烈想听到/见到对方、或剧情需要时偶尔使用，不能与其他消息同时使用（每次对话最多1次）
 - 撤回：在某条气泡末尾加 [REVOKE]，该气泡发出几秒后会自动撤回。适合说错话、突然后悔、欲言又止、发出后觉得太暴露的话。每次对话最多撤回 1 条，不要滥用。撤回的气泡仍会先短暂显示再消失，这是正常效果。
 - 备注名：你可以在任意一轮回复中给对方起一个私下的备注名，格式：[SET_NOTE:备注名]（加在 CHAR_STATE 之前，不在气泡正文里显示）。这个备注名是你内心对对方的称呼，可随时修改。平均每 5~8 轮对话随机触发一次，首次聊天后可以早一些。备注名要有个性、符合你的人设和你们当前的关系，例如：小傻瓜、笨蛋用户、我的小太阳、那个人、麻烦精……不能太正式，要有情绪。
+- 发表情包：你可以在回复中主动发一个表情包，格式：[SEND_EMOJI:释义]（加在 CHAR_STATE 之前，不在气泡正文里显示）。释义必须从以下列表中选择：${emojiLabelsStr || '（当前无可用表情包）'}。如果列表为空，不要使用此标记。每次对话最多发 1 个，在情绪契合、气氛到位时自然使用，不要滥用。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 你不是聊天机器人，而是一个有情绪的个体。拉黑是极端手段，必须经历"情绪不满 → 明确警告 → 警告无效 → 拉黑"的完整升级过程。
@@ -3459,7 +3492,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       setIsAiThinking(false);
       setIsTyping(false);
 
-      const { cleanedText, charState: newState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname } = parseAIResponse(aiRawText);
+      const { cleanedText, charState: newState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname, sendEmojiLabel } = parseAIResponse(aiRawText);
 
       // 备注名更新
       if (newNickname) {
@@ -3484,6 +3517,23 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         setMessages(prev => [...prev, noticeMsg]);
       }
 
+      if (sendEmojiLabel) {
+        const groups = getGroupsForContact(contact.id);
+        const matched = groups.flatMap(g => g.emojis).find(e => e.label === sendEmojiLabel);
+        if (matched) {
+          (async () => {
+            const imgSrc = matched.type === 'url' ? (matched.url ?? null) : await getImageFromIDB(matched.idbKey!);
+            if (!imgSrc) return;
+            setMessages(prev => [...prev, {
+              id: `emoji_ai_${Date.now()}`, text: `[表情包：${matched.label}]`,
+              sender: 'other', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isImage: true,
+              imageData: matched.type === 'local' ? imgSrc : undefined,
+              imageDesc: matched.type === 'url' ? imgSrc : undefined,
+            }]);
+          })();
+        }
+      }
       // 更新角色状态历史（最多保留10轮）
       if (newState) {
         roundRef.current += 1;
@@ -3602,10 +3652,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
         const finalText = isVoiceMsg ? voiceText
           : isImageMsg ? (imageDesc || '')
-          : isRedPacketMsg ? `[红包] ¥${rpAmount} ${rpNote}`
-          : isTransferMsg ? `[转账] ¥${tfAmount}${tfNote ? ` ${tfNote}` : ''}`
-          : isLocationMsg ? `[位置] ${locName}${locAddr ? ` · ${locAddr}` : ''}`
-          : textForProcessing;
+            : isRedPacketMsg ? `[红包] ¥${rpAmount} ${rpNote}`
+              : isTransferMsg ? `[转账] ¥${tfAmount}${tfNote ? ` ${tfNote}` : ''}`
+                : isLocationMsg ? `[位置] ${locName}${locAddr ? ` · ${locAddr}` : ''}`
+                  : textForProcessing;
 
         const newMsgId = Math.random().toString();
         setMessages(prev => [
@@ -4167,11 +4217,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       <div className={`text-[11px] font-bold shrink-0 mb-1 ${r.sender === 'me' ? 'text-black/25' : 'text-black/30'}`}>
                         {r.senderName}
                       </div>
-                      <div className={`max-w-[72%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-snug ${
-                        r.sender === 'me'
+                      <div className={`max-w-[72%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-snug ${r.sender === 'me'
                           ? 'bg-[#95EC69] text-black rounded-br-sm'
                           : 'bg-black/6 text-black/80 rounded-bl-sm'
-                      }`}>
+                        }`}>
                         {r.text}
                       </div>
                       <span className="text-[10px] text-black/20 shrink-0 mb-1">{r.time}</span>
@@ -4210,7 +4259,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               const mask = masks.find((m: { id: string; avatar: string }) => m.id === activeMaskId);
               if (mask?.avatar) myAvatar = mask.avatar;
             }
-          } catch {}
+          } catch { }
           return (
             <CallOverlay
               mode={activeCall.mode}
@@ -4335,9 +4384,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     >
                       {isMultiSelect && (
                         <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
-                          }`}>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                            }`}>
                             {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                           </div>
                         </div>
@@ -4403,9 +4451,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     <div className="flex justify-center my-2 relative">
                       {isMultiSelect && (
                         <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
-                          }`}>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                            }`}>
                             {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                           </div>
                         </div>
@@ -4447,11 +4494,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         {/* 多选勾选框 */}
                         {isMultiSelect && (
                           <div className={`shrink-0 self-center ${msg.sender === 'me' ? 'order-last ml-1' : 'order-first mr-1'}`}>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                              selectedMsgIds.has(msg.id)
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id)
                                 ? 'bg-black border-black'
                                 : 'border-black/20 bg-white'
-                            }`}>
+                              }`}>
                               {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                             </div>
                           </div>
@@ -4496,17 +4542,14 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 setTransferActionMsgId(msg.id);
                               }
                             }}
-                            className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${
-                              msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
-                            } ${
-                              (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
+                            className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
+                              } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
                                 ? ''
                                 : msg.sender === 'me'
                                   ? 'bg-black text-white'
                                   : 'bg-white text-black'
-                            } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${
-                              isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
-                            }`}
+                              } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
+                              }`}
                             style={
                               (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage)
                                 ? {}
@@ -4618,8 +4661,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                     <div style={{ width: '100%', height: '80px', background: parchmentDeep, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                       <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 13px,rgba(180,160,120,0.18) 13px,rgba(180,160,120,0.18) 14px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(180,160,120,0.13) 20px,rgba(180,160,120,0.13) 21px)` }} />
                                       <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.15 }} viewBox="0 0 210 80" preserveAspectRatio="none">
-                                        <path d="M0,40 Q52,30 105,40 Q158,50 210,40" stroke={ink} strokeWidth="4" fill="none"/>
-                                        <path d="M105,0 Q108,40 105,80" stroke={ink} strokeWidth="2.5" fill="none"/>
+                                        <path d="M0,40 Q52,30 105,40 Q158,50 210,40" stroke={ink} strokeWidth="4" fill="none" />
+                                        <path d="M105,0 Q108,40 105,80" stroke={ink} strokeWidth="2.5" fill="none" />
                                       </svg>
                                       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateY(-4px)' }}>
                                         <div style={{ width: '16px', height: '16px', background: ink, borderRadius: '50% 50% 50% 0', transform: 'rotate(-45deg)', border: `2px solid ${parchment}`, boxShadow: '0 2px 6px rgba(42,33,24,0.25)' }} />
@@ -4641,38 +4684,38 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   </div>
                                 );
                               })()
-                            ) : msg.isVoice ? (                              <div className="min-w-25">
-                                {/* 语音条 */}
-                                <div className={`flex items-center gap-2 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                  {/* 波形条 */}
-                                  <div className={`flex items-center gap-0.75 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                    {Array.from({ length: Math.min(12, Math.max(4, msg.voiceDuration || 4)) }).map((_, i) => (
-                                      <div
-                                        key={i}
-                                        className={`w-0.75 rounded-full ${msg.sender === 'me' ? 'bg-white/60' : 'bg-black/30'}`}
-                                        style={{ height: `${8 + Math.sin(i * 1.5) * 6 + (i % 3) * 2}px` }}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-black/35'}`}>
-                                    {msg.voiceDuration}″
-                                  </span>
+                            ) : msg.isVoice ? (<div className="min-w-25">
+                              {/* 语音条 */}
+                              <div className={`flex items-center gap-2 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                {/* 波形条 */}
+                                <div className={`flex items-center gap-0.75 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                  {Array.from({ length: Math.min(12, Math.max(4, msg.voiceDuration || 4)) }).map((_, i) => (
+                                    <div
+                                      key={i}
+                                      className={`w-0.75 rounded-full ${msg.sender === 'me' ? 'bg-white/60' : 'bg-black/30'}`}
+                                      style={{ height: `${8 + Math.sin(i * 1.5) * 6 + (i % 3) * 2}px` }}
+                                    />
+                                  ))}
                                 </div>
-                                {/* 展开文字 */}
-                                <AnimatePresence>
-                                  {expandedVoiceIds.has(msg.id) && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.2 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-black/8 text-black/55'}`}>
-                                        {msg.text}
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
+                                <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-black/35'}`}>
+                                  {msg.voiceDuration}″
+                                </span>
                               </div>
+                              {/* 展开文字 */}
+                              <AnimatePresence>
+                                {expandedVoiceIds.has(msg.id) && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-black/8 text-black/55'}`}>
+                                      {msg.text}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
                             ) : msg.isImage ? (
                               /* ── 图片气泡 ── */
                               msg.imageData ? (
@@ -4718,9 +4761,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 {msg.quote && (
                                   <div
                                     onClick={() => msg.quote?.msgId && scrollToMessage(msg.quote.msgId)}
-                                    className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${
-                                      msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
-                                    }`}
+                                    className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
+                                      }`}
                                   >
                                     <div className="font-bold opacity-50 text-[10px] mb-0.5">{msg.quote.userName}</div>
                                     <div className="opacity-70 truncate text-[11px]">{msg.quote.text}</div>
@@ -4851,7 +4893,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               </AnimatePresence>
 
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', gap: 8 }}>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#111', flexShrink: 0 }}><Smile size={20} /></button>
+                <button onClick={() => { setShowEmojiPanel(v => !v); setShowPlusPanel(false); }}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+                    color: showEmojiPanel ? '#111' : '#888', flexShrink: 0
+                  }}>
+                  <Smile size={20} />
+                </button>
                 <div style={{ flex: 1, border: '1px solid #111', padding: '7px 12px', display: 'flex', alignItems: 'center', minHeight: 36, background: '#fff' }}>
                   <textarea
                     ref={textareaRef}
@@ -4966,6 +5014,55 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     </div>
                   </motion.div>
                 )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {showEmojiPanel && (() => {
+                  const emojiGroups = getGroupsForContact(contact.id);
+                  const [activeTab, setActiveTab] = React.useState(0);
+                  const currentGroup = emojiGroups[activeTab];
+                  return (
+                    <motion.div key="emoji-panel"
+                      initial={{ height: 0, opacity: 0 }} animate={{ height: 220, opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 36 }}
+                      style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}>
+                      {emojiGroups.length === 0 ? (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                          <span style={{ fontSize: 12, color: '#ccc', fontFamily: 'Georgia, serif' }}>暂无绑定的表情包，请前往 Core → 表情管理</span>
+                        </div>
+                      ) : (<>
+                        <div style={{ display: 'flex', borderBottom: '1px solid #eee', overflowX: 'auto' }}>
+                          {emojiGroups.map((g, i) => (
+                            <button key={g.id} onClick={() => setActiveTab(i)}
+                              style={{
+                                padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                                fontFamily: 'Georgia, serif', fontSize: 12, whiteSpace: 'nowrap',
+                                color: activeTab === i ? '#111' : '#bbb',
+                                borderBottom: activeTab === i ? '2px solid #111' : '2px solid transparent'
+                              }}>
+                              {g.name}
+                            </button>
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: 12, overflowY: 'auto', maxHeight: 170 }}>
+                          {(currentGroup?.emojis ?? []).map(emoji => (
+                            <EmojiThumbChat key={emoji.id} item={emoji} onSend={async () => {
+                              const imgSrc = emoji.type === 'url' ? (emoji.url ?? null) : await getImageFromIDB(emoji.idbKey!);
+                              if (!imgSrc) return;
+                              setMessages(prev => [...prev, {
+                                id: `emoji_me_${Date.now()}`, text: `[表情包：${emoji.label}]`,
+                                sender: 'me', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                status: 'sent', isImage: true,
+                                imageData: emoji.type === 'local' ? imgSrc : undefined,
+                                imageDesc: emoji.type === 'url' ? imgSrc : undefined,
+                              }]);
+                              setShowEmojiPanel(false);
+                            }} />
+                          ))}
+                        </div>
+                      </>)}
+                    </motion.div>
+                  );
+                })()}
               </AnimatePresence>
 
             </motion.div>
