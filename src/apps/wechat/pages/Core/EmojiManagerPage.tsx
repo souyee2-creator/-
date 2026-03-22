@@ -10,6 +10,11 @@ import {
 
 // ─── 简单联系人结构（从 localStorage 读取即可）──────────────────────────────────
 interface Contact { id: string; name: string; avatar?: string; }
+const toContact = (c: any): Contact => ({
+  id: c.id,
+  name: c.remark || c.realName || c.name || '未命名',
+  avatar: c.avatar,
+});
 
 // ─── 单个表情缩略图 ────────────────────────────────────────────────────────────
 const EmojiThumb: React.FC<{
@@ -102,7 +107,7 @@ export const EmojiManagerPage: React.FC<EmojiManagerPageProps> = ({ onBack }) =>
     setGroups(loadGroups());
     try {
       const raw = localStorage.getItem('souyee_os_wechat_characters');
-      if (raw) setContacts(JSON.parse(raw));
+      if (raw) setContacts(JSON.parse(raw).map(toContact));
     } catch {}
   }, []);
 

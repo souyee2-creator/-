@@ -187,7 +187,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         {/* ↓ 新增 */}
         {showEmoji && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: '#ffffff' }}>
+            style={{ position: 'fixed', inset: 0, zIndex: 200, overflow: 'hidden', background: '#ffffff' }}>
             <EmojiManagerPage onBack={() => setShowEmoji(false)} />
           </motion.div>
         )}

@@ -1018,8 +1018,8 @@ const CallOverlay = ({
         ) : (
           <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-[13px] leading-snug ${m.isMe
-                ? 'rounded-br-sm'
-                : 'rounded-bl-sm'
+              ? 'rounded-br-sm'
+              : 'rounded-bl-sm'
               }`} style={
                 m.isMe
                   ? { background: 'rgba(0,0,0,0.82)', color: '#ffffff' }
@@ -1455,8 +1455,8 @@ const ContactAppearancePage = ({
                         key={p.id}
                         onClick={() => update({ bubbleDraftCss: p.css, activeBubblePresetId: p.id })}
                         className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.activeBubblePresetId === p.id
-                            ? 'bg-black text-white'
-                            : 'bg-black/4 text-black/50 active:bg-black/8'
+                          ? 'bg-black text-white'
+                          : 'bg-black/4 text-black/50 active:bg-black/8'
                           }`}
                       >
                         {p.name}
@@ -1495,8 +1495,8 @@ const ContactAppearancePage = ({
                         key={p.id}
                         onClick={() => update({ themeDraftCss: p.css })}
                         className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.themeDraftCss === p.css && local.themeDraftCss !== ''
-                            ? 'bg-black text-white'
-                            : 'bg-black/4 text-black/50 active:bg-black/8'
+                          ? 'bg-black text-white'
+                          : 'bg-black/4 text-black/50 active:bg-black/8'
                           }`}
                       >
                         {p.name}
@@ -1600,8 +1600,8 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                 <button
                   onClick={() => setActiveMaskId('')}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${activeMaskId === ''
-                      ? 'bg-black text-white'
-                      : 'bg-black/3 active:bg-black/6'
+                    ? 'bg-black text-white'
+                    : 'bg-black/3 active:bg-black/6'
                     }`}
                 >
                   <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-black/20 text-black/30'
@@ -1891,8 +1891,8 @@ const ChatSettingsPage = ({
                               key={pos}
                               onClick={() => onToggleTimestampPosition(pos)}
                               className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${chatSettings.timestampPosition === pos
-                                  ? 'bg-black text-white'
-                                  : 'bg-black/6 text-black/40 active:bg-black/12'
+                                ? 'bg-black text-white'
+                                : 'bg-black/6 text-black/40 active:bg-black/12'
                                 }`}
                             >
                               {pos === 'avatar' ? '头像下方' : '气泡旁边'}
@@ -2208,8 +2208,8 @@ const RedPacketModal = ({ senderName, onConfirm, onCancel }: {
             onClick={() => { if (isValid) onConfirm(Number(amount).toFixed(2), note.trim() || '恭喜发财，大吉大利'); }}
             disabled={!isValid}
             className={`w-full py-4 rounded-2xl font-bold text-[16px] transition-all ${isValid
-                ? 'bg-[#f5c842] text-[#7a1f10] active:scale-95 shadow-lg'
-                : 'bg-white/10 text-white/25 cursor-not-allowed'
+              ? 'bg-[#f5c842] text-[#7a1f10] active:scale-95 shadow-lg'
+              : 'bg-white/10 text-white/25 cursor-not-allowed'
               }`}
           >
             塞钱进红包
@@ -2755,7 +2755,7 @@ const parseAIResponse = (raw: string): ParsedAIResponse => {
   return { cleanedText, charState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname, sendEmojiLabel };
 };
 
-// ─── 主组件 ──────────────────────────────────────────────────────────────────
+
 const EmojiThumbChat: React.FC<{ item: EmojiItem; onSend: () => void }> = ({ item, onSend }) => {
   const [src, setSrc] = useState<string | null>(item.type === 'url' ? (item.url ?? null) : null);
   const [showLabel, setShowLabel] = useState(false);
@@ -2783,6 +2783,54 @@ const EmojiThumbChat: React.FC<{ item: EmojiItem; onSend: () => void }> = ({ ite
     </div>
   );
 };
+const EmojiPanel: React.FC<{
+  contactId: string;
+  onSend: (msg: { text: string; isImage: boolean; imageData?: string; imageDesc?: string }) => void;
+  onClose: () => void;
+}> = ({ contactId, onSend, onClose }) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const emojiGroups = getGroupsForContact(contactId);
+  const currentGroup = emojiGroups[activeTab];
+  const serif = 'Georgia, serif';
+
+  if (emojiGroups.length === 0) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 180 }}>
+      <span style={{ fontSize: 12, color: '#ccc', fontFamily: serif }}>暂无绑定的表情包，请前往 Core → 表情管理</span>
+    </div>
+  );
+
+  return (
+    <>
+      <div style={{ display: 'flex', borderBottom: '1px solid #eee', overflowX: 'auto' }}>
+        {emojiGroups.map((g, i) => (
+          <button key={g.id} onClick={() => setActiveTab(i)}
+            style={{ padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: serif, fontSize: 12, whiteSpace: 'nowrap',
+              color: activeTab === i ? '#111' : '#bbb',
+              borderBottom: activeTab === i ? '2px solid #111' : '2px solid transparent' }}>
+            {g.name}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: 12, overflowY: 'auto', maxHeight: 160 }}>
+        {(currentGroup?.emojis ?? []).map(emoji => (
+          <EmojiThumbChat key={emoji.id} item={emoji} onSend={async () => {
+            const imgSrc = emoji.type === 'url' ? (emoji.url ?? null) : await getImageFromIDB(emoji.idbKey!);
+            if (!imgSrc) return;
+            onSend({
+              text: `[表情包：${emoji.label}]`,
+              isImage: true,
+              imageData: emoji.type === 'local' ? imgSrc : undefined,
+              imageDesc: emoji.type === 'url' ? imgSrc : undefined,
+            });
+            onClose();
+          }} />
+        ))}
+      </div>
+    </>
+  );
+};
+// ─── 主组件 ──────────────────────────────────────────────────────────────────
 export const ChatPage: React.FC<ChatPageProps> = ({
   contact, onBack, onUpdateMessages, onFavorite, onDeleteContact,
   allContacts = [], onForwardToContact,
@@ -4218,8 +4266,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         {r.senderName}
                       </div>
                       <div className={`max-w-[72%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-snug ${r.sender === 'me'
-                          ? 'bg-[#95EC69] text-black rounded-br-sm'
-                          : 'bg-black/6 text-black/80 rounded-bl-sm'
+                        ? 'bg-[#95EC69] text-black rounded-br-sm'
+                        : 'bg-black/6 text-black/80 rounded-bl-sm'
                         }`}>
                         {r.text}
                       </div>
@@ -4495,8 +4543,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         {isMultiSelect && (
                           <div className={`shrink-0 self-center ${msg.sender === 'me' ? 'order-last ml-1' : 'order-first mr-1'}`}>
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id)
-                                ? 'bg-black border-black'
-                                : 'border-black/20 bg-white'
+                              ? 'bg-black border-black'
+                              : 'border-black/20 bg-white'
                               }`}>
                               {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                             </div>
@@ -5016,53 +5064,30 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 )}
               </AnimatePresence>
               <AnimatePresence>
-                {showEmojiPanel && (() => {
-                  const emojiGroups = getGroupsForContact(contact.id);
-                  const [activeTab, setActiveTab] = React.useState(0);
-                  const currentGroup = emojiGroups[activeTab];
-                  return (
-                    <motion.div key="emoji-panel"
-                      initial={{ height: 0, opacity: 0 }} animate={{ height: 220, opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                      style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}>
-                      {emojiGroups.length === 0 ? (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                          <span style={{ fontSize: 12, color: '#ccc', fontFamily: 'Georgia, serif' }}>暂无绑定的表情包，请前往 Core → 表情管理</span>
-                        </div>
-                      ) : (<>
-                        <div style={{ display: 'flex', borderBottom: '1px solid #eee', overflowX: 'auto' }}>
-                          {emojiGroups.map((g, i) => (
-                            <button key={g.id} onClick={() => setActiveTab(i)}
-                              style={{
-                                padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                                fontFamily: 'Georgia, serif', fontSize: 12, whiteSpace: 'nowrap',
-                                color: activeTab === i ? '#111' : '#bbb',
-                                borderBottom: activeTab === i ? '2px solid #111' : '2px solid transparent'
-                              }}>
-                              {g.name}
-                            </button>
-                          ))}
-                        </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: 12, overflowY: 'auto', maxHeight: 170 }}>
-                          {(currentGroup?.emojis ?? []).map(emoji => (
-                            <EmojiThumbChat key={emoji.id} item={emoji} onSend={async () => {
-                              const imgSrc = emoji.type === 'url' ? (emoji.url ?? null) : await getImageFromIDB(emoji.idbKey!);
-                              if (!imgSrc) return;
-                              setMessages(prev => [...prev, {
-                                id: `emoji_me_${Date.now()}`, text: `[表情包：${emoji.label}]`,
-                                sender: 'me', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                                status: 'sent', isImage: true,
-                                imageData: emoji.type === 'local' ? imgSrc : undefined,
-                                imageDesc: emoji.type === 'url' ? imgSrc : undefined,
-                              }]);
-                              setShowEmojiPanel(false);
-                            }} />
-                          ))}
-                        </div>
-                      </>)}
-                    </motion.div>
-                  );
-                })()}
+                {showEmojiPanel && (
+                  <motion.div
+                    key="emoji-panel"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 220, opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 36 }}
+                    style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}
+                  >
+                    <EmojiPanel
+                      contactId={contact.id}
+                      onSend={(msgData) => {
+                        setMessages(prev => [...prev, {
+                          id: `emoji_me_${Date.now()}`,
+                          sender: 'me',
+                          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          status: 'sent',
+                          ...msgData,
+                        }]);
+                      }}
+                      onClose={() => setShowEmojiPanel(false)}
+                    />
+                  </motion.div>
+                )}
               </AnimatePresence>
 
             </motion.div>
