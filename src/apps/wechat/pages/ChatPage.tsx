@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getGroupsForContact, getImageFromIDB, EmojiGroup, EmojiItem } from '../../utils/emojiStorage';
+import { getGroupsForContact, getImageFromIDB, EmojiGroup, EmojiItem } from '../utils/emojiStorage';
 
 interface Message {
   id: string;
