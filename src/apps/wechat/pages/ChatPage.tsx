@@ -71,6 +71,7 @@ interface ChatSettings {
   maxBubbles: number;           // AI每轮最多气泡数
   bubbleControlEnabled: boolean; // 是否启用气泡数控制
   showTimestamps: boolean;       // 是否显示时间戳
+  timestampPosition: 'avatar' | 'bubble'; // 时间戳位置：头像下方 or 气泡旁
   myPatTarget: string;           // 拍一拍：我拍角色的内容（如"腹肌"）
   activeMaskId: string;          // 当前聊天使用的面具 ID（空串 = 无面具）
 }
@@ -81,6 +82,7 @@ const DEFAULT_CHAT_SETTINGS: ChatSettings = {
   maxBubbles: 3,
   bubbleControlEnabled: true,
   showTimestamps: true,
+  timestampPosition: 'avatar' as const,
   myPatTarget: '',
   activeMaskId: '',
 };
@@ -1708,7 +1710,7 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
 const ChatSettingsPage = ({
   contact, onClose, onClearMessages, onDeleteContact,
   isBlacklisted, onToggleBlacklist, onOpenSearch, onExport, chatSettings, onSaveChatSettings,
-  messages, onToggleTimestamps, onOpenAppearance
+  messages, onToggleTimestamps, onToggleTimestampPosition, onOpenAppearance
 }: any) => {
   const [confirmConfig, setConfirmConfig] = useState<{ type: 'clear' | 'delete' } | null>(null);
   const [showChatSettingsModal, setShowChatSettingsModal] = useState(false);
@@ -1809,21 +1811,44 @@ const ChatSettingsPage = ({
                 const iconColor = item.id === 'delete' ? 'text-red-500/80' : 'text-black/30';
                 const textColor = item.id === 'delete' ? 'text-red-500' : 'text-black/80';
                 return (
-                  <button key={item.id} onClick={() => { if (!isBlacklist && !isTimestamps) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className={iconColor}>{item.icon}</div>
-                      <div className="text-left">
-                        <div className={`text-[15px] font-bold ${textColor}`}>{item.label}</div>
-                        {item.desc && <div className="text-[11px] text-black/20">{item.desc}</div>}
+                  <React.Fragment key={item.id}>
+                    <button onClick={() => { if (!isBlacklist && !isTimestamps) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={iconColor}>{item.icon}</div>
+                        <div className="text-left">
+                          <div className={`text-[15px] font-bold ${textColor}`}>{item.label}</div>
+                          {item.desc && <div className="text-[11px] text-black/20">{item.desc}</div>}
+                        </div>
                       </div>
-                    </div>
-                    {isBlacklist
-                      ? <Switch checked={isBlacklisted} onChange={onToggleBlacklist} />
-                      : isTimestamps
-                        ? <Switch checked={chatSettings.showTimestamps} onChange={onToggleTimestamps} />
-                        : <ChevronRight size={18} className="text-black/10" />
-                    }
-                  </button>
+                      {isBlacklist
+                        ? <Switch checked={isBlacklisted} onChange={onToggleBlacklist} />
+                        : isTimestamps
+                          ? <Switch checked={chatSettings.showTimestamps} onChange={onToggleTimestamps} />
+                          : <ChevronRight size={18} className="text-black/10" />
+                      }
+                    </button>
+                    {/* 时间戳位置选择器：仅在开启时展开 */}
+                    {isTimestamps && chatSettings.showTimestamps && (
+                      <div className="px-6 pb-4 flex items-center justify-between border-t border-black/3">
+                        <span className="text-[12px] text-black/40 font-medium">时间戳位置</span>
+                        <div className="flex gap-1">
+                          {(['avatar', 'bubble'] as const).map(pos => (
+                            <button
+                              key={pos}
+                              onClick={() => onToggleTimestampPosition(pos)}
+                              className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
+                                chatSettings.timestampPosition === pos
+                                  ? 'bg-black text-white'
+                                  : 'bg-black/6 text-black/40 active:bg-black/12'
+                              }`}
+                            >
+                              {pos === 'avatar' ? '头像下方' : '气泡旁边'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -3635,6 +3660,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             onSaveChatSettings={saveChatSettings}
             messages={messages}
             onToggleTimestamps={(v: boolean) => saveChatSettings({ ...chatSettings, showTimestamps: v })}
+            onToggleTimestampPosition={(pos: 'avatar' | 'bubble') => saveChatSettings({ ...chatSettings, timestampPosition: pos })}
             onOpenAppearance={() => { setShowContactAppearance(true); }}
           />
         )}
@@ -4119,10 +4145,40 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 <div key={msg.id} ref={(el) => setMsgRef(msg.id, el)} className="w-full">
                   {/* 系统通知：居中灰色小字，不渲染气泡 */}
                   {msg.isSystemNotice ? (
-                    <div className="flex justify-center my-1">
+                    <div
+                      className="flex justify-center my-1 relative"
+                      onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
+                      onMouseDown={(e) => {
+                        if (isMultiSelect) return;
+                        longPressTimer.current = setTimeout(() => {
+                          setIsMultiSelect(true);
+                          setSelectedMsgIds(new Set([msg.id]));
+                          if (navigator.vibrate) navigator.vibrate(40);
+                        }, 500);
+                      }}
+                      onTouchStart={(e) => {
+                        if (isMultiSelect) return;
+                        longPressTimer.current = setTimeout(() => {
+                          setIsMultiSelect(true);
+                          setSelectedMsgIds(new Set([msg.id]));
+                          if (navigator.vibrate) navigator.vibrate(40);
+                        }, 500);
+                      }}
+                      onMouseUp={endPress}
+                      onTouchEnd={endPress}
+                    >
+                      {isMultiSelect && (
+                        <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                            selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                          }`}>
+                            {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
+                          </div>
+                        </div>
+                      )}
                       {msg.isCallEnd ? (
                         <button
-                          onClick={() => (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg)}
+                          onClick={() => { if (!isMultiSelect) (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg); }}
                           className={`flex items-center gap-1.5 bg-black/4.5 text-black/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-black/8 active:bg-black/12 cursor-pointer' : 'cursor-default'}`}
                         >
                           {msg.callType === 'video' ? <Video size={11} className="opacity-60" /> : <PhoneCall size={11} className="opacity-60" />}
@@ -4136,9 +4192,38 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       )}
                     </div>
                   ) : msg.isRevoked ? (
-                    <div className="flex justify-center my-2">
+                    <div
+                      className="flex justify-center my-2 relative"
+                      onMouseDown={(e) => {
+                        if (isMultiSelect) return;
+                        longPressTimer.current = setTimeout(() => {
+                          setIsMultiSelect(true);
+                          setSelectedMsgIds(new Set([msg.id]));
+                          if (navigator.vibrate) navigator.vibrate(40);
+                        }, 500);
+                      }}
+                      onTouchStart={(e) => {
+                        if (isMultiSelect) return;
+                        longPressTimer.current = setTimeout(() => {
+                          setIsMultiSelect(true);
+                          setSelectedMsgIds(new Set([msg.id]));
+                          if (navigator.vibrate) navigator.vibrate(40);
+                        }, 500);
+                      }}
+                      onMouseUp={endPress}
+                      onTouchEnd={endPress}
+                    >
+                      {isMultiSelect && (
+                        <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                            selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                          }`}>
+                            {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
+                          </div>
+                        </div>
+                      )}
                       <div
-                        onClick={() => setViewingRevoked(msg)}
+                        onClick={() => { if (isMultiSelect) { toggleSelectMsg(msg.id); return; } setViewingRevoked(msg); }}
                         className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors"
                       >
                         {msg.sender === 'me' ? "你撤回了一条消息" : `${contact.name} 撤回了一条消息`}
@@ -4172,13 +4257,17 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           >
                             {renderAvatar(msg.sender === 'me')}
                           </div>
-                          {chatSettings.showTimestamps && (
+                          {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
                             <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
                           )}
                         </div>
 
                         {/* 气泡 + 感叹号 */}
                         <div className={`flex items-center gap-1.5 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          {/* 气泡旁时间戳（仅 bubble 模式） */}
+                          {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
+                            <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5">{msg.time}</span>
+                          )}
                           <div
                             onMouseDown={(e) => startPress(e, msg)}
                             onTouchStart={(e) => startPress(e, msg)}
