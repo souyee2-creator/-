@@ -4264,10 +4264,6 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
                         {/* 气泡 + 感叹号 */}
                         <div className={`flex items-center gap-1.5 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          {/* 气泡旁时间戳（仅 bubble 模式） */}
-                          {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
-                            <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5">{msg.time}</span>
-                          )}
                           <div
                             onMouseDown={(e) => startPress(e, msg)}
                             onTouchStart={(e) => startPress(e, msg)}
@@ -4538,6 +4534,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                             </button>
                           )}
                         </div>
+
+                        {/* 气泡外侧时间戳（bubble 模式，与头像列平级，自动被推到气泡最外侧） */}
+                        {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
+                          <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5 whitespace-nowrap">
+                            {msg.time}
+                          </span>
+                        )}
 
                       </div>
                     </div>
