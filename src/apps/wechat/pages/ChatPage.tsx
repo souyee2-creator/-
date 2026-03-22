@@ -2512,6 +2512,64 @@ const MessageMenu = ({ rect, onAction, isAi, canRevoke }: {
   );
 };
 
+// ─── 系统通知 / 撤回消息的简化菜单 ───────────────────────────────────────────
+const SystemNoticeMenu = ({
+  rect,
+  onAction,
+}: {
+  rect: { top: number; bottom: number; left: number; right: number; width: number };
+  onAction: (id: 'delete' | 'multiselect') => void;
+}) => {
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  const [pos, setPos] = React.useState<{ left: number; top: number } | null>(null);
+
+  React.useEffect(() => {
+    if (!menuRef.current) return;
+    const mw = menuRef.current.offsetWidth;
+    const mh = menuRef.current.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const GAP = 8;
+    const MARGIN = 8;
+    const bubbleMid = rect.left + rect.width / 2;
+    let left = bubbleMid - mw / 2;
+    left = Math.max(MARGIN, Math.min(left, vw - mw - MARGIN));
+    let top = rect.top - mh - GAP;
+    if (top < MARGIN) top = rect.bottom + GAP;
+    top = Math.min(top, vh - mh - MARGIN);
+    setPos({ left, top });
+  }, [rect]);
+
+  const items: { icon: React.ReactNode; label: string; id: 'delete' | 'multiselect' }[] = [
+    { icon: <CheckSquare size={15} />, label: '多选', id: 'multiselect' },
+    { icon: <Trash2 size={15} className="text-red-500" />, label: '删除', id: 'delete' },
+  ];
+
+  return (
+    <motion.div
+      ref={menuRef}
+      initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
+      transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
+      style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: -9999 }}
+      onClick={(e) => e.stopPropagation()}
+      className="fixed z-100 bg-white/92 backdrop-blur-xl rounded-2xl shadow-xl border border-black/5 p-1.5"
+    >
+      <div className="flex gap-0.5 items-center">
+        {items.map(item => (
+          <button
+            key={item.id}
+            onClick={(e) => { e.stopPropagation(); onAction(item.id); }}
+            className="flex flex-col items-center min-w-12.5 py-1.5 hover:bg-black/5 rounded-xl active:bg-black/10 transition-colors"
+          >
+            <div className="text-black/70 mb-0.5">{item.icon}</div>
+            <span className="text-[10px] font-bold text-black/40">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
 // ─── Markdown 工具函数 ────────────────────────────────────────────────────────
 const hoistBlockquotes = (text: string): string => {
   const lines = text.split('\n');
@@ -2643,6 +2701,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [menuConfig, setMenuConfig] = useState<{ rect: { top: number; bottom: number; left: number; right: number; width: number }; msgId: string; isAi: boolean } | null>(null);
+  const [systemMenuConfig, setSystemMenuConfig] = useState<{ rect: { top: number; bottom: number; left: number; right: number; width: number }; msgId: string } | null>(null);
   const [quotingMsg, setQuotingMsg] = useState<Message | null>(null);
   const [viewingRevoked, setViewingRevoked] = useState<Message | null>(null);
   const [editingMsg, setEditingMsg] = useState<Message | null>(null);
@@ -3906,6 +3965,24 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             />
           </>
         )}
+        {systemMenuConfig && (
+          <>
+            <div className="fixed inset-0 z-90" onMouseDown={() => setSystemMenuConfig(null)} onTouchStart={() => setSystemMenuConfig(null)} />
+            <SystemNoticeMenu
+              rect={systemMenuConfig.rect}
+              onAction={(a) => {
+                const msgId = systemMenuConfig.msgId;
+                setSystemMenuConfig(null);
+                if (a === 'delete') {
+                  setMsgToDelete(msgId);
+                } else if (a === 'multiselect') {
+                  setIsMultiSelect(true);
+                  setSelectedMsgIds(new Set([msgId]));
+                }
+              }}
+            />
+          </>
+        )}
         {/* 联系人选择器 */}
         {showContactPicker && (
           <ContactPickerModal
@@ -4148,24 +4225,6 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     <div
                       className="flex justify-center my-1 relative"
                       onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
-                      onMouseDown={(e) => {
-                        if (isMultiSelect) return;
-                        longPressTimer.current = setTimeout(() => {
-                          setIsMultiSelect(true);
-                          setSelectedMsgIds(new Set([msg.id]));
-                          if (navigator.vibrate) navigator.vibrate(40);
-                        }, 500);
-                      }}
-                      onTouchStart={(e) => {
-                        if (isMultiSelect) return;
-                        longPressTimer.current = setTimeout(() => {
-                          setIsMultiSelect(true);
-                          setSelectedMsgIds(new Set([msg.id]));
-                          if (navigator.vibrate) navigator.vibrate(40);
-                        }, 500);
-                      }}
-                      onMouseUp={endPress}
-                      onTouchEnd={endPress}
                     >
                       {isMultiSelect && (
                         <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
@@ -4178,6 +4237,26 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       )}
                       {msg.isCallEnd ? (
                         <button
+                          onMouseDown={(e) => {
+                            if (isMultiSelect) return;
+                            const el = e.currentTarget as HTMLElement;
+                            longPressTimer.current = setTimeout(() => {
+                              const r = el.getBoundingClientRect();
+                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                              if (navigator.vibrate) navigator.vibrate(40);
+                            }, 500);
+                          }}
+                          onTouchStart={(e) => {
+                            if (isMultiSelect) return;
+                            const el = e.currentTarget as HTMLElement;
+                            longPressTimer.current = setTimeout(() => {
+                              const r = el.getBoundingClientRect();
+                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                              if (navigator.vibrate) navigator.vibrate(40);
+                            }, 500);
+                          }}
+                          onMouseUp={endPress}
+                          onTouchEnd={endPress}
                           onClick={() => { if (!isMultiSelect) (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg); }}
                           className={`flex items-center gap-1.5 bg-black/4.5 text-black/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-black/8 active:bg-black/12 cursor-pointer' : 'cursor-default'}`}
                         >
@@ -4186,33 +4265,35 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           {(msg.callLog?.length ?? 0) > 0 && <ChevronRight size={11} className="opacity-50" />}
                         </button>
                       ) : (
-                        <div className="bg-black/4 text-black/30 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug">
+                        <div
+                          onMouseDown={(e) => {
+                            if (isMultiSelect) return;
+                            const el = e.currentTarget as HTMLElement;
+                            longPressTimer.current = setTimeout(() => {
+                              const r = el.getBoundingClientRect();
+                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                              if (navigator.vibrate) navigator.vibrate(40);
+                            }, 500);
+                          }}
+                          onTouchStart={(e) => {
+                            if (isMultiSelect) return;
+                            const el = e.currentTarget as HTMLElement;
+                            longPressTimer.current = setTimeout(() => {
+                              const r = el.getBoundingClientRect();
+                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                              if (navigator.vibrate) navigator.vibrate(40);
+                            }, 500);
+                          }}
+                          onMouseUp={endPress}
+                          onTouchEnd={endPress}
+                          className="bg-black/4 text-black/30 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug select-none"
+                        >
                           {msg.displayText ?? msg.text.replace('[系统通知] ', '')}
                         </div>
                       )}
                     </div>
                   ) : msg.isRevoked ? (
-                    <div
-                      className="flex justify-center my-2 relative"
-                      onMouseDown={(e) => {
-                        if (isMultiSelect) return;
-                        longPressTimer.current = setTimeout(() => {
-                          setIsMultiSelect(true);
-                          setSelectedMsgIds(new Set([msg.id]));
-                          if (navigator.vibrate) navigator.vibrate(40);
-                        }, 500);
-                      }}
-                      onTouchStart={(e) => {
-                        if (isMultiSelect) return;
-                        longPressTimer.current = setTimeout(() => {
-                          setIsMultiSelect(true);
-                          setSelectedMsgIds(new Set([msg.id]));
-                          if (navigator.vibrate) navigator.vibrate(40);
-                        }, 500);
-                      }}
-                      onMouseUp={endPress}
-                      onTouchEnd={endPress}
-                    >
+                    <div className="flex justify-center my-2 relative">
                       {isMultiSelect && (
                         <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -4223,8 +4304,28 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                         </div>
                       )}
                       <div
+                        onMouseDown={(e) => {
+                          if (isMultiSelect) return;
+                          const el = e.currentTarget as HTMLElement;
+                          longPressTimer.current = setTimeout(() => {
+                            const r = el.getBoundingClientRect();
+                            setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                            if (navigator.vibrate) navigator.vibrate(40);
+                          }, 500);
+                        }}
+                        onTouchStart={(e) => {
+                          if (isMultiSelect) return;
+                          const el = e.currentTarget as HTMLElement;
+                          longPressTimer.current = setTimeout(() => {
+                            const r = el.getBoundingClientRect();
+                            setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                            if (navigator.vibrate) navigator.vibrate(40);
+                          }, 500);
+                        }}
+                        onMouseUp={endPress}
+                        onTouchEnd={endPress}
                         onClick={() => { if (isMultiSelect) { toggleSelectMsg(msg.id); return; } setViewingRevoked(msg); }}
-                        className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors"
+                        className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors select-none"
                       >
                         {msg.sender === 'me' ? "你撤回了一条消息" : `${contact.name} 撤回了一条消息`}
                       </div>
