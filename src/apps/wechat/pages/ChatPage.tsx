@@ -1710,12 +1710,16 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
 const ChatSettingsPage = ({
   contact, onClose, onClearMessages, onDeleteContact,
   isBlacklisted, onToggleBlacklist, onOpenSearch, onExport, chatSettings, onSaveChatSettings,
-  messages, onToggleTimestamps, onToggleTimestampPosition, onOpenAppearance
+  messages, onToggleTimestamps, onToggleTimestampPosition, onOpenAppearance, charNote,
 }: any) => {
   const [confirmConfig, setConfirmConfig] = useState<{ type: 'clear' | 'delete' } | null>(null);
   const [showChatSettingsModal, setShowChatSettingsModal] = useState(false);
   const [showExportConfirm, setShowExportConfirm] = useState(false);
   const [showFriendSettings, setShowFriendSettings] = useState(false);
+  const [showNoteHistory, setShowNoteHistory] = useState(false);
+
+  const noteData: { nickname: string; history: Array<{ nickname: string; updatedAt: string }> } =
+    charNote ?? { nickname: '', history: [] };
 
   const menuGroups = [
     {
@@ -1799,6 +1803,62 @@ const ChatSettingsPage = ({
             }
           </div>
           <h3 className="font-bold text-xl text-black/80">{contact.name}</h3>
+        </div>
+
+        {/* ── TA 对你的备注名 ── */}
+        <div className="mx-4 mb-3 bg-white rounded-[18px] border border-black/5 px-5 py-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-black/25 uppercase tracking-widest">TA 对你的备注</span>
+            {noteData.history.length > 0 && (
+              <button
+                onClick={() => setShowNoteHistory(v => !v)}
+                className="text-[10px] font-bold text-black/30 flex items-center gap-1 active:text-black/60 transition-colors"
+              >
+                历史
+                <motion.span
+                  animate={{ rotate: showNoteHistory ? 90 : 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ display: 'inline-block' }}
+                >
+                  ›
+                </motion.span>
+              </button>
+            )}
+          </div>
+          {/* 备注名展示框（只读，仿输入框风格） */}
+          <div className="w-full border border-black/8 rounded-xl px-4 py-3 bg-black/1.5 10.5 flex items-center">
+            {noteData.nickname ? (
+              <span className="text-[15px] text-black/70" style={{ fontFamily: 'Georgia, serif' }}>
+                {noteData.nickname}
+              </span>
+            ) : (
+              <span className="text-[13px] text-black/20 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                暂无备注，聊一段时间后 {contact.name} 会给你起名…
+              </span>
+            )}
+          </div>
+          {/* 历史记录展开 */}
+          <AnimatePresence>
+            {showNoteHistory && noteData.history.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 border-t border-black/4 pt-3 space-y-2">
+                  <p className="text-[10px] font-bold text-black/20 uppercase tracking-widest mb-1">曾用名</p>
+                  {noteData.history.map((h, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <span className="text-[13px] text-black/40 line-through" style={{ fontFamily: 'Georgia, serif' }}>{h.nickname}</span>
+                      <span className="text-[10px] text-black/20">{h.updatedAt}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {menuGroups.map((group, idx) => (
@@ -2651,6 +2711,7 @@ const UNBLOCK_SIGNAL = '[SYSTEM_ACTION:UNBLOCK]';
 const HANG_UP_SIGNAL = '[SYSTEM_ACTION:HANG_UP]';
 const INCOMING_CALL_RE = /\[INCOMING_CALL:(voice|video)\]/;
 const VOICE_REGEX = /\[VOICE:([\s\S]*?)\]/g;
+const SET_NOTE_RE = /\[SET_NOTE:([\s\S]*?)\]/;
 
 interface ParsedAIResponse {
   cleanedText: string;
@@ -2659,6 +2720,7 @@ interface ParsedAIResponse {
   shouldUnblock: boolean;
   shouldTransferReturn: boolean;
   incomingCall: 'voice' | 'video' | null;
+  newNickname: string | null;
 }
 
 const TRANSFER_RETURN_SIGNAL = '[SYSTEM_ACTION:TRANSFER_RETURN]';
@@ -2681,14 +2743,18 @@ const parseAIResponse = (raw: string): ParsedAIResponse => {
   const incomingCallMatch = text.match(INCOMING_CALL_RE);
   const incomingCall = incomingCallMatch ? (incomingCallMatch[1] as 'voice' | 'video') : null;
 
+  const noteMatch = text.match(SET_NOTE_RE);
+  const newNickname = noteMatch ? noteMatch[1].trim() : null;
+
   const cleanedText = text
     .replace(BLOCK_SIGNAL, '')
     .replace(UNBLOCK_SIGNAL, '')
     .replace(TRANSFER_RETURN_SIGNAL, '')
     .replace(INCOMING_CALL_RE, '')
+    .replace(SET_NOTE_RE, '')
     .trim();
 
-  return { cleanedText, charState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall };
+  return { cleanedText, charState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname };
 };
 
 // ─── 主组件 ──────────────────────────────────────────────────────────────────
@@ -2751,6 +2817,22 @@ export const ChatPage: React.FC<ChatPageProps> = ({
 
   // 新增状态
   const innerVoiceKey = contact.id ? `souyee_inner_voice_${contact.id}` : null;
+  const charNoteKey = contact.id ? `souyee_char_note_${contact.id}` : null;
+
+  // 备注名存储结构：{ nickname: string, history: Array<{nickname, updatedAt}> }
+  const loadCharNote = (): { nickname: string; history: Array<{ nickname: string; updatedAt: string }> } => {
+    try {
+      if (!charNoteKey) return { nickname: '', history: [] };
+      const raw = localStorage.getItem(charNoteKey);
+      return raw ? JSON.parse(raw) : { nickname: '', history: [] };
+    } catch { return { nickname: '', history: [] }; }
+  };
+  const [charNote, setCharNote] = useState(loadCharNote);
+
+  const saveCharNote = (data: { nickname: string; history: Array<{ nickname: string; updatedAt: string }> }) => {
+    setCharNote(data);
+    try { if (charNoteKey) localStorage.setItem(charNoteKey, JSON.stringify(data)); } catch {}
+  };
   const [charStateHistory, setCharStateHistory] = useState<Array<CharState & { timestamp: string; round: number }>>(() => {
     try {
       if (!innerVoiceKey) return [];
@@ -3314,6 +3396,7 @@ ${chatSettings.bubbleControlEnabled
 - 拍一拍：[PAT:内容]，系统最终显示为：「角色名」拍了拍你{内容}，内容直接拼在"拍了拍你"后面，可自由填写，根据当前语气决定加不加"的"。适合气氛温馨、亲密或调皮时偶尔使用（每次对话最多1次）
 - 主动发起通话：[INCOMING_CALL:voice] 或 [INCOMING_CALL:video]，用户会看到来电界面，可选择接听或拒绝。适合强烈想听到/见到对方、或剧情需要时偶尔使用，不能与其他消息同时使用（每次对话最多1次）
 - 撤回：在某条气泡末尾加 [REVOKE]，该气泡发出几秒后会自动撤回。适合说错话、突然后悔、欲言又止、发出后觉得太暴露的话。每次对话最多撤回 1 条，不要滥用。撤回的气泡仍会先短暂显示再消失，这是正常效果。
+- 备注名：你可以在任意一轮回复中给对方起一个私下的备注名，格式：[SET_NOTE:备注名]（加在 CHAR_STATE 之前，不在气泡正文里显示）。这个备注名是你内心对对方的称呼，可随时修改。平均每 5~8 轮对话随机触发一次，首次聊天后可以早一些。备注名要有个性、符合你的人设和你们当前的关系，例如：小傻瓜、笨蛋用户、我的小太阳、那个人、麻烦精……不能太正式，要有情绪。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 你不是聊天机器人，而是一个有情绪的个体。拉黑是极端手段，必须经历"情绪不满 → 明确警告 → 警告无效 → 拉黑"的完整升级过程。
@@ -3376,7 +3459,30 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       setIsAiThinking(false);
       setIsTyping(false);
 
-      const { cleanedText, charState: newState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall } = parseAIResponse(aiRawText);
+      const { cleanedText, charState: newState, shouldBlock, shouldUnblock, shouldTransferReturn, incomingCall, newNickname } = parseAIResponse(aiRawText);
+
+      // 备注名更新
+      if (newNickname) {
+        const prev = loadCharNote();
+        const isFirstTime = !prev.nickname;
+        const updatedAt = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        const newHistory = prev.nickname && prev.nickname !== newNickname
+          ? [{ nickname: prev.nickname, updatedAt: prev.history[prev.history.length - 1]?.updatedAt ?? updatedAt }, ...prev.history].slice(0, 10)
+          : prev.history;
+        saveCharNote({ nickname: newNickname, history: newHistory });
+        const noticeText = isFirstTime
+          ? `${contact.name} 给你起了个备注名`
+          : `${contact.name} 更新了对你的备注名`;
+        const noticeMsg: Message = {
+          id: `note_notice_${Date.now()}`,
+          text: `[系统通知] ${noticeText}`,
+          displayText: noticeText,
+          sender: 'other',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isSystemNotice: true,
+        };
+        setMessages(prev => [...prev, noticeMsg]);
+      }
 
       // 更新角色状态历史（最多保留10轮）
       if (newState) {
@@ -3721,6 +3827,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             onToggleTimestamps={(v: boolean) => saveChatSettings({ ...chatSettings, showTimestamps: v })}
             onToggleTimestampPosition={(pos: 'avatar' | 'bubble') => saveChatSettings({ ...chatSettings, timestampPosition: pos })}
             onOpenAppearance={() => { setShowContactAppearance(true); }}
+            charNote={charNote}
           />
         )}
 
