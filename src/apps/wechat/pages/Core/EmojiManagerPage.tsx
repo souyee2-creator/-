@@ -423,7 +423,7 @@ export const EmojiManagerPage: React.FC<EmojiManagerPageProps> = ({ onBack }) =>
                 value={newGroupName}
                 onChange={e => setNewGroupName(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleCreateGroup()}
-                placeholder="组名（如：搞笑）"
+                placeholder="组名（如:小猫）"
                 style={{ width: '100%', fontFamily: serif, fontSize: 14, border: 'none', borderBottom: '1px solid #111', outline: 'none', padding: '4px 0', marginBottom: 22, boxSizing: 'border-box', background: 'transparent' }}
               />
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>

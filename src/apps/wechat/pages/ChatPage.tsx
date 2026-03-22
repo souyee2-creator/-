@@ -28,6 +28,8 @@ interface Message {
   isImage?: boolean;
   imageData?: string;      // base64 真实图片
   imageDesc?: string;      // 文字描述图片
+  isEmoji?: boolean;       // 表情包（直接显示图片，不走占位符）
+  emojiLabel?: string;     // 表情包释义（给 AI 看）
   isRedPacket?: boolean;
   redPacketAmount?: string;
   redPacketNote?: string;
@@ -2785,7 +2787,7 @@ const EmojiThumbChat: React.FC<{ item: EmojiItem; onSend: () => void }> = ({ ite
 };
 const EmojiPanel: React.FC<{
   contactId: string;
-  onSend: (msg: { text: string; isImage: boolean; imageData?: string; imageDesc?: string }) => void;
+  onSend: (msg: { text: string; isImage: boolean; isEmoji: boolean; emojiLabel: string; imageData?: string; imageDesc?: string }) => void;
   onClose: () => void;
 }> = ({ contactId, onSend, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -2820,6 +2822,8 @@ const EmojiPanel: React.FC<{
             onSend({
               text: `[表情包：${emoji.label}]`,
               isImage: true,
+              isEmoji: true,
+              emojiLabel: emoji.label,
               imageData: emoji.type === 'local' ? imgSrc : undefined,
               imageDesc: emoji.type === 'url' ? imgSrc : undefined,
             });
@@ -3499,6 +3503,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
                 const role = (m.sender === 'me' ? 'user' : 'assistant') as 'user' | 'assistant';
 
+                // 表情包
+                if (m.isEmoji) return { role, content: `[表情包：${m.emojiLabel || '表情'}]` };
                 // 真实图片：多模态格式，让视觉模型真正看到图片
                 if (m.isImage && m.imageData) {
                   return {
@@ -3575,7 +3581,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             setMessages(prev => [...prev, {
               id: `emoji_ai_${Date.now()}`, text: `[表情包：${matched.label}]`,
               sender: 'other', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              isImage: true,
+              isImage: true, isEmoji: true, emojiLabel: matched.label,
               imageData: matched.type === 'local' ? imgSrc : undefined,
               imageDesc: matched.type === 'url' ? imgSrc : undefined,
             }]);
@@ -4766,7 +4772,14 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                             </div>
                             ) : msg.isImage ? (
                               /* ── 图片气泡 ── */
-                              msg.imageData ? (
+                              msg.isEmoji ? (
+                                /* 表情包：直接显示，自适应大小 */
+                                <img
+                                  src={msg.imageData ?? msg.imageDesc ?? ''}
+                                  alt={msg.emojiLabel || '表情'}
+                                  style={{ maxWidth: 140, maxHeight: 140, minWidth: 40, minHeight: 40, display: 'block', objectFit: 'contain' }}
+                                />
+                              ) : msg.imageData ? (
                                 /* 真实图片 */
                                 <img
                                   src={msg.imageData}
