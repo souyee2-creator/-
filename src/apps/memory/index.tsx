@@ -82,14 +82,35 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
   useEffect(() => {
     try {
       const raw = localStorage.getItem('souyee_os_wechat_characters');
-      const all: Array<{ id: string; name: string }> = raw ? JSON.parse(raw) : [];
-      setAllContacts(all);
-      if (all.length > 0) {
-        const withMem = all.find(c => localStorage.getItem(MEMORY_KEY(c.id)));
-        const first = withMem || all[0];
-        setSelectedContactId(first.id);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        
+        // 关键修复：判断解析出来的是数组还是对象
+        let all: Array<{ id: string; name: string }> = [];
+        
+        if (Array.isArray(parsed)) {
+          // 如果本身就是数组
+          all = parsed;
+        } else if (typeof parsed === 'object' && parsed !== null) {
+          // 如果是对象，将其转换为包含 id 和 name 的数组
+          all = Object.entries(parsed).map(([id, data]: [string, any]) => ({
+            id: id,
+            name: data.name || '未知角色'
+          }));
+        }
+
+        setAllContacts(all);
+
+        // 设置初始选中的联系人
+        if (all.length > 0) {
+          const withMem = all.find(c => localStorage.getItem(MEMORY_KEY(c.id)));
+          const first = withMem || all[0];
+          setSelectedContactId(first.id);
+        }
       }
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.error("读取联系人列表失败:", e);
+    }
   }, []);
 
   // 联系人切换时加载记忆
