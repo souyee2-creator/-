@@ -7,7 +7,7 @@ import {
   Download, SlidersHorizontal, Heart, Zap, MessageSquare, Clock,
   CheckSquare, Square, ImageIcon, Gift, ArrowRightLeft, MapPin, Phone,
   Share2, FileText, Video, PhoneOff, VideoOff, Volume2, MicOff,
-  PhoneCall, Minimize2
+  PhoneCall, Minimize2, Layers
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -353,26 +353,6 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
   const [local, setLocal] = useState({ ...settings });
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
-  // 记忆提取间隔（从 memory 存储里单独读写）
-  const [extractInterval, setExtractInterval] = useState<number>(() => {
-    try {
-      const raw = localStorage.getItem(`souyee_memory_${contactId}`);
-      return raw ? (JSON.parse(raw).extractIntervalRounds ?? 20) : 20;
-    } catch { return 20; }
-  });
-
-  const handleSave = () => {
-    // 保存提取间隔到 memory 存储
-    try {
-      const key = `souyee_memory_${contactId}`;
-      const raw = localStorage.getItem(key);
-      const mem = raw ? JSON.parse(raw) : { contactId, facts: [], summaries: [], lastExtractedAt: 0 };
-      localStorage.setItem(key, JSON.stringify({ ...mem, extractIntervalRounds: extractInterval }));
-    } catch { /* ignore */ }
-    onSave(local);
-    onClose();
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -455,49 +435,45 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
               </div>
             )}
           </div>
-          {/* 记忆提取间隔 */}
+          {/* 气泡数范围 */}
           <div className="bg-black/2.5 rounded-2xl px-4 py-4">
-            <div className="mb-3">
-              <div className="font-bold text-[13px] text-black/70">记忆提取间隔</div>
-              <div className="text-[11px] text-black/30 mt-0.5">每隔多少条消息自动整理一次记忆</div>
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <div className="font-bold text-[13px] text-black/70">每轮回复气泡数范围</div>
+                <div className="text-[11px] text-black/30 mt-0.5">
+                  {local.bubbleControlEnabled ? 'AI 每次回复最少和最多发几条消息' : 'AI 自主决定发几条消息'}
+                </div>
+              </div>
+              <Switch checked={local.bubbleControlEnabled} onChange={v => setLocal(p => ({ ...p, bubbleControlEnabled: v }))} />
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setExtractInterval(v => Math.max(5, v - 5))}
-                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
-              >−</button>
-              <input
-                type="number"
-                min={5}
-                value={extractInterval}
-                onChange={e => {
-                  const v = parseInt(e.target.value);
-                  if (!isNaN(v) && v >= 5) setExtractInterval(v);
-                }}
-                className="flex-1 text-center bg-white rounded-xl border border-black/5 shadow-sm py-2 font-bold text-black/70 text-[15px] outline-none focus:ring-2 focus:ring-black/10"
-              />
-              <button
-                onClick={() => setExtractInterval(v => v + 5)}
-                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
-              >+</button>
-            </div>
+            {local.bubbleControlEnabled && (
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex-1">
+                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最少</div>
+                  <div className="flex items-center gap-2 justify-center">
+                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles - 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
+                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.minBubbles}</span>
+                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles + 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
+                  </div>
+                </div>
+                <div className="text-black/15 text-xl font-light">—</div>
+                <div className="flex-1">
+                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最多</div>
+                  <div className="flex items-center gap-2 justify-center">
+                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles - 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
+                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.maxBubbles}</span>
+                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles + 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* 底部按钮 */}
         <div className="flex border-t border-black/4">
-          <button
-            onClick={onClose}
-            className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors"
-          >
-            取消
-          </button>
-          <button
-            onClick={handleSave}
-            className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors"
-          >
-            保存设置
-          </button>
+          <button onClick={onClose} className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors">取消</button>
+          <button onClick={() => { onSave(local); onClose(); }} className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors">保存设置</button>
         </div>
       </motion.div>
     </motion.div>
@@ -1802,12 +1778,51 @@ const ChatSettingsPage = ({
   contact, onClose, onClearMessages, onDeleteContact,
   isBlacklisted, onToggleBlacklist, onOpenSearch, onExport, chatSettings, onSaveChatSettings,
   messages, onToggleTimestamps, onToggleTimestampPosition, onToggleTimeAwareness, onOpenAppearance, charNote,
+  onTriggerMemory,
 }: any) => {
   const [confirmConfig, setConfirmConfig] = useState<{ type: 'clear' | 'delete' } | null>(null);
   const [showChatSettingsModal, setShowChatSettingsModal] = useState(false);
   const [showExportConfirm, setShowExportConfirm] = useState(false);
   const [showFriendSettings, setShowFriendSettings] = useState(false);
   const [showNoteHistory, setShowNoteHistory] = useState(false);
+  const [isMemoryExtracting, setIsMemoryExtracting] = useState(false);
+
+  // 读取记忆统计
+  const [memStats, setMemStats] = useState<{ lastExtractedAt: number; interval: number }>(() => {
+    try {
+      const raw = localStorage.getItem(`souyee_memory_${contact.id}`);
+      const mem = raw ? JSON.parse(raw) : null;
+      return { lastExtractedAt: mem?.lastExtractedAt ?? 0, interval: mem?.extractIntervalRounds ?? 20 };
+    } catch { return { lastExtractedAt: 0, interval: 20 }; }
+  });
+
+  const totalMsgs = (messages as any[]).filter((m: any) => !m.isRevoked && !m.isSystemNotice).length;
+  const pendingMsgs = totalMsgs - memStats.lastExtractedAt;
+  // 本次手动可提取条数：最多一个 interval
+  const canExtract = Math.min(pendingMsgs, memStats.interval);
+
+  const saveInterval = (val: number) => {
+    try {
+      const key = `souyee_memory_${contact.id}`;
+      const raw = localStorage.getItem(key);
+      const mem = raw ? JSON.parse(raw) : { contactId: contact.id, facts: [], summaries: [], lastExtractedAt: 0 };
+      localStorage.setItem(key, JSON.stringify({ ...mem, extractIntervalRounds: val }));
+      setMemStats(s => ({ ...s, interval: val }));
+    } catch { /* ignore */ }
+  };
+
+  const handleManualExtract = async () => {
+    if (isMemoryExtracting || canExtract <= 0) return;
+    setIsMemoryExtracting(true);
+    await onTriggerMemory?.();
+    // 提取完后刷新统计
+    try {
+      const raw = localStorage.getItem(`souyee_memory_${contact.id}`);
+      const mem = raw ? JSON.parse(raw) : null;
+      setMemStats({ lastExtractedAt: mem?.lastExtractedAt ?? 0, interval: mem?.extractIntervalRounds ?? 20 });
+    } catch { /* ignore */ }
+    setIsMemoryExtracting(false);
+  };
 
   const noteData: { nickname: string; history: Array<{ nickname: string; updatedAt: string }> } =
     charNote ?? { nickname: '', history: [] };
@@ -1818,6 +1833,7 @@ const ChatSettingsPage = ({
       items: [
         { id: 'style', icon: <Palette size={20} />, label: '聊天页面美化', desc: '背景与气泡自定义', action: onOpenAppearance },
         { id: 'chatSettings', icon: <SlidersHorizontal size={20} />, label: '对话参数', desc: '上下文条数 & 气泡数', action: () => setShowChatSettingsModal(true) },
+        { id: 'memory', icon: <Layers size={20} />, label: '记忆总结', desc: '' },
         { id: 'timestamps', icon: <Clock size={20} />, label: '显示时间戳', desc: '' },
         { id: 'timeAwareness', icon: <Zap size={20} />, label: '时间感知', desc: '让角色知道真实时间与星期' },
       ]
@@ -1962,16 +1978,23 @@ const ChatSettingsPage = ({
                 const isBlacklist = item.id === 'blacklist';
                 const isTimestamps = item.id === 'timestamps';
                 const isTimeAwareness = item.id === 'timeAwareness';
+                const isMemory = item.id === 'memory';
                 const iconColor = item.id === 'delete' ? 'text-red-500/80' : 'text-black/30';
                 const textColor = item.id === 'delete' ? 'text-red-500' : 'text-black/80';
                 return (
                   <React.Fragment key={item.id}>
-                    <button onClick={() => { if (!isBlacklist && !isTimestamps && !isTimeAwareness) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
+                    <button onClick={() => { if (!isBlacklist && !isTimestamps && !isTimeAwareness && !isMemory) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={iconColor}>{item.icon}</div>
                         <div className="text-left">
                           <div className={`text-[15px] font-bold ${textColor}`}>{item.label}</div>
                           {item.desc && <div className="text-[11px] text-black/20">{item.desc}</div>}
+                          {/* memory 行内嵌统计小字 */}
+                          {isMemory && (
+                            <div className="text-[11px] text-black/30 mt-0.5">
+                              消息总数：{totalMsgs} 条　待总结：{pendingMsgs}/{memStats.interval} 条
+                            </div>
+                          )}
                         </div>
                       </div>
                       {isBlacklist
@@ -1983,6 +2006,56 @@ const ChatSettingsPage = ({
                             : <ChevronRight size={18} className="text-black/10" />
                       }
                     </button>
+                    {/* 记忆总结展开面板：始终展开 */}
+                    {isMemory && (
+                      <div className="border-t border-black/3 px-6 py-4 space-y-4">
+                        {/* 提取间隔调节 */}
+                        <div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">自动提取间隔（条）</div>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => saveInterval(Math.max(5, memStats.interval - 5))}
+                              className="w-9 h-9 rounded-xl bg-black/4 flex items-center justify-center font-bold text-black/50 active:bg-black/10 shrink-0"
+                            >−</button>
+                            <input
+                              type="number"
+                              min={5}
+                              value={memStats.interval}
+                              onChange={e => { const v = parseInt(e.target.value); if (!isNaN(v) && v >= 5) saveInterval(v); }}
+                              className="flex-1 text-center bg-white rounded-xl border border-black/8 py-2 font-bold text-black/70 text-[15px] outline-none"
+                            />
+                            <button
+                              onClick={() => saveInterval(memStats.interval + 5)}
+                              className="w-9 h-9 rounded-xl bg-black/4 flex items-center justify-center font-bold text-black/50 active:bg-black/10 shrink-0"
+                            >+</button>
+                          </div>
+                        </div>
+                        {/* 手动提取按钮 */}
+                        <button
+                          onClick={handleManualExtract}
+                          disabled={isMemoryExtracting || canExtract <= 0}
+                          className="w-full py-3 rounded-2xl flex items-center justify-center gap-2 text-[13px] font-bold transition-all"
+                          style={{
+                            background: canExtract <= 0 ? '#f5f5f5' : '#111',
+                            color: canExtract <= 0 ? '#bbb' : '#fff',
+                            opacity: isMemoryExtracting ? 0.6 : 1,
+                            fontFamily: 'Georgia, serif',
+                          }}
+                        >
+                          {isMemoryExtracting ? (
+                            <>
+                              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+                                style={{ width: 13, height: 13, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%' }} />
+                              正在整理…
+                            </>
+                          ) : canExtract <= 0 ? (
+                            '暂无待总结消息'
+                          ) : (
+                            `立即总结（${canExtract} 条）`
+                          )}
+                        </button>
+                      </div>
+                    )}
                     {/* 时间戳位置选择器：仅在开启时展开 */}
                     {isTimestamps && chatSettings.showTimestamps && (
                       <div className="px-6 pb-4 flex items-center justify-between border-t border-black/3">
@@ -3116,17 +3189,19 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   };
 
   // ── 记忆提取函数 ──────────────────────────────────────────────────────────
-  const triggerMemoryExtraction = async (currentMessages: Message[], totalCount: number) => {
+  const triggerMemoryExtraction = async (currentMessages: Message[], totalCount: number, isManual = false) => {
     const configStr = localStorage.getItem('souyee_os_config');
     if (!configStr) return;
     const config = JSON.parse(configStr);
 
     const mem = loadContactMemory(contact.id, contact.name);
+    const interval = mem.extractIntervalRounds || 20;
 
-    // 取上次提取位置到本次之间的消息
-    const newMsgs = currentMessages
+    // 取上次提取位置到本次之间的消息；手动时最多取一个 interval 批次
+    const allNew = currentMessages
       .slice(mem.lastExtractedAt)
       .filter(m => !m.isRevoked && !m.isSystemNotice && m.text && m.text.trim());
+    const newMsgs = isManual ? allNew.slice(0, interval) : allNew;
 
     if (newMsgs.length === 0) return;
 
@@ -3223,7 +3298,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
       // 处理 summary
       if (parsed.summary?.trim()) {
         const startIdx = mem.lastExtractedAt + 1;
-        const endIdx = totalCount;
+        const endIdx = mem.lastExtractedAt + newMsgs.length;
         updatedMem.summaries.push({
           id: `sum_${Date.now()}`,
           content: parsed.summary.trim(),
@@ -3232,7 +3307,8 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
         });
       }
 
-      updatedMem.lastExtractedAt = totalCount;
+      // lastExtractedAt 按实际处理条数推进（手动模式每次最多一个批次）
+      updatedMem.lastExtractedAt = mem.lastExtractedAt + newMsgs.length;
       saveContactMemory(updatedMem);
 
       setMemoryBanner('done');
@@ -4316,6 +4392,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             onToggleTimeAwareness={(v: boolean) => saveChatSettings({ ...chatSettings, timeAwareness: v })}
             onOpenAppearance={() => { setShowContactAppearance(true); }}
             charNote={charNote}
+            onTriggerMemory={async () => {
+              const total = messages.filter((m: any) => !m.isRevoked && !m.isSystemNotice).length;
+              await triggerMemoryExtraction(messages, total, true);
+            }}
           />
         )}
 
