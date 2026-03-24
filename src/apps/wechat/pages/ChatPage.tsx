@@ -77,6 +77,9 @@ interface ChatSettings {
   timestampPosition: 'avatar' | 'bubble'; // 时间戳位置：头像下方 or 气泡旁
   myPatTarget: string;           // 拍一拍：我拍角色的内容（如"腹肌"）
   activeMaskId: string;          // 当前聊天使用的面具 ID（空串 = 无面具）
+  timeAwareness: boolean;        // 是否开启时间感知（将真实时间注入 system prompt）
+  userTimezone: string;          // user 所在时区（IANA 格式，如 Asia/Shanghai）
+  charTimezone: string;          // char 所在时区（IANA 格式，如 America/New_York）
 }
 
 const DEFAULT_CHAT_SETTINGS: ChatSettings = {
@@ -88,6 +91,9 @@ const DEFAULT_CHAT_SETTINGS: ChatSettings = {
   timestampPosition: 'avatar' as const,
   myPatTarget: '',
   activeMaskId: '',
+  timeAwareness: false,
+  userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  charTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
 
 // ─── 联系人外观（单独覆盖全局） ──────────────────────────────────────────────
@@ -296,6 +302,47 @@ const HighlightText = ({ text, query }: { text: string; query: string }) => {
   );
 };
 
+// ─── 常用时区列表 ────────────────────────────────────────────────────────────
+const TIMEZONE_OPTIONS = [
+  // 亚洲
+  { value: 'Asia/Shanghai',      label: '🇨🇳 中国标准时间 (UTC+8)' },
+  { value: 'Asia/Hong_Kong',     label: '🇭🇰 香港 (UTC+8)' },
+  { value: 'Asia/Taipei',        label: '🇹🇼 台北 (UTC+8)' },
+  { value: 'Asia/Tokyo',         label: '🇯🇵 日本 (UTC+9)' },
+  { value: 'Asia/Seoul',         label: '🇰🇷 韩国 (UTC+9)' },
+  { value: 'Asia/Singapore',     label: '🇸🇬 新加坡 (UTC+8)' },
+  { value: 'Asia/Bangkok',       label: '🇹🇭 泰国 (UTC+7)' },
+  { value: 'Asia/Kolkata',       label: '🇮🇳 印度 (UTC+5:30)' },
+  { value: 'Asia/Dubai',         label: '🇦🇪 迪拜 (UTC+4)' },
+  { value: 'Asia/Riyadh',        label: '🇸🇦 沙特 (UTC+3)' },
+  // 欧洲
+  { value: 'Europe/London',      label: '🇬🇧 伦敦 (UTC+0/+1)' },
+  { value: 'Europe/Paris',       label: '🇫🇷 巴黎 (UTC+1/+2)' },
+  { value: 'Europe/Berlin',      label: '🇩🇪 柏林 (UTC+1/+2)' },
+  { value: 'Europe/Rome',        label: '🇮🇹 罗马 (UTC+1/+2)' },
+  { value: 'Europe/Madrid',      label: '🇪🇸 马德里 (UTC+1/+2)' },
+  { value: 'Europe/Amsterdam',   label: '🇳🇱 阿姆斯特丹 (UTC+1/+2)' },
+  { value: 'Europe/Moscow',      label: '🇷🇺 莫斯科 (UTC+3)' },
+  // 美洲
+  { value: 'America/New_York',   label: '🇺🇸 纽约/东部 (UTC-5/-4)' },
+  { value: 'America/Chicago',    label: '🇺🇸 芝加哥/中部 (UTC-6/-5)' },
+  { value: 'America/Denver',     label: '🇺🇸 丹佛/山地 (UTC-7/-6)' },
+  { value: 'America/Los_Angeles',label: '🇺🇸 洛杉矶/太平洋 (UTC-8/-7)' },
+  { value: 'America/Toronto',    label: '🇨🇦 多伦多 (UTC-5/-4)' },
+  { value: 'America/Vancouver',  label: '🇨🇦 温哥华 (UTC-8/-7)' },
+  { value: 'America/Sao_Paulo',  label: '🇧🇷 圣保罗 (UTC-3)' },
+  { value: 'America/Mexico_City',label: '🇲🇽 墨西哥城 (UTC-6/-5)' },
+  // 大洋洲
+  { value: 'Australia/Sydney',   label: '🇦🇺 悉尼 (UTC+10/+11)' },
+  { value: 'Australia/Melbourne',label: '🇦🇺 墨尔本 (UTC+10/+11)' },
+  { value: 'Pacific/Auckland',   label: '🇳🇿 奥克兰 (UTC+12/+13)' },
+  // 非洲
+  { value: 'Africa/Cairo',       label: '🇪🇬 开罗 (UTC+2)' },
+  { value: 'Africa/Johannesburg',label: '🇿🇦 约翰内斯堡 (UTC+2)' },
+  // UTC
+  { value: 'UTC',                label: '🌐 UTC (UTC+0)' },
+];
+
 // ─── 聊天设置 Modal ──────────────────────────────────────────────────────────
 const ChatSettingsModal = ({ settings, onSave, onClose }: {
   settings: ChatSettings;
@@ -386,6 +433,39 @@ const ChatSettingsModal = ({ settings, onSave, onClose }: {
                 </div>
               </div>
             )}
+          </div>
+          {/* 时区设置（仅在时间感知开启时有意义，但始终可配置） */}
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-3">
+            <div>
+              <div className="font-bold text-[13px] text-black/70">时区设置</div>
+              <div className="text-[11px] text-black/30 mt-0.5">配合「时间感知」功能使用，支持异国角色</div>
+            </div>
+            {/* user 时区 */}
+            <div>
+              <div className="text-[10px] font-bold text-black/30 uppercase tracking-widest mb-1.5">我的时区</div>
+              <select
+                value={local.userTimezone}
+                onChange={e => setLocal(p => ({ ...p, userTimezone: e.target.value }))}
+                className="w-full bg-white border border-black/8 rounded-xl px-3 py-2.5 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/10"
+              >
+                {TIMEZONE_OPTIONS.map(tz => (
+                  <option key={tz.value} value={tz.value}>{tz.label}</option>
+                ))}
+              </select>
+            </div>
+            {/* char 时区 */}
+            <div>
+              <div className="text-[10px] font-bold text-black/30 uppercase tracking-widest mb-1.5">角色的时区</div>
+              <select
+                value={local.charTimezone}
+                onChange={e => setLocal(p => ({ ...p, charTimezone: e.target.value }))}
+                className="w-full bg-white border border-black/8 rounded-xl px-3 py-2.5 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/10"
+              >
+                {TIMEZONE_OPTIONS.map(tz => (
+                  <option key={tz.value} value={tz.value}>{tz.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -1706,7 +1786,7 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
 const ChatSettingsPage = ({
   contact, onClose, onClearMessages, onDeleteContact,
   isBlacklisted, onToggleBlacklist, onOpenSearch, onExport, chatSettings, onSaveChatSettings,
-  messages, onToggleTimestamps, onToggleTimestampPosition, onOpenAppearance, charNote,
+  messages, onToggleTimestamps, onToggleTimestampPosition, onToggleTimeAwareness, onOpenAppearance, charNote,
 }: any) => {
   const [confirmConfig, setConfirmConfig] = useState<{ type: 'clear' | 'delete' } | null>(null);
   const [showChatSettingsModal, setShowChatSettingsModal] = useState(false);
@@ -1724,6 +1804,7 @@ const ChatSettingsPage = ({
         { id: 'style', icon: <Palette size={20} />, label: '聊天页面美化', desc: '背景与气泡自定义', action: onOpenAppearance },
         { id: 'chatSettings', icon: <SlidersHorizontal size={20} />, label: '对话参数', desc: '上下文条数 & 气泡数', action: () => setShowChatSettingsModal(true) },
         { id: 'timestamps', icon: <Clock size={20} />, label: '显示时间戳', desc: '' },
+        { id: 'timeAwareness', icon: <Zap size={20} />, label: '时间感知', desc: '让角色知道真实时间与星期' },
       ]
     },
     {
@@ -1864,11 +1945,12 @@ const ChatSettingsPage = ({
               {group.items.map((item) => {
                 const isBlacklist = item.id === 'blacklist';
                 const isTimestamps = item.id === 'timestamps';
+                const isTimeAwareness = item.id === 'timeAwareness';
                 const iconColor = item.id === 'delete' ? 'text-red-500/80' : 'text-black/30';
                 const textColor = item.id === 'delete' ? 'text-red-500' : 'text-black/80';
                 return (
                   <React.Fragment key={item.id}>
-                    <button onClick={() => { if (!isBlacklist && !isTimestamps) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
+                    <button onClick={() => { if (!isBlacklist && !isTimestamps && !isTimeAwareness) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={iconColor}>{item.icon}</div>
                         <div className="text-left">
@@ -1880,7 +1962,9 @@ const ChatSettingsPage = ({
                         ? <Switch checked={isBlacklisted} onChange={onToggleBlacklist} />
                         : isTimestamps
                           ? <Switch checked={chatSettings.showTimestamps} onChange={onToggleTimestamps} />
-                          : <ChevronRight size={18} className="text-black/10" />
+                          : isTimeAwareness
+                            ? <Switch checked={chatSettings.timeAwareness} onChange={onToggleTimeAwareness} />
+                            : <ChevronRight size={18} className="text-black/10" />
                       }
                     </button>
                     {/* 时间戳位置选择器：仅在开启时展开 */}
@@ -3385,6 +3469,66 @@ export const ChatPage: React.FC<ChatPageProps> = ({
       } catch { /* 读取失败则忽略 */ }
     }
 
+    // ── 时间感知：构建当前真实时间信息（支持双时区）──
+    let timePrompt = '';
+    if (chatSettings.timeAwareness) {
+      const getTimeInfo = (timezone: string) => {
+        const now = new Date();
+        const fmt = (part: Intl.DateTimeFormatPartTypes) =>
+          new Intl.DateTimeFormat('zh-CN', { timeZone: timezone, [part]: 'numeric' } as any)
+            .formatToParts(now)
+            .find(p => p.type === part)?.value ?? '';
+
+        const year   = fmt('year');
+        const month  = fmt('month');
+        const day    = fmt('day');
+        const hour   = parseInt(fmt('hour'));
+        const minute = fmt('minute').padStart(2, '0');
+        const weekDay = new Intl.DateTimeFormat('zh-CN', { timeZone: timezone, weekday: 'long' }).format(now);
+
+        let period = '';
+        if (hour >= 0 && hour < 5)       period = '深夜';
+        else if (hour >= 5 && hour < 7)  period = '清晨';
+        else if (hour >= 7 && hour < 9)  period = '早上';
+        else if (hour >= 9 && hour < 12) period = '上午';
+        else if (hour === 12)            period = '中午';
+        else if (hour >= 13 && hour < 14)period = '午后';
+        else if (hour >= 14 && hour < 17)period = '下午';
+        else if (hour >= 17 && hour < 19)period = '傍晚';
+        else if (hour >= 19 && hour < 22)period = '晚上';
+        else                             period = '深夜';
+
+        return { year, month, day, hour, minute, weekDay, period };
+      };
+
+      const userTz = chatSettings.userTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const charTz = chatSettings.charTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const u = getTimeInfo(userTz);
+      const c = getTimeInfo(charTz);
+      const sameTimezone = userTz === charTz;
+
+      const userTimeStr = `${u.year}年${u.month}月${u.day}日 ${u.weekDay} ${u.period} ${u.hour}:${u.minute}`;
+      const charTimeStr = `${c.year}年${c.month}月${c.day}日 ${c.weekDay} ${c.period} ${c.hour}:${c.minute}`;
+
+      timePrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前真实时间】
+${sameTimezone
+  ? `现在是 ${userTimeStr}（双方处于同一时区）。`
+  : `对方（用户）那边：${userTimeStr}（${userTz}）
+你所在时区：${charTimeStr}（${charTz}）`
+}
+你必须将此时间作为你当前所处的真实时刻。你有清醒的时间感知，具体体现在：
+- 你清楚地知道现在是${sameTimezone ? '' : '你所在时区的'}${c.period}，并据此感知自己当下的状态（是否刚起床、是否在休息、是否该睡觉等）
+${!sameTimezone ? `- 你也知道对方那边现在是${u.period}，可能与你的时段不同，因此你们的作息状态可能有差异` : ''}
+- 你会感知时间的流逝——如果对方上次说话是早上，现在是晚上，你知道中间过了很长时间，对方的状态已经发生了变化
+- 你会对不寻常的时间点有自然反应（深夜找你会感到意外，清晨会提到早安，等等）
+- 你不会凭空猜测对方"现在在做什么"，除非对方明确告诉你；但你会根据时间做合理推断
+${chatSettings.showTimestamps ? '- 消息记录中带有时间戳，你可以参考时间戳来判断对话间的时间间隔' : '- 消息记录中没有时间戳，但你仍然清楚地感知当前时刻'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+    }
+
     setIsAiThinking(true);
     setIsTyping(true);
 
@@ -3405,7 +3549,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({
           messages: [
             {
               role: "system",
-              content: `${maskPrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
+              content: `${maskPrompt}${timePrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【★ 输出格式——最高优先级，每次回复必须严格遵守 ★】
@@ -3930,6 +4074,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             messages={messages}
             onToggleTimestamps={(v: boolean) => saveChatSettings({ ...chatSettings, showTimestamps: v })}
             onToggleTimestampPosition={(pos: 'avatar' | 'bubble') => saveChatSettings({ ...chatSettings, timestampPosition: pos })}
+            onToggleTimeAwareness={(v: boolean) => saveChatSettings({ ...chatSettings, timeAwareness: v })}
             onOpenAppearance={() => { setShowContactAppearance(true); }}
             charNote={charNote}
           />
