@@ -434,39 +434,6 @@ const ChatSettingsModal = ({ settings, onSave, onClose }: {
               </div>
             )}
           </div>
-          {/* 时区设置（仅在时间感知开启时有意义，但始终可配置） */}
-          <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-3">
-            <div>
-              <div className="font-bold text-[13px] text-black/70">时区设置</div>
-              <div className="text-[11px] text-black/30 mt-0.5">配合「时间感知」功能使用，支持异国角色</div>
-            </div>
-            {/* user 时区 */}
-            <div>
-              <div className="text-[10px] font-bold text-black/30 uppercase tracking-widest mb-1.5">我的时区</div>
-              <select
-                value={local.userTimezone}
-                onChange={e => setLocal(p => ({ ...p, userTimezone: e.target.value }))}
-                className="w-full bg-white border border-black/8 rounded-xl px-3 py-2.5 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/10"
-              >
-                {TIMEZONE_OPTIONS.map(tz => (
-                  <option key={tz.value} value={tz.value}>{tz.label}</option>
-                ))}
-              </select>
-            </div>
-            {/* char 时区 */}
-            <div>
-              <div className="text-[10px] font-bold text-black/30 uppercase tracking-widest mb-1.5">角色的时区</div>
-              <select
-                value={local.charTimezone}
-                onChange={e => setLocal(p => ({ ...p, charTimezone: e.target.value }))}
-                className="w-full bg-white border border-black/8 rounded-xl px-3 py-2.5 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/10"
-              >
-                {TIMEZONE_OPTIONS.map(tz => (
-                  <option key={tz.value} value={tz.value}>{tz.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
 
         {/* 底部按钮 */}
@@ -1984,6 +1951,35 @@ const ChatSettingsPage = ({
                               {pos === 'avatar' ? '头像下方' : '气泡旁边'}
                             </button>
                           ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* 时区选择：仅在时间感知开启时展开 */}
+                    {isTimeAwareness && chatSettings.timeAwareness && (
+                      <div className="border-t border-black/3 px-6 py-4 space-y-3">
+                        <div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">我的时区</div>
+                          <select
+                            value={chatSettings.userTimezone}
+                            onChange={e => onSaveChatSettings({ ...chatSettings, userTimezone: e.target.value })}
+                            className="w-full bg-black/2 border border-black/8 rounded-xl px-3 py-2 text-[12px] text-black/60 outline-none"
+                          >
+                            {TIMEZONE_OPTIONS.map(tz => (
+                              <option key={tz.value} value={tz.value}>{tz.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">角色的时区</div>
+                          <select
+                            value={chatSettings.charTimezone}
+                            onChange={e => onSaveChatSettings({ ...chatSettings, charTimezone: e.target.value })}
+                            className="w-full bg-black/2 border border-black/8 rounded-xl px-3 py-2 text-[12px] text-black/60 outline-none"
+                          >
+                            {TIMEZONE_OPTIONS.map(tz => (
+                              <option key={tz.value} value={tz.value}>{tz.label}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     )}
