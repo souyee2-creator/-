@@ -344,13 +344,34 @@ const TIMEZONE_OPTIONS = [
 ];
 
 // ─── 聊天设置 Modal ──────────────────────────────────────────────────────────
-const ChatSettingsModal = ({ settings, onSave, onClose }: {
+const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
   settings: ChatSettings;
   onSave: (s: ChatSettings) => void;
   onClose: () => void;
+  contactId: string;
 }) => {
   const [local, setLocal] = useState({ ...settings });
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+  // 记忆提取间隔（从 memory 存储里单独读写）
+  const [extractInterval, setExtractInterval] = useState<number>(() => {
+    try {
+      const raw = localStorage.getItem(`souyee_memory_${contactId}`);
+      return raw ? (JSON.parse(raw).extractIntervalRounds ?? 20) : 20;
+    } catch { return 20; }
+  });
+
+  const handleSave = () => {
+    // 保存提取间隔到 memory 存储
+    try {
+      const key = `souyee_memory_${contactId}`;
+      const raw = localStorage.getItem(key);
+      const mem = raw ? JSON.parse(raw) : { contactId, facts: [], summaries: [], lastExtractedAt: 0 };
+      localStorage.setItem(key, JSON.stringify({ ...mem, extractIntervalRounds: extractInterval }));
+    } catch { /* ignore */ }
+    onSave(local);
+    onClose();
+  };
 
   return (
     <motion.div
@@ -434,6 +455,33 @@ const ChatSettingsModal = ({ settings, onSave, onClose }: {
               </div>
             )}
           </div>
+          {/* 记忆提取间隔 */}
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4">
+            <div className="mb-3">
+              <div className="font-bold text-[13px] text-black/70">记忆提取间隔</div>
+              <div className="text-[11px] text-black/30 mt-0.5">每隔多少条消息自动整理一次记忆</div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setExtractInterval(v => Math.max(5, v - 5))}
+                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
+              >−</button>
+              <input
+                type="number"
+                min={5}
+                value={extractInterval}
+                onChange={e => {
+                  const v = parseInt(e.target.value);
+                  if (!isNaN(v) && v >= 5) setExtractInterval(v);
+                }}
+                className="flex-1 text-center bg-white rounded-xl border border-black/5 shadow-sm py-2 font-bold text-black/70 text-[15px] outline-none focus:ring-2 focus:ring-black/10"
+              />
+              <button
+                onClick={() => setExtractInterval(v => v + 5)}
+                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
+              >+</button>
+            </div>
+          </div>
         </div>
 
         {/* 底部按钮 */}
@@ -445,7 +493,7 @@ const ChatSettingsModal = ({ settings, onSave, onClose }: {
             取消
           </button>
           <button
-            onClick={() => { onSave(local); onClose(); }}
+            onClick={handleSave}
             className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors"
           >
             保存设置
@@ -1811,6 +1859,7 @@ const ChatSettingsPage = ({
             settings={chatSettings}
             onSave={onSaveChatSettings}
             onClose={() => setShowChatSettingsModal(false)}
+            contactId={contact.id}
           />
         )}
         {showFriendSettings && (
@@ -2780,6 +2829,42 @@ const exportChatLog = (messages: Message[], contactName: string) => {
 // ─── 解析并移除隐藏系统指令 ───────────────────────────────────────────────────
 // 用贪婪匹配找最后一个 ] 作为结束，防止 innerVoice 内含 ] 导致截断
 const CHAR_STATE_REGEX = /\[CHAR_STATE:(\{[\s\S]*\})\]/;  // 贪婪匹配，防止 innerVoice 含 } 导致截断
+// ─── 记忆系统工具（内联，与 memory/index.tsx 共用同一 localStorage 格式）────
+interface MemoryFact {
+  id: string;
+  content: string;
+  category: 'identity' | 'preference' | 'relationship' | 'event' | 'other';
+  isPinned: boolean;
+  createdAt: string;
+  updatedAt: string;
+  updatedFlag?: boolean;
+}
+interface MemorySummary {
+  id: string;
+  content: string;
+  messageRange: string;
+  createdAt: string;
+}
+interface ContactMemory {
+  contactId: string;
+  contactName: string;
+  facts: MemoryFact[];
+  summaries: MemorySummary[];
+  lastExtractedAt: number;
+  extractIntervalRounds: number;
+}
+const memoryKey = (id: string) => `souyee_memory_${id}`;
+const loadContactMemory = (contactId: string, contactName: string): ContactMemory => {
+  try {
+    const raw = localStorage.getItem(memoryKey(contactId));
+    if (raw) return { extractIntervalRounds: 20, ...JSON.parse(raw) };
+  } catch { /* ignore */ }
+  return { contactId, contactName, facts: [], summaries: [], lastExtractedAt: 0, extractIntervalRounds: 20 };
+};
+const saveContactMemory = (mem: ContactMemory) => {
+  try { localStorage.setItem(memoryKey(mem.contactId), JSON.stringify(mem)); } catch { /* ignore */ }
+};
+
 const BLOCK_SIGNAL = '[SYSTEM_ACTION:BLOCK]';
 const UNBLOCK_SIGNAL = '[SYSTEM_ACTION:UNBLOCK]';
 const HANG_UP_SIGNAL = '[SYSTEM_ACTION:HANG_UP]';
@@ -2999,6 +3084,8 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   });
   const [showSearch, setShowSearch] = useState(false);
   const [showInnerVoice, setShowInnerVoice] = useState(false);
+  // 记忆提取 banner 状态：null=隐藏，'extracting'=提取中，'done'=完成
+  const [memoryBanner, setMemoryBanner] = useState<null | 'extracting' | 'done'>(null);
   const [showPlusPanel, setShowPlusPanel] = useState(false);
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
   const [showVoiceModal, setShowVoiceModal] = useState(false);
@@ -3026,6 +3113,133 @@ export const ChatPage: React.FC<ChatPageProps> = ({
   const saveChatSettings = (s: ChatSettings) => {
     setChatSettings(s);
     localStorage.setItem(settingsKey, JSON.stringify(s));
+  };
+
+  // ── 记忆提取函数 ──────────────────────────────────────────────────────────
+  const triggerMemoryExtraction = async (currentMessages: Message[], totalCount: number) => {
+    const configStr = localStorage.getItem('souyee_os_config');
+    if (!configStr) return;
+    const config = JSON.parse(configStr);
+
+    const mem = loadContactMemory(contact.id, contact.name);
+
+    // 取上次提取位置到本次之间的消息
+    const newMsgs = currentMessages
+      .slice(mem.lastExtractedAt)
+      .filter(m => !m.isRevoked && !m.isSystemNotice && m.text && m.text.trim());
+
+    if (newMsgs.length === 0) return;
+
+    setMemoryBanner('extracting');
+
+    const msgText = newMsgs.map(m =>
+      `${m.sender === 'me' ? 'user' : contact.name}：${m.text}`
+    ).join('\n');
+
+    const existingFacts = mem.facts.map((f, i) => `[${i}] ${f.content}`).join('\n');
+
+    try {
+      const baseUrl = config.baseUrl.replace(/\/+$/, '');
+      const fullUrl = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl}/chat/completions`;
+
+      const res = await fetch(fullUrl, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: config.model,
+          max_tokens: 1200,
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个专业的对话记忆提取助手。你的任务是从对话片段中提取关于用户（user）的关键信息，以及生成这段对话的简短摘要。
+你只关注 user 的信息，不提取角色自身（${contact.name}）的设定。
+
+【提取优先级】高优先级：用户的身份/职业/地点、明确的喜好与厌恶、重要承诺与约定、关系里程碑、反复提到的事情。低优先级/忽略：临时情绪、日常寒暄、没有后续意义的细节。
+
+【已有记忆条目（供参考，避免重复；如有矛盾请标注覆盖）】
+${existingFacts || '（暂无）'}
+
+请严格按以下 JSON 格式输出，不要输出任何其他内容：
+{
+  "facts": [
+    {
+      "content": "事实描述，一句话，简洁客观",
+      "category": "identity|preference|relationship|event|other",
+      "action": "append|overwrite",
+      "overwriteIndex": null
+    }
+  ],
+  "summary": "2-4句话，概括这段对话发生了什么，用第三人称，客观简洁"
+}
+
+action 说明：append=新增条目；overwrite=覆盖已有条目（需填 overwriteIndex 为已有条目的序号）。如果新信息与已有条目矛盾，用 overwrite；如果是补充，用 append。`
+            },
+            { role: 'user', content: `以下是对话片段：\n\n${msgText}` }
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        setMemoryBanner(null);
+        return;
+      }
+
+      const data = await res.json();
+      const raw = data.choices?.[0]?.message?.content || '';
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+
+      let parsed: { facts: Array<{ content: string; category: MemoryFact['category']; action: string; overwriteIndex: number | null }>; summary: string };
+      try { parsed = JSON.parse(cleaned); } catch {
+        setMemoryBanner(null);
+        return;
+      }
+
+      const now = new Date().toLocaleString('zh-CN');
+      const updatedMem = { ...mem };
+
+      // 处理 facts
+      for (const f of parsed.facts || []) {
+        if (!f.content?.trim()) continue;
+        if (f.action === 'overwrite' && f.overwriteIndex != null && updatedMem.facts[f.overwriteIndex]) {
+          updatedMem.facts[f.overwriteIndex] = {
+            ...updatedMem.facts[f.overwriteIndex],
+            content: f.content.trim(),
+            updatedAt: now,
+            updatedFlag: true,
+          };
+        } else {
+          updatedMem.facts.push({
+            id: `fact_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+            content: f.content.trim(),
+            category: f.category || 'other',
+            isPinned: false,
+            createdAt: now,
+            updatedAt: now,
+            updatedFlag: false,
+          });
+        }
+      }
+
+      // 处理 summary
+      if (parsed.summary?.trim()) {
+        const startIdx = mem.lastExtractedAt + 1;
+        const endIdx = totalCount;
+        updatedMem.summaries.push({
+          id: `sum_${Date.now()}`,
+          content: parsed.summary.trim(),
+          messageRange: `第 ${startIdx}～${endIdx} 条`,
+          createdAt: now,
+        });
+      }
+
+      updatedMem.lastExtractedAt = totalCount;
+      saveContactMemory(updatedMem);
+
+      setMemoryBanner('done');
+      setTimeout(() => setMemoryBanner(null), 2500);
+    } catch {
+      setMemoryBanner(null);
+    }
   };
 
   const longPressTimer = useRef<any>(null);
@@ -3533,6 +3747,22 @@ ${chatSettings.showTimestamps ? '- 消息记录中带有时间戳，你可以参
     const emojiLabels = emojiGroups.flatMap(g => g.emojis.map(e => e.label)).filter(Boolean);
     const emojiLabelsStr = emojiLabels.length > 0 ? emojiLabels.join('、') : '';
 
+    // 读取记忆，构建注入段落
+    const memData = loadContactMemory(contact.id, contact.name);
+    let memoryPrompt = '';
+    const pinnedFacts = memData.facts.filter(f => f.isPinned);
+    const allFacts = [...pinnedFacts, ...memData.facts.filter(f => !f.isPinned)];
+    const recentSummaries = memData.summaries.slice(-5); // 最近5条摘要
+    if (allFacts.length > 0 || recentSummaries.length > 0) {
+      memoryPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【关于对方的已知记忆——请融入对话，自然体现，不要生硬引用】
+${allFacts.length > 0 ? `\n关键信息：\n${allFacts.map(f => `・${f.content}`).join('\n')}` : ''}
+${recentSummaries.length > 0 ? `\n近期对话摘要（从早到晚）：\n${recentSummaries.map(s => `・[${s.messageRange}] ${s.content}`).join('\n')}` : ''}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+    }
+
     try {
       const baseUrl = config.baseUrl.replace(/\/+$/, '');
       const fullUrl = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl}/chat/completions`;
@@ -3545,7 +3775,7 @@ ${chatSettings.showTimestamps ? '- 消息记录中带有时间戳，你可以参
           messages: [
             {
               role: "system",
-              content: `${maskPrompt}${timePrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
+              content: `${maskPrompt}${timePrompt}${memoryPrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【★ 输出格式——最高优先级，每次回复必须严格遵守 ★】
@@ -3935,6 +4165,19 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         callLogRef.current = [];
         setActiveCall({ mode: incomingCall, phase: 'incoming', connectedAt: null, initiator: 'other' });
       }
+      // ── 检查是否需要触发记忆提取 ──
+      setMessages(prev => {
+        const total = prev.filter(m => !m.isRevoked && !m.isSystemNotice).length;
+        const mem = loadContactMemory(contact.id, contact.name);
+        const interval = mem.extractIntervalRounds || 20;
+        const newCount = total - mem.lastExtractedAt;
+        if (newCount >= interval) {
+          // 异步触发，不阻塞聊天
+          setTimeout(() => triggerMemoryExtraction(prev, total), 800);
+        }
+        return prev;
+      });
+
     } catch (err: any) {
       setIsAiThinking(false);
       setIsTyping(false);
@@ -4530,6 +4773,46 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 <span style={{ fontSize: 10, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
                   {blockedBy === 'other' ? '对方已将你拉入黑名单' : '已将对方加入黑名单'}
                 </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 记忆提取 banner */}
+        <AnimatePresence>
+          {memoryBanner && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div style={{
+                borderTop: '1px solid #eee',
+                padding: '7px 16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                background: memoryBanner === 'done' ? '#f0fdf4' : '#fafafa',
+                transition: 'background 0.3s',
+              }}>
+                {memoryBanner === 'extracting' ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+                      style={{ width: 11, height: 11, border: '1.5px solid #ccc', borderTopColor: '#111', borderRadius: '50%', flexShrink: 0 }}
+                    />
+                    <span style={{ fontSize: 10, color: '#999', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+                      正在整理记忆…
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: 11, color: '#22c55e' }}>✓</span>
+                    <span style={{ fontSize: 10, color: '#86efac', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+                      记忆已更新
+                    </span>
+                  </>
+                )}
               </div>
             </motion.div>
           )}

@@ -8,6 +8,7 @@ import { SettingsApp } from './apps/settings';
 import { DiaryApp } from './apps/diary';
 import { BeautifyApp } from './apps/beautify';
 import { CouplesApp } from './apps/couples';
+import { MemoryApp } from './apps/memory';
 
 // ─── 字体注入：确保衬线字体生效 ───
 const editorialStyle = `
@@ -462,6 +463,7 @@ export default function App() {
     { id: 'diary',    symbol: '§',  label: 'Journal',  labelZh: '日记' },
     { id: 'beautify', symbol: '◆',  label: 'Beautify', labelZh: '美化' },
     { id: 'couples',  symbol: '♡',  label: 'Couple',   labelZh: '情侣' },
+    { id: 'memory',   symbol: '◇',  label: 'Memory',   labelZh: '记忆' },
   ];
 
   const isImageWallpaper =
@@ -606,6 +608,9 @@ export default function App() {
           )}
           {activeApp === 'couples' && (
             <CouplesApp onClose={() => setActiveApp(null)} />
+          )}
+          {activeApp === 'memory' && (
+            <MemoryApp onClose={() => setActiveApp(null)} />
           )}
         </AnimatePresence>
       </div>
