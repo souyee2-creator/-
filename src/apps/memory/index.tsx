@@ -85,17 +85,19 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
       if (raw) {
         const parsed = JSON.parse(raw);
         
-        // 关键修复：判断解析出来的是数组还是对象
         let all: Array<{ id: string; name: string }> = [];
         
         if (Array.isArray(parsed)) {
-          // 如果本身就是数组
-          all = parsed;
+          // 关键修复：适配微信的数据结构，优先用备注(remark)，没有就用真名(realName)
+          all = parsed.map((c: any) => ({
+            id: c.id,
+            name: c.remark || c.realName || '未知角色'
+          }));
         } else if (typeof parsed === 'object' && parsed !== null) {
-          // 如果是对象，将其转换为包含 id 和 name 的数组
+          // 如果是对象，同样适配字段
           all = Object.entries(parsed).map(([id, data]: [string, any]) => ({
             id: id,
-            name: data.name || '未知角色'
+            name: data.remark || data.realName || data.name || '未知角色'
           }));
         }
 
