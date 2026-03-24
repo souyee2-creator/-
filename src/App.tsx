@@ -574,43 +574,54 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── App overlays (unchanged) ── */}
+        {/* ── App overlays ── */}
         <AnimatePresence>
-          {activeApp === 'wechat' && (
-            <WeChatApp
-              onClose={() => setActiveApp(null)}
-              {...({ apiKey, baseUrl } as any)}
-            />
-          )}
-          {activeApp === 'settings' && (
-            <SettingsApp
-              onClose={() => setActiveApp(null)}
-              {...({
-                apiKey,
-                onUpdateApiKey: setApiKey,
-                baseUrl,
-                onUpdateBaseUrl: setBaseUrl,
-              } as any)}
-            />
-          )}
-          {activeApp === 'diary' && (
-            <DiaryApp
-              onClose={() => setActiveApp(null)}
-              {...({ apiKey } as any)}
-            />
-          )}
-          {activeApp === 'beautify' && (
-            <BeautifyApp
-              onClose={() => setActiveApp(null)}
-              onSetWallpaper={setWallpaper}
-              currentWallpaper={wallpaper}
-            />
-          )}
-          {activeApp === 'couples' && (
-            <CouplesApp onClose={() => setActiveApp(null)} />
-          )}
-          {activeApp === 'memory' && (
-            <MemoryApp onClose={() => setActiveApp(null)} />
+          {activeApp && (
+            <motion.div
+              key={activeApp}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              style={{ position: 'fixed', inset: 0, zIndex: 50 }}
+            >
+              {activeApp === 'wechat' && (
+                <WeChatApp
+                  onClose={() => setActiveApp(null)}
+                  {...({ apiKey, baseUrl } as any)}
+                />
+              )}
+              {activeApp === 'settings' && (
+                <SettingsApp
+                  onClose={() => setActiveApp(null)}
+                  {...({
+                    apiKey,
+                    onUpdateApiKey: setApiKey,
+                    baseUrl,
+                    onUpdateBaseUrl: setBaseUrl,
+                  } as any)}
+                />
+              )}
+              {activeApp === 'diary' && (
+                <DiaryApp
+                  onClose={() => setActiveApp(null)}
+                  {...({ apiKey } as any)}
+                />
+              )}
+              {activeApp === 'beautify' && (
+                <BeautifyApp
+                  onClose={() => setActiveApp(null)}
+                  onSetWallpaper={setWallpaper}
+                  currentWallpaper={wallpaper}
+                />
+              )}
+              {activeApp === 'couples' && (
+                <CouplesApp onClose={() => setActiveApp(null)} />
+              )}
+              {activeApp === 'memory' && (
+                <MemoryApp onClose={() => setActiveApp(null)} />
+              )}
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

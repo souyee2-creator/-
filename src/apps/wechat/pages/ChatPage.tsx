@@ -435,39 +435,6 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
               </div>
             )}
           </div>
-          {/* 气泡数范围 */}
-          <div className="bg-black/2.5 rounded-2xl px-4 py-4">
-            <div className="flex items-center justify-between mb-1">
-              <div>
-                <div className="font-bold text-[13px] text-black/70">每轮回复气泡数范围</div>
-                <div className="text-[11px] text-black/30 mt-0.5">
-                  {local.bubbleControlEnabled ? 'AI 每次回复最少和最多发几条消息' : 'AI 自主决定发几条消息'}
-                </div>
-              </div>
-              <Switch checked={local.bubbleControlEnabled} onChange={v => setLocal(p => ({ ...p, bubbleControlEnabled: v }))} />
-            </div>
-            {local.bubbleControlEnabled && (
-              <div className="flex items-center gap-3 mt-3">
-                <div className="flex-1">
-                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最少</div>
-                  <div className="flex items-center gap-2 justify-center">
-                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles - 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
-                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.minBubbles}</span>
-                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles + 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
-                  </div>
-                </div>
-                <div className="text-black/15 text-xl font-light">—</div>
-                <div className="flex-1">
-                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最多</div>
-                  <div className="flex items-center gap-2 justify-center">
-                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles - 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
-                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.maxBubbles}</span>
-                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles + 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 底部按钮 */}

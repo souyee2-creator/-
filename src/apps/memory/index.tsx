@@ -85,7 +85,6 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
       const all: Array<{ id: string; name: string }> = raw ? JSON.parse(raw) : [];
       setAllContacts(all);
       if (all.length > 0) {
-        // 优先选有记忆的
         const withMem = all.find(c => localStorage.getItem(MEMORY_KEY(c.id)));
         const first = withMem || all[0];
         setSelectedContactId(first.id);
@@ -112,8 +111,8 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
   if (allContacts.length === 0) {
     return (
       <motion.div
-        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-        transition={{ type: 'tween', duration: 0.3 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
         style={{ position: 'fixed', inset: 0, zIndex: 300, background: '#F7F7F7', display: 'flex', flexDirection: 'column' }}
         onClick={e => e.stopPropagation()}
       >
@@ -141,14 +140,10 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
   const pinnedFacts = filteredFacts.filter(f => f.isPinned);
   const unpinnedFacts = filteredFacts.filter(f => !f.isPinned);
 
-  // 分区：有记忆的 vs 无记忆的
-  const contactsWithMem = allContacts.filter(c => localStorage.getItem(MEMORY_KEY(c.id)));
-  const contactsNoMem = allContacts.filter(c => !localStorage.getItem(MEMORY_KEY(c.id)));
-
   return (
     <motion.div
-      initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-      transition={{ type: 'tween', duration: 0.3 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
       style={{ position: 'fixed', inset: 0, zIndex: 300, background: '#F7F7F7', display: 'flex', flexDirection: 'column' }}
       onClick={e => e.stopPropagation()}
     >
@@ -159,12 +154,12 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
         </button>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 18, fontWeight: 700, color: 'rgba(0,0,0,0.8)', margin: 0, flex: 1 }}>记忆档案</h2>
 
-        {/* 联系人切换下拉 */}
+        {/* 联系人切换按钮 */}
         <button
           onClick={e => { e.stopPropagation(); setShowContactDropdown(v => !v); }}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, background: '#fff', cursor: 'pointer', fontFamily: 'Georgia, serif' }}
         >
-          <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)' }}>{contactName}</span>
+          <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.4)', letterSpacing: '0.05em' }}>选择联系人</span>
           <motion.div animate={{ rotate: showContactDropdown ? 180 : 0 }} transition={{ duration: 0.18 }}>
             <ChevronDown size={14} style={{ color: 'rgba(0,0,0,0.3)' }} />
           </motion.div>
@@ -185,38 +180,16 @@ export const MemoryApp = ({ onClose }: MemoryAppProps) => {
                 border: '1px solid rgba(0,0,0,0.06)', minWidth: 160, overflow: 'hidden',
               }}
             >
-              {/* 有记忆分区 */}
-              {contactsWithMem.length > 0 && (
-                <>
-                  <div style={{ padding: '8px 14px 4px', fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.25)', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Georgia, serif' }}>
-                    有记忆
-                  </div>
-                  {contactsWithMem.map(c => (
-                    <button key={c.id} onClick={() => { setSelectedContactId(c.id); setShowContactDropdown(false); }}
-                      style={{ width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: c.id === selectedContactId ? 'rgba(0,0,0,0.04)' : 'none', border: 'none', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(0,0,0,0.7)' }}>{c.name}</span>
-                      {c.id === selectedContactId && <Check size={14} style={{ color: 'rgba(0,0,0,0.4)' }} />}
-                    </button>
-                  ))}
-                </>
-              )}
-
-              {/* 无记忆分区 */}
-              {contactsNoMem.length > 0 && (
-                <>
-                  <div style={{ height: 1, background: 'rgba(0,0,0,0.05)', margin: '4px 0' }} />
-                  <div style={{ padding: '4px 14px 4px', fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.2)', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Georgia, serif' }}>
-                    尚无记忆
-                  </div>
-                  {contactsNoMem.map(c => (
-                    <button key={c.id} onClick={() => { setSelectedContactId(c.id); setShowContactDropdown(false); }}
-                      style={{ width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: c.id === selectedContactId ? 'rgba(0,0,0,0.04)' : 'none', border: 'none', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
-                      <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.4)' }}>{c.name}</span>
-                      {c.id === selectedContactId && <Check size={14} style={{ color: 'rgba(0,0,0,0.3)' }} />}
-                    </button>
-                  ))}
-                </>
-              )}
+              <div style={{ padding: '8px 14px 4px', fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.25)', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Georgia, serif' }}>
+                全部角色
+              </div>
+              {allContacts.map(c => (
+                <button key={c.id} onClick={() => { setSelectedContactId(c.id); setShowContactDropdown(false); }}
+                  style={{ width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: c.id === selectedContactId ? 'rgba(0,0,0,0.04)' : 'none', border: 'none', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+                  <span style={{ fontSize: 14, fontWeight: c.id === selectedContactId ? 700 : 500, color: 'rgba(0,0,0,0.7)' }}>{c.name}</span>
+                  {c.id === selectedContactId && <Check size={14} style={{ color: 'rgba(0,0,0,0.4)' }} />}
+                </button>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
