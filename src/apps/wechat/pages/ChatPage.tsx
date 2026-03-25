@@ -4867,10 +4867,11 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </div>
 
       {/* 消息列表 */}
+      {/* 消息列表 */}
       <div
         ref={scrollRef}
         onClick={() => { if (showPlusPanel) setShowPlusPanel(false); }}
-        className="flex-1 overflow-y-auto p-4 space-y-3 pt-4 no-scrollbar"
+        className="flex-1 overflow-y-auto p-4 pt-4 no-scrollbar flex flex-col"
         style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : undefined}
       >
         {effectiveBubbleCss && <style>{effectiveBubbleCss}</style>}
@@ -4899,8 +4900,22 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 </button>
               )}
 
-              {visibleMessages.map((msg) => (
-                <div key={msg.id} ref={(el) => setMsgRef(msg.id, el)} className="w-full">
+              {visibleMessages.map((msg, index) => {
+                const prevMsg = index > 0 ? visibleMessages[index - 1] : null;
+                const nextMsg = index < visibleMessages.length - 1 ? visibleMessages[index + 1] : null;
+
+                const isStandardMsg = (m: any) => !m.isSystemNotice && !m.isRevoked;
+                const isSameSenderAsPrev = prevMsg && isStandardMsg(prevMsg) && isStandardMsg(msg) && prevMsg.sender === msg.sender;
+                const isSameSenderAsNext = nextMsg && isStandardMsg(nextMsg) && isStandardMsg(msg) && nextMsg.sender === msg.sender;
+
+                const isFirstInGroup = !isSameSenderAsPrev;
+                const isLastInGroup = !isSameSenderAsNext;
+                
+                // 连续消息间距紧凑，不同分组或系统消息间距拉开
+                const marginTopClass = index === 0 ? 'mt-0' : (isFirstInGroup || !isStandardMsg(msg) || (prevMsg && !isStandardMsg(prevMsg)) ? 'mt-4' : 'mt-[3px]');
+
+                return (
+                <div key={msg.id} ref={(el) => setMsgRef(msg.id, el)} className={`w-full ${marginTopClass}`}>
                   {/* 系统通知：居中灰色小字，不渲染气泡 */}
                   {msg.isSystemNotice ? (
                     <div
@@ -5028,18 +5043,22 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           </div>
                         )}
 
-                        {/* 头像 + 时间戳 */}
-                        <div className="flex flex-col items-center gap-1 shrink-0 self-start">
-                          <div
-                            className="w-9 h-9 rounded-xl overflow-hidden border border-black/5 shadow-sm"
-                            onClick={msg.sender === 'other' ? handleAvatarTap : undefined}
-                          >
-                            {renderAvatar(msg.sender === 'me')}
+                        {/* 头像 + 时间戳 (iMessage风格：仅在最后一条显示) */}
+                        {isLastInGroup ? (
+                          <div className="flex flex-col items-center gap-1 shrink-0 self-end w-9">
+                            <div
+                              className="w-9 h-9 rounded-xl overflow-hidden border border-black/5 shadow-sm"
+                              onClick={msg.sender === 'other' ? handleAvatarTap : undefined}
+                            >
+                              {renderAvatar(msg.sender === 'me')}
+                            </div>
+                            {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
+                              <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
+                            )}
                           </div>
-                          {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
-                            <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
-                          )}
-                        </div>
+                        ) : (
+                          <div className="w-9 shrink-0 self-end" />
+                        )}
 
                         {/* 气泡 + 感叹号 */}
                         <div className={`flex items-center gap-1.5 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -5075,13 +5094,24 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   : 'bg-white text-black'
                               } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
                               }`}
-                            style={
-                              (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage)
-                                ? {}
-                                : msg.sender === 'me'
-                                  ? { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: '14px 4px 14px 14px', boxShadow: 'none' }
-                                  : { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: '4px 14px 14px 14px', border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }
-                            }
+                            style={(() => {
+                              if (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage) return {};
+                              
+                              let radius = '18px';
+                              if (msg.sender === 'me') {
+                                if (isFirstInGroup && isLastInGroup) radius = '18px 18px 4px 18px';
+                                else if (isFirstInGroup) radius = '18px 18px 6px 18px';
+                                else if (isLastInGroup) radius = '18px 6px 4px 18px';
+                                else radius = '18px 6px 6px 18px';
+                                return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, boxShadow: 'none' };
+                              } else {
+                                if (isFirstInGroup && isLastInGroup) radius = '18px 18px 18px 4px';
+                                else if (isFirstInGroup) radius = '18px 18px 18px 6px';
+                                else if (isLastInGroup) radius = '6px 18px 18px 4px';
+                                else radius = '6px 18px 18px 6px';
+                                return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' };
+                              }
+                            })()}
                           >
                             {msg.isForwardRecord ? (
                               /* ── 合并转发卡片 ── */
@@ -5328,7 +5358,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     </div>
                   )}
                 </div>
-              ))}
+              );
+            })}
             </>
           );
         })()}
