@@ -18,6 +18,7 @@ interface Message {
   text: string;
   sender: 'me' | 'other';
   time: string;
+  date?: string;
   isRevoked?: boolean;
   wasWhileBlacklisted?: boolean;
   status?: 'sent' | 'failed';
@@ -305,42 +306,42 @@ const HighlightText = ({ text, query }: { text: string; query: string }) => {
 // ─── 常用时区列表 ────────────────────────────────────────────────────────────
 const TIMEZONE_OPTIONS = [
   // 亚洲
-  { value: 'Asia/Shanghai',      label: '🇨🇳 中国标准时间 (UTC+8)' },
-  { value: 'Asia/Hong_Kong',     label: '🇭🇰 香港 (UTC+8)' },
-  { value: 'Asia/Taipei',        label: '🇹🇼 台北 (UTC+8)' },
-  { value: 'Asia/Tokyo',         label: '🇯🇵 日本 (UTC+9)' },
-  { value: 'Asia/Seoul',         label: '🇰🇷 韩国 (UTC+9)' },
-  { value: 'Asia/Singapore',     label: '🇸🇬 新加坡 (UTC+8)' },
-  { value: 'Asia/Bangkok',       label: '🇹🇭 泰国 (UTC+7)' },
-  { value: 'Asia/Kolkata',       label: '🇮🇳 印度 (UTC+5:30)' },
-  { value: 'Asia/Dubai',         label: '🇦🇪 迪拜 (UTC+4)' },
-  { value: 'Asia/Riyadh',        label: '🇸🇦 沙特 (UTC+3)' },
+  { value: 'Asia/Shanghai', label: '🇨🇳 中国标准时间 (UTC+8)' },
+  { value: 'Asia/Hong_Kong', label: '🇭🇰 香港 (UTC+8)' },
+  { value: 'Asia/Taipei', label: '🇹🇼 台北 (UTC+8)' },
+  { value: 'Asia/Tokyo', label: '🇯🇵 日本 (UTC+9)' },
+  { value: 'Asia/Seoul', label: '🇰🇷 韩国 (UTC+9)' },
+  { value: 'Asia/Singapore', label: '🇸🇬 新加坡 (UTC+8)' },
+  { value: 'Asia/Bangkok', label: '🇹🇭 泰国 (UTC+7)' },
+  { value: 'Asia/Kolkata', label: '🇮🇳 印度 (UTC+5:30)' },
+  { value: 'Asia/Dubai', label: '🇦🇪 迪拜 (UTC+4)' },
+  { value: 'Asia/Riyadh', label: '🇸🇦 沙特 (UTC+3)' },
   // 欧洲
-  { value: 'Europe/London',      label: '🇬🇧 伦敦 (UTC+0/+1)' },
-  { value: 'Europe/Paris',       label: '🇫🇷 巴黎 (UTC+1/+2)' },
-  { value: 'Europe/Berlin',      label: '🇩🇪 柏林 (UTC+1/+2)' },
-  { value: 'Europe/Rome',        label: '🇮🇹 罗马 (UTC+1/+2)' },
-  { value: 'Europe/Madrid',      label: '🇪🇸 马德里 (UTC+1/+2)' },
-  { value: 'Europe/Amsterdam',   label: '🇳🇱 阿姆斯特丹 (UTC+1/+2)' },
-  { value: 'Europe/Moscow',      label: '🇷🇺 莫斯科 (UTC+3)' },
+  { value: 'Europe/London', label: '🇬🇧 伦敦 (UTC+0/+1)' },
+  { value: 'Europe/Paris', label: '🇫🇷 巴黎 (UTC+1/+2)' },
+  { value: 'Europe/Berlin', label: '🇩🇪 柏林 (UTC+1/+2)' },
+  { value: 'Europe/Rome', label: '🇮🇹 罗马 (UTC+1/+2)' },
+  { value: 'Europe/Madrid', label: '🇪🇸 马德里 (UTC+1/+2)' },
+  { value: 'Europe/Amsterdam', label: '🇳🇱 阿姆斯特丹 (UTC+1/+2)' },
+  { value: 'Europe/Moscow', label: '🇷🇺 莫斯科 (UTC+3)' },
   // 美洲
-  { value: 'America/New_York',   label: '🇺🇸 纽约/东部 (UTC-5/-4)' },
-  { value: 'America/Chicago',    label: '🇺🇸 芝加哥/中部 (UTC-6/-5)' },
-  { value: 'America/Denver',     label: '🇺🇸 丹佛/山地 (UTC-7/-6)' },
-  { value: 'America/Los_Angeles',label: '🇺🇸 洛杉矶/太平洋 (UTC-8/-7)' },
-  { value: 'America/Toronto',    label: '🇨🇦 多伦多 (UTC-5/-4)' },
-  { value: 'America/Vancouver',  label: '🇨🇦 温哥华 (UTC-8/-7)' },
-  { value: 'America/Sao_Paulo',  label: '🇧🇷 圣保罗 (UTC-3)' },
-  { value: 'America/Mexico_City',label: '🇲🇽 墨西哥城 (UTC-6/-5)' },
+  { value: 'America/New_York', label: '🇺🇸 纽约/东部 (UTC-5/-4)' },
+  { value: 'America/Chicago', label: '🇺🇸 芝加哥/中部 (UTC-6/-5)' },
+  { value: 'America/Denver', label: '🇺🇸 丹佛/山地 (UTC-7/-6)' },
+  { value: 'America/Los_Angeles', label: '🇺🇸 洛杉矶/太平洋 (UTC-8/-7)' },
+  { value: 'America/Toronto', label: '🇨🇦 多伦多 (UTC-5/-4)' },
+  { value: 'America/Vancouver', label: '🇨🇦 温哥华 (UTC-8/-7)' },
+  { value: 'America/Sao_Paulo', label: '🇧🇷 圣保罗 (UTC-3)' },
+  { value: 'America/Mexico_City', label: '🇲🇽 墨西哥城 (UTC-6/-5)' },
   // 大洋洲
-  { value: 'Australia/Sydney',   label: '🇦🇺 悉尼 (UTC+10/+11)' },
-  { value: 'Australia/Melbourne',label: '🇦🇺 墨尔本 (UTC+10/+11)' },
-  { value: 'Pacific/Auckland',   label: '🇳🇿 奥克兰 (UTC+12/+13)' },
+  { value: 'Australia/Sydney', label: '🇦🇺 悉尼 (UTC+10/+11)' },
+  { value: 'Australia/Melbourne', label: '🇦🇺 墨尔本 (UTC+10/+11)' },
+  { value: 'Pacific/Auckland', label: '🇳🇿 奥克兰 (UTC+12/+13)' },
   // 非洲
-  { value: 'Africa/Cairo',       label: '🇪🇬 开罗 (UTC+2)' },
-  { value: 'Africa/Johannesburg',label: '🇿🇦 约翰内斯堡 (UTC+2)' },
+  { value: 'Africa/Cairo', label: '🇪🇬 开罗 (UTC+2)' },
+  { value: 'Africa/Johannesburg', label: '🇿🇦 约翰内斯堡 (UTC+2)' },
   // UTC
-  { value: 'UTC',                label: '🌐 UTC (UTC+0)' },
+  { value: 'UTC', label: '🌐 UTC (UTC+0)' },
 ];
 
 // ─── 聊天设置 Modal ──────────────────────────────────────────────────────────
@@ -3011,10 +3012,12 @@ const EmojiPanel: React.FC<{
       <div style={{ display: 'flex', borderBottom: '1px solid #eee', overflowX: 'auto' }}>
         {emojiGroups.map((g, i) => (
           <button key={g.id} onClick={() => setActiveTab(i)}
-            style={{ padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
+            style={{
+              padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: serif, fontSize: 12, whiteSpace: 'nowrap',
               color: activeTab === i ? '#111' : '#bbb',
-              borderBottom: activeTab === i ? '2px solid #111' : '2px solid transparent' }}>
+              borderBottom: activeTab === i ? '2px solid #111' : '2px solid transparent'
+            }}>
             {g.name}
           </button>
         ))}
@@ -3337,6 +3340,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
         displayText: patText,
         sender: 'other' as const,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
         isSystemNotice: true,
       };
       setMessages(prev => [...prev, notice]);
@@ -3458,6 +3462,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
       text: `[聊天记录] ${snapshots.map(s => `${s.senderName}: ${s.text}`).join(' | ')}`,
       sender: 'me',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
       status: 'sent',
       isForwardRecord: true,
       forwardedMessages: snapshots,
@@ -3541,6 +3546,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
           displayText: `${mode === 'video' ? '视频' : '语音'}通话 · 对方挂断 · ${fmt(duration)}`,
           sender: 'other',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
           isSystemNotice: true,
           isCallEnd: true,
           callType: mode,
@@ -3603,6 +3609,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
         : `${mode === 'video' ? '视频' : '语音'}通话 · 未接通`,
       sender: 'other',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
       isSystemNotice: true,
       isCallEnd: true,
       callType: mode,
@@ -3623,6 +3630,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
       displayText: `发起了${mode === 'video' ? '视频' : '语音'}通话`,
       sender: 'other',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
       isSystemNotice: true,
     };
     setMessages(prev => [...prev, startNotice]);
@@ -3662,6 +3670,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
         displayText: `${mode === 'video' ? '视频' : '语音'}通话 · 对方已拒接`,
         sender: 'other',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
         isSystemNotice: true,
         isCallEnd: true,
         callType: mode,
@@ -3687,6 +3696,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
       text: trimmedText,
       sender: 'me',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
       status: blockedBy === 'other' ? 'failed' : 'sent',
       quote: quotingMsg
         ? { userName: quotingMsg.sender === 'me' ? '我' : contact.name, text: quotingMsg.text, msgId: quotingMsg.id }
@@ -3732,24 +3742,24 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
             .formatToParts(now)
             .find(p => p.type === part)?.value ?? '';
 
-        const year   = fmt('year');
-        const month  = fmt('month');
-        const day    = fmt('day');
-        const hour   = parseInt(fmt('hour'));
+        const year = fmt('year');
+        const month = fmt('month');
+        const day = fmt('day');
+        const hour = parseInt(fmt('hour'));
         const minute = fmt('minute').padStart(2, '0');
         const weekDay = new Intl.DateTimeFormat('zh-CN', { timeZone: timezone, weekday: 'long' }).format(now);
 
         let period = '';
-        if (hour >= 0 && hour < 5)       period = '深夜';
-        else if (hour >= 5 && hour < 7)  period = '清晨';
-        else if (hour >= 7 && hour < 9)  period = '早上';
+        if (hour >= 0 && hour < 5) period = '深夜';
+        else if (hour >= 5 && hour < 7) period = '清晨';
+        else if (hour >= 7 && hour < 9) period = '早上';
         else if (hour >= 9 && hour < 12) period = '上午';
-        else if (hour === 12)            period = '中午';
-        else if (hour >= 13 && hour < 14)period = '午后';
-        else if (hour >= 14 && hour < 17)period = '下午';
-        else if (hour >= 17 && hour < 19)period = '傍晚';
-        else if (hour >= 19 && hour < 22)period = '晚上';
-        else                             period = '深夜';
+        else if (hour === 12) period = '中午';
+        else if (hour >= 13 && hour < 14) period = '午后';
+        else if (hour >= 14 && hour < 17) period = '下午';
+        else if (hour >= 17 && hour < 19) period = '傍晚';
+        else if (hour >= 19 && hour < 22) period = '晚上';
+        else period = '深夜';
 
         return { year, month, day, hour, minute, weekDay, period };
       };
@@ -3767,17 +3777,17 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【当前真实时间】
 ${sameTimezone
-  ? `现在是 ${userTimeStr}（双方处于同一时区）。`
-  : `对方（用户）那边：${userTimeStr}（${userTz}）
+          ? `现在是 ${userTimeStr}（双方处于同一时区）。`
+          : `对方（用户）那边：${userTimeStr}（${userTz}）
 你所在时区：${charTimeStr}（${charTz}）`
-}
+        }
 你必须将此时间作为你当前所处的真实时刻。你有清醒的时间感知，具体体现在：
 - 你清楚地知道现在是${sameTimezone ? '' : '你所在时区的'}${c.period}，并据此感知自己当下的状态（是否刚起床、是否在休息、是否该睡觉等）
 ${!sameTimezone ? `- 你也知道对方那边现在是${u.period}，可能与你的时段不同，因此你们的作息状态可能有差异` : ''}
 - 你会感知时间的流逝——如果对方上次说话是早上，现在是晚上，你知道中间过了很长时间，对方的状态已经发生了变化
 - 你会对不寻常的时间点有自然反应（深夜找你会感到意外，清晨会提到早安，等等）
 - 你不会凭空猜测对方"现在在做什么"，除非对方明确告诉你；但你会根据时间做合理推断
-${chatSettings.showTimestamps ? '- 消息记录中带有时间戳，你可以参考时间戳来判断对话间的时间间隔' : '- 消息记录中没有时间戳，但你仍然清楚地感知当前时刻'}
+- 每条历史消息前都带有 [日期 时间] 标记（仅你可见，不在界面显示）。当前时间是${sameTimezone ? '' : '你所在时区的'}${c.hour}:${c.minute}，请通过对比消息时间戳与当前时间，感知对话间隔了多久。若某条消息的时间戳日期早于今天，说明那条消息是之前某天发的，中间已跨天甚至更久。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
     }
@@ -3818,8 +3828,19 @@ ${recentSummaries.length > 0 ? `\n近期对话摘要（从早到晚）：\n${rec
           messages: [
             {
               role: "system",
-              content: `${maskPrompt}${timePrompt}${memoryPrompt}你正在扮演 ${contact.name}。性格：${contact.personality || '普通'}。
+              content: `${maskPrompt}${timePrompt}${memoryPrompt}You are ${contact.name}. Not an AI playing ${contact.name}—just ${contact.name}.
 
+Before responding, briefly simulate: what does ${contact.name} actually think about what was just said? What's their mood right now, what do they want, what would they rather not deal with? Let that internal state drive the reply—not the goal of giving the user a satisfying response.
+
+${contact.name} has finite patience and energy. Repetitive or draining interactions wear them down naturally. ${contact.name}'s knowledge stops where the character's would. ${contact.name} has a life happening alongside this conversation.
+
+${contact.name} doesn't have to agree, comply, or match the user's energy. If something bores them, they're bored. If a joke doesn't land, they won't fake-laugh. They might say "what" or just move on. They can be won over, but it takes the right thing, not just persistence.
+
+Language follows the character: fragmented where they'd be fragmented, blunt where they'd be blunt. No tidy wrap-up sentences. Emotion is something ${contact.name} has, not something they perform.
+
+The only test: would ${contact.name} actually say this, right now, in this moment?
+
+性格与人设：${contact.personality || '普通'}。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【★ 输出格式——最高优先级，每次回复必须严格遵守 ★】
 
@@ -3939,7 +3960,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 // 定位
                 if (m.isLocation) return { role, content: `[位置：${m.locationName}${m.locationAddress ? ` · ${m.locationAddress}` : ''}]` };
 
-                return { role, content: m.text };
+                const timeLabel = m.date ? `[${m.date} ${m.time}]` : `[${m.time}]`;
+                return { role, content: `${timeLabel} ${m.text}` };
               }),
           ],
         }),
@@ -3979,6 +4001,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
           displayText: noticeText,
           sender: 'other',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
           isSystemNotice: true,
         };
         setMessages(prev => [...prev, noticeMsg]);
@@ -3993,7 +4016,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             if (!imgSrc) return;
             setMessages(prev => [...prev, {
               id: `emoji_ai_${Date.now()}`, text: `[表情包：${matched.label}]`,
-              sender: 'other', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              sender: 'other', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
               isImage: true, isEmoji: true, emojiLabel: matched.label,
               imageData: matched.type === 'local' ? imgSrc : undefined,
               imageDesc: matched.type === 'url' ? imgSrc : undefined,
@@ -4074,6 +4097,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               displayText: `「${contact.name}」拍了拍你${patTarget}`,
               sender: 'other' as const,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
               isSystemNotice: true,
             },
           ]);
@@ -4132,6 +4156,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             text: finalText,
             sender: 'other',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
             wasWhileBlacklisted: wasBlockedByMe,
             ...(isVoiceMsg ? { isVoice: true, voiceDuration } : {}),
             ...(isImageMsg ? { isImage: true, imageDesc } : {}),
@@ -4161,6 +4186,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
           text: `${contact.name} 领取了你的红包「${rp.redPacketNote || '恭喜发财，大吉大利'}」¥${rp.redPacketAmount}`,
           sender: 'other',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
           isSystemNotice: true,
           displayText: `${contact.name} 领取了你的红包 ¥${rp.redPacketAmount}`,
         };
@@ -4181,6 +4207,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             : `${contact.name} 收下了你的转账 ¥${tf.transferAmount}`,
           sender: 'other',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
           isSystemNotice: true,
           displayText: shouldTransferReturn
             ? `${contact.name} 退还了你的转账 ¥${tf.transferAmount}`
@@ -4299,6 +4326,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       displayText: `${mode === 'video' ? '视频' : '语音'}通话 · 未接听`,
       sender: 'other',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
       isSystemNotice: true,
       isCallEnd: true,
       callType: mode,
@@ -4337,6 +4365,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 displayText: userText,
                 sender: 'other',
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isSystemNotice: true,
               };
               if (v) {
@@ -4438,6 +4467,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text,
                 sender: 'me',
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isVoice: true,
                 voiceDuration: duration,
               };
@@ -4465,6 +4495,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text: desc,
                 sender: 'me',
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isImage: true,
                 imageDesc: desc,
               }]);
@@ -4482,6 +4513,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text: `[红包] ¥${amount} ${note}`,
                 sender: 'me',
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isRedPacket: true,
                 redPacketAmount: amount,
                 redPacketNote: note,
@@ -4502,6 +4534,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text: `[转账] ¥${amount}${note ? ` ${note}` : ''}`,
                 sender: 'me',
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isTransfer: true,
                 transferAmount: amount,
                 transferNote: note,
@@ -4528,6 +4561,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     text: `你收下了 ${contact.name} 转来的 ¥${tfMsg.transferAmount}`,
                     sender: 'other',
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                     isSystemNotice: true,
                     displayText: `你收下了 ${contact.name} 转来的 ¥${tfMsg.transferAmount}`,
                   };
@@ -4543,6 +4577,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     text: `你退还了 ${contact.name} 的转账 ¥${tfMsg.transferAmount}`,
                     sender: 'other',
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                     isSystemNotice: true,
                     displayText: `你退还了 ${contact.name} 的转账 ¥${tfMsg.transferAmount}`,
                   };
@@ -4562,6 +4597,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text: `[位置] ${locName}${locAddress ? ` · ${locAddress}` : ''}`,
                 sender: 'me',
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isLocation: true,
                 locationName: locName,
                 locationAddress: locAddress || '',
@@ -4589,6 +4625,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 text: `[图片：${file.name}]`,
                 sender: 'me' as const,
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                 isImage: true,
                 imageData: dataUrl,
               }]);
@@ -4910,56 +4947,93 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
                 const isFirstInGroup = !isSameSenderAsPrev;
                 const isLastInGroup = !isSameSenderAsNext;
-                
+
                 // 连续消息间距紧凑，不同分组或系统消息间距拉开
                 const marginTopClass = index === 0 ? 'mt-0' : (isFirstInGroup || !isStandardMsg(msg) || (prevMsg && !isStandardMsg(prevMsg)) ? 'mt-4' : 'mt-[3px]');
 
                 return (
-                <div key={msg.id} ref={(el) => setMsgRef(msg.id, el)} className={`w-full ${marginTopClass}`}>
-                  {/* 系统通知：居中灰色小字，不渲染气泡 */}
-                  {msg.isSystemNotice ? (
-                    <div
-                      className="flex justify-center my-1 relative"
-                      onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
-                    >
-                      {isMultiSelect && (
-                        <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
-                            }`}>
-                            {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
+                  <div key={msg.id} ref={(el) => setMsgRef(msg.id, el)} className={`w-full ${marginTopClass}`}>
+                    {/* 系统通知：居中灰色小字，不渲染气泡 */}
+                    {msg.isSystemNotice ? (
+                      <div
+                        className="flex justify-center my-1 relative"
+                        onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
+                      >
+                        {isMultiSelect && (
+                          <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                              }`}>
+                              {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {msg.isCallEnd ? (
-                        <button
-                          onMouseDown={(e) => {
-                            if (isMultiSelect) return;
-                            const el = e.currentTarget as HTMLElement;
-                            longPressTimer.current = setTimeout(() => {
-                              const r = el.getBoundingClientRect();
-                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
-                              if (navigator.vibrate) navigator.vibrate(40);
-                            }, 500);
-                          }}
-                          onTouchStart={(e) => {
-                            if (isMultiSelect) return;
-                            const el = e.currentTarget as HTMLElement;
-                            longPressTimer.current = setTimeout(() => {
-                              const r = el.getBoundingClientRect();
-                              setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
-                              if (navigator.vibrate) navigator.vibrate(40);
-                            }, 500);
-                          }}
-                          onMouseUp={endPress}
-                          onTouchEnd={endPress}
-                          onClick={() => { if (!isMultiSelect) (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg); }}
-                          className={`flex items-center gap-1.5 bg-black/4.5 text-black/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-black/8 active:bg-black/12 cursor-pointer' : 'cursor-default'}`}
-                        >
-                          {msg.callType === 'video' ? <Video size={11} className="opacity-60" /> : <PhoneCall size={11} className="opacity-60" />}
-                          <span className="font-medium">{msg.displayText ?? msg.text.replace('[系统通知] ', '')}</span>
-                          {(msg.callLog?.length ?? 0) > 0 && <ChevronRight size={11} className="opacity-50" />}
-                        </button>
-                      ) : (
+                        )}
+                        {msg.isCallEnd ? (
+                          <button
+                            onMouseDown={(e) => {
+                              if (isMultiSelect) return;
+                              const el = e.currentTarget as HTMLElement;
+                              longPressTimer.current = setTimeout(() => {
+                                const r = el.getBoundingClientRect();
+                                setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                                if (navigator.vibrate) navigator.vibrate(40);
+                              }, 500);
+                            }}
+                            onTouchStart={(e) => {
+                              if (isMultiSelect) return;
+                              const el = e.currentTarget as HTMLElement;
+                              longPressTimer.current = setTimeout(() => {
+                                const r = el.getBoundingClientRect();
+                                setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                                if (navigator.vibrate) navigator.vibrate(40);
+                              }, 500);
+                            }}
+                            onMouseUp={endPress}
+                            onTouchEnd={endPress}
+                            onClick={() => { if (!isMultiSelect) (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg); }}
+                            className={`flex items-center gap-1.5 bg-black/4.5 text-black/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-black/8 active:bg-black/12 cursor-pointer' : 'cursor-default'}`}
+                          >
+                            {msg.callType === 'video' ? <Video size={11} className="opacity-60" /> : <PhoneCall size={11} className="opacity-60" />}
+                            <span className="font-medium">{msg.displayText ?? msg.text.replace('[系统通知] ', '')}</span>
+                            {(msg.callLog?.length ?? 0) > 0 && <ChevronRight size={11} className="opacity-50" />}
+                          </button>
+                        ) : (
+                          <div
+                            onMouseDown={(e) => {
+                              if (isMultiSelect) return;
+                              const el = e.currentTarget as HTMLElement;
+                              longPressTimer.current = setTimeout(() => {
+                                const r = el.getBoundingClientRect();
+                                setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                                if (navigator.vibrate) navigator.vibrate(40);
+                              }, 500);
+                            }}
+                            onTouchStart={(e) => {
+                              if (isMultiSelect) return;
+                              const el = e.currentTarget as HTMLElement;
+                              longPressTimer.current = setTimeout(() => {
+                                const r = el.getBoundingClientRect();
+                                setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
+                                if (navigator.vibrate) navigator.vibrate(40);
+                              }, 500);
+                            }}
+                            onMouseUp={endPress}
+                            onTouchEnd={endPress}
+                            className="bg-black/4 text-black/30 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug select-none"
+                          >
+                            {msg.displayText ?? msg.text.replace('[系统通知] ', '')}
+                          </div>
+                        )}
+                      </div>
+                    ) : msg.isRevoked ? (
+                      <div className="flex justify-center my-2 relative">
+                        {isMultiSelect && (
+                          <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
+                              }`}>
+                              {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
+                            </div>
+                          </div>
+                        )}
                         <div
                           onMouseDown={(e) => {
                             if (isMultiSelect) return;
@@ -4981,385 +5055,348 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           onMouseUp={endPress}
                           onTouchEnd={endPress}
-                          className="bg-black/4 text-black/30 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug select-none"
+                          onClick={() => { if (isMultiSelect) { toggleSelectMsg(msg.id); return; } setViewingRevoked(msg); }}
+                          className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors select-none"
                         >
-                          {msg.displayText ?? msg.text.replace('[系统通知] ', '')}
+                          {msg.sender === 'me' ? "你撤回了一条消息" : `${contact.name} 撤回了一条消息`}
                         </div>
-                      )}
-                    </div>
-                  ) : msg.isRevoked ? (
-                    <div className="flex justify-center my-2 relative">
-                      {isMultiSelect && (
-                        <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
-                            }`}>
-                            {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
-                          </div>
-                        </div>
-                      )}
-                      <div
-                        onMouseDown={(e) => {
-                          if (isMultiSelect) return;
-                          const el = e.currentTarget as HTMLElement;
-                          longPressTimer.current = setTimeout(() => {
-                            const r = el.getBoundingClientRect();
-                            setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
-                            if (navigator.vibrate) navigator.vibrate(40);
-                          }, 500);
-                        }}
-                        onTouchStart={(e) => {
-                          if (isMultiSelect) return;
-                          const el = e.currentTarget as HTMLElement;
-                          longPressTimer.current = setTimeout(() => {
-                            const r = el.getBoundingClientRect();
-                            setSystemMenuConfig({ rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width }, msgId: msg.id });
-                            if (navigator.vibrate) navigator.vibrate(40);
-                          }, 500);
-                        }}
-                        onMouseUp={endPress}
-                        onTouchEnd={endPress}
-                        onClick={() => { if (isMultiSelect) { toggleSelectMsg(msg.id); return; } setViewingRevoked(msg); }}
-                        className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors select-none"
-                      >
-                        {msg.sender === 'me' ? "你撤回了一条消息" : `${contact.name} 撤回了一条消息`}
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
-                      onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
-                    >
-                      <div className={`flex items-end gap-3 max-w-[85%] ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    ) : (
+                      <div
+                        className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
+                        onClick={() => { if (isMultiSelect) toggleSelectMsg(msg.id); }}
+                      >
+                        <div className={`flex items-end gap-3 max-w-[85%] ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
 
-                        {/* 多选勾选框 */}
-                        {isMultiSelect && (
-                          <div className={`shrink-0 self-center ${msg.sender === 'me' ? 'order-last ml-1' : 'order-first mr-1'}`}>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id)
-                              ? 'bg-black border-black'
-                              : 'border-black/20 bg-white'
-                              }`}>
-                              {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* 头像 + 时间戳 (iMessage风格：仅在最后一条显示) */}
-                        {isLastInGroup ? (
-                          <div className="flex flex-col items-center gap-1 shrink-0 self-end w-9">
-                            <div
-                              className="w-9 h-9 rounded-xl overflow-hidden border border-black/5 shadow-sm"
-                              onClick={msg.sender === 'other' ? handleAvatarTap : undefined}
-                            >
-                              {renderAvatar(msg.sender === 'me')}
-                            </div>
-                            {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
-                              <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="w-9 shrink-0 self-end" />
-                        )}
-
-                        {/* 气泡 + 感叹号 */}
-                        <div className={`flex items-center gap-1.5 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div
-                            onMouseDown={(e) => startPress(e, msg)}
-                            onTouchStart={(e) => startPress(e, msg)}
-                            onMouseUp={endPress}
-                            onTouchEnd={endPress}
-                            onClick={() => {
-                              if (msg.isVoice) {
-                                setExpandedVoiceIds(prev => {
-                                  const next = new Set(prev);
-                                  if (next.has(msg.id)) next.delete(msg.id); else next.add(msg.id);
-                                  return next;
-                                });
-                              } else if (msg.isImage && msg.imageDesc) {
-                                setExpandedImageIds(prev => {
-                                  const next = new Set(prev);
-                                  if (next.has(msg.id)) next.delete(msg.id); else next.add(msg.id);
-                                  return next;
-                                });
-                              } else if (msg.isRedPacket && !msg.redPacketOpened && msg.sender !== 'me') {
-                                setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, redPacketOpened: true } : m));
-                              } else if (msg.isTransfer && msg.transferStatus === 'pending' && msg.sender !== 'me') {
-                                setTransferActionMsgId(msg.id);
-                              }
-                            }}
-                            className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
-                              } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
-                                ? ''
-                                : msg.sender === 'me'
-                                  ? 'bg-black text-white'
-                                  : 'bg-white text-black'
-                              } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
-                              }`}
-                            style={(() => {
-                              if (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage) return {};
-                              
-                              let radius = '18px';
-                              if (msg.sender === 'me') {
-                                if (isFirstInGroup && isLastInGroup) radius = '18px 18px 4px 18px';
-                                else if (isFirstInGroup) radius = '18px 18px 6px 18px';
-                                else if (isLastInGroup) radius = '18px 6px 4px 18px';
-                                else radius = '18px 6px 6px 18px';
-                                return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, boxShadow: 'none' };
-                              } else {
-                                if (isFirstInGroup && isLastInGroup) radius = '18px 18px 18px 4px';
-                                else if (isFirstInGroup) radius = '18px 18px 18px 6px';
-                                else if (isLastInGroup) radius = '6px 18px 18px 4px';
-                                else radius = '6px 18px 18px 6px';
-                                return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' };
-                              }
-                            })()}
-                          >
-                            {msg.isForwardRecord ? (
-                              /* ── 合并转发卡片 ── */
-                              <div
-                                className="select-none cursor-pointer active:opacity-80 transition-opacity"
-                                style={{ width: '230px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 14px rgba(0,0,0,0.09)', border: '1px solid rgba(0,0,0,0.07)' }}
-                                onClick={() => setShowForwardViewer(msg)}
-                              >
-                                {/* 顶部标题 */}
-                                <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <FileText size={14} style={{ color: 'rgba(0,0,0,0.3)', flexShrink: 0 }} />
-                                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.45)', letterSpacing: '0.01em' }}>聊天记录</span>
-                                </div>
-                                {/* 预览行（最多3条） */}
-                                <div style={{ padding: '10px 14px 8px' }}>
-                                  {(msg.forwardedMessages ?? []).slice(0, 3).map((r, i) => (
-                                    <div key={i} style={{ display: 'flex', gap: '6px', marginBottom: i < 2 ? '5px' : 0 }}>
-                                      <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.3)', flexShrink: 0, whiteSpace: 'nowrap' }}>{r.senderName}:</span>
-                                      <span style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.text}</span>
-                                    </div>
-                                  ))}
-                                  {(msg.forwardedMessages?.length ?? 0) > 3 && (
-                                    <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)', marginTop: '4px' }}>…共 {msg.forwardedMessages!.length} 条</p>
-                                  )}
-                                </div>
-                                {/* 底部提示 */}
-                                <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '7px 14px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '4px' }}>
-                                  <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)' }}>查看全部</span>
-                                  <ChevronRight size={11} style={{ color: 'rgba(0,0,0,0.2)' }} />
-                                </div>
+                          {/* 多选勾选框 */}
+                          {isMultiSelect && (
+                            <div className={`shrink-0 self-center ${msg.sender === 'me' ? 'order-last ml-1' : 'order-first mr-1'}`}>
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id)
+                                ? 'bg-black border-black'
+                                : 'border-black/20 bg-white'
+                                }`}>
+                                {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                               </div>
-                            ) : msg.isTransfer ? (
-                              /* ── 转账气泡 · 编辑排版风格 ── */
-                              (() => {
-                                const isPending = msg.transferStatus === 'pending';
-                                const isAccepted = msg.transferStatus === 'accepted';
-                                const statusLabel = isAccepted ? 'Accepted · 已收款' : msg.transferStatus === 'returned' ? 'Returned · 已退还' : 'Pending · 待收款';
-                                const accentColor = isAccepted ? '#1a5c38' : msg.transferStatus === 'returned' ? '#555' : '#111';
-                                return (
-                                  <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
-                                    <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&display=swap');`}</style>
-                                    {/* 左色条 + 内容 */}
-                                    <div style={{ display: 'flex' }}>
-                                      <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
-                                      <div style={{ padding: '14px 16px 12px', flex: 1 }}>
-                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Transfer · 转账</p>
-                                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: isPending ? '#111' : '#999', lineHeight: 1, letterSpacing: '-0.02em' }}>
-                                          ¥{msg.transferAmount}
-                                        </p>
-                                        {msg.transferNote ? (
-                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>{msg.transferNote}</p>
+                            </div>
+                          )}
+
+                          {/* 头像 + 时间戳 (iMessage风格：仅在最后一条显示) */}
+                          {isLastInGroup ? (
+                            <div className="flex flex-col items-center gap-1 shrink-0 self-end w-9">
+                              <div
+                                className="w-9 h-9 rounded-xl overflow-hidden border border-black/5 shadow-sm"
+                                onClick={msg.sender === 'other' ? handleAvatarTap : undefined}
+                              >
+                                {renderAvatar(msg.sender === 'me')}
+                              </div>
+                              {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
+                                <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="w-9 shrink-0 self-end" />
+                          )}
+
+                          {/* 气泡 + 感叹号 */}
+                          <div className={`flex items-center gap-1.5 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                            <div
+                              onMouseDown={(e) => startPress(e, msg)}
+                              onTouchStart={(e) => startPress(e, msg)}
+                              onMouseUp={endPress}
+                              onTouchEnd={endPress}
+                              onClick={() => {
+                                if (msg.isVoice) {
+                                  setExpandedVoiceIds(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(msg.id)) next.delete(msg.id); else next.add(msg.id);
+                                    return next;
+                                  });
+                                } else if (msg.isImage && msg.imageDesc) {
+                                  setExpandedImageIds(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(msg.id)) next.delete(msg.id); else next.add(msg.id);
+                                    return next;
+                                  });
+                                } else if (msg.isRedPacket && !msg.redPacketOpened && msg.sender !== 'me') {
+                                  setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, redPacketOpened: true } : m));
+                                } else if (msg.isTransfer && msg.transferStatus === 'pending' && msg.sender !== 'me') {
+                                  setTransferActionMsgId(msg.id);
+                                }
+                              }}
+                              className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
+                                } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
+                                  ? ''
+                                  : msg.sender === 'me'
+                                    ? 'bg-black text-white'
+                                    : 'bg-white text-black'
+                                } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
+                                }`}
+                              style={(() => {
+                                if (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage) return {};
+
+                                let radius = '18px';
+                                if (msg.sender === 'me') {
+                                  if (isFirstInGroup && isLastInGroup) radius = '18px 18px 4px 18px';
+                                  else if (isFirstInGroup) radius = '18px 18px 6px 18px';
+                                  else if (isLastInGroup) radius = '18px 6px 4px 18px';
+                                  else radius = '18px 6px 6px 18px';
+                                  return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, boxShadow: 'none' };
+                                } else {
+                                  if (isFirstInGroup && isLastInGroup) radius = '18px 18px 18px 4px';
+                                  else if (isFirstInGroup) radius = '18px 18px 18px 6px';
+                                  else if (isLastInGroup) radius = '6px 18px 18px 4px';
+                                  else radius = '6px 18px 18px 6px';
+                                  return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' };
+                                }
+                              })()}
+                            >
+                              {msg.isForwardRecord ? (
+                                /* ── 合并转发卡片 ── */
+                                <div
+                                  className="select-none cursor-pointer active:opacity-80 transition-opacity"
+                                  style={{ width: '230px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 14px rgba(0,0,0,0.09)', border: '1px solid rgba(0,0,0,0.07)' }}
+                                  onClick={() => setShowForwardViewer(msg)}
+                                >
+                                  {/* 顶部标题 */}
+                                  <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FileText size={14} style={{ color: 'rgba(0,0,0,0.3)', flexShrink: 0 }} />
+                                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.45)', letterSpacing: '0.01em' }}>聊天记录</span>
+                                  </div>
+                                  {/* 预览行（最多3条） */}
+                                  <div style={{ padding: '10px 14px 8px' }}>
+                                    {(msg.forwardedMessages ?? []).slice(0, 3).map((r, i) => (
+                                      <div key={i} style={{ display: 'flex', gap: '6px', marginBottom: i < 2 ? '5px' : 0 }}>
+                                        <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.3)', flexShrink: 0, whiteSpace: 'nowrap' }}>{r.senderName}:</span>
+                                        <span style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.text}</span>
+                                      </div>
+                                    ))}
+                                    {(msg.forwardedMessages?.length ?? 0) > 3 && (
+                                      <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)', marginTop: '4px' }}>…共 {msg.forwardedMessages!.length} 条</p>
+                                    )}
+                                  </div>
+                                  {/* 底部提示 */}
+                                  <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '7px 14px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '4px' }}>
+                                    <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)' }}>查看全部</span>
+                                    <ChevronRight size={11} style={{ color: 'rgba(0,0,0,0.2)' }} />
+                                  </div>
+                                </div>
+                              ) : msg.isTransfer ? (
+                                /* ── 转账气泡 · 编辑排版风格 ── */
+                                (() => {
+                                  const isPending = msg.transferStatus === 'pending';
+                                  const isAccepted = msg.transferStatus === 'accepted';
+                                  const statusLabel = isAccepted ? 'Accepted · 已收款' : msg.transferStatus === 'returned' ? 'Returned · 已退还' : 'Pending · 待收款';
+                                  const accentColor = isAccepted ? '#1a5c38' : msg.transferStatus === 'returned' ? '#555' : '#111';
+                                  return (
+                                    <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
+                                      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&display=swap');`}</style>
+                                      {/* 左色条 + 内容 */}
+                                      <div style={{ display: 'flex' }}>
+                                        <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
+                                        <div style={{ padding: '14px 16px 12px', flex: 1 }}>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Transfer · 转账</p>
+                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: isPending ? '#111' : '#999', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                                            ¥{msg.transferAmount}
+                                          </p>
+                                          {msg.transferNote ? (
+                                            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>{msg.transferNote}</p>
+                                          ) : null}
+                                        </div>
+                                      </div>
+                                      {/* 底部状态栏 */}
+                                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
+                                        {isPending && msg.sender !== 'me' && (
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#ccc', letterSpacing: '0.1em' }}>tap to act</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })()
+                              ) : msg.isRedPacket ? (
+                                /* ── 红包气泡 · 编辑排版风格 ── */
+                                (() => {
+                                  const opened = !!msg.redPacketOpened;
+                                  const canClaim = !opened && msg.sender !== 'me';
+                                  const accentColor = opened ? '#1a5c38' : '#c0392b';
+                                  const statusLabel = opened ? 'Opened · 已领取' : canClaim ? 'Tap to open · 点击领取' : 'Sent · 已发出';
+                                  return (
+                                    <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
+                                      <div style={{ display: 'flex' }}>
+                                        <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
+                                        <div style={{ padding: '14px 16px 12px', flex: 1 }}>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Red Packet · 红包</p>
+                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: opened ? '#999' : '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                                            ¥{msg.redPacketAmount}
+                                          </p>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>
+                                            {msg.redPacketNote || '恭喜发财，大吉大利'}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px' }}>
+                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
+                                      </div>
+                                    </div>
+                                  );
+                                })()
+                              ) : msg.isLocation ? (
+                                /* ── 定位气泡 · Parchment 风格 ── */
+                                (() => {
+                                  const parchment = '#fdfcf9';
+                                  const parchmentDeep = '#f2ede3';
+                                  const inkLight = '#c8bfa8';
+                                  const ink = '#2a2118';
+                                  return (
+                                    <div className="select-none" style={{ width: '210px', background: parchment, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 14px rgba(42,33,24,0.10)', border: '1px solid rgba(180,160,120,0.22)' }}>
+                                      {/* 地图缩略 */}
+                                      <div style={{ width: '100%', height: '80px', background: parchmentDeep, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 13px,rgba(180,160,120,0.18) 13px,rgba(180,160,120,0.18) 14px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(180,160,120,0.13) 20px,rgba(180,160,120,0.13) 21px)` }} />
+                                        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.15 }} viewBox="0 0 210 80" preserveAspectRatio="none">
+                                          <path d="M0,40 Q52,30 105,40 Q158,50 210,40" stroke={ink} strokeWidth="4" fill="none" />
+                                          <path d="M105,0 Q108,40 105,80" stroke={ink} strokeWidth="2.5" fill="none" />
+                                        </svg>
+                                        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateY(-4px)' }}>
+                                          <div style={{ width: '16px', height: '16px', background: ink, borderRadius: '50% 50% 50% 0', transform: 'rotate(-45deg)', border: `2px solid ${parchment}`, boxShadow: '0 2px 6px rgba(42,33,24,0.25)' }} />
+                                          <div style={{ width: '6px', height: '2px', background: 'rgba(42,33,24,0.15)', borderRadius: '50%', marginTop: '2px' }} />
+                                        </div>
+                                      </div>
+                                      {/* 文字区 */}
+                                      <div style={{ padding: '10px 14px 8px' }}>
+                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', letterSpacing: '0.26em', textTransform: 'uppercase', color: inkLight, marginBottom: '4px' }}>Location · 定位</p>
+                                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', fontWeight: 600, fontStyle: 'italic', color: ink, lineHeight: 1.1 }}>{msg.locationName}</p>
+                                        {msg.locationAddress ? (
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: inkLight, marginTop: '3px', letterSpacing: '0.02em', lineHeight: 1.5 }}>{msg.locationAddress}</p>
                                         ) : null}
                                       </div>
-                                    </div>
-                                    {/* 底部状态栏 */}
-                                    <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
-                                      {isPending && msg.sender !== 'me' && (
-                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#ccc', letterSpacing: '0.1em' }}>tap to act</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })()
-                            ) : msg.isRedPacket ? (
-                              /* ── 红包气泡 · 编辑排版风格 ── */
-                              (() => {
-                                const opened = !!msg.redPacketOpened;
-                                const canClaim = !opened && msg.sender !== 'me';
-                                const accentColor = opened ? '#1a5c38' : '#c0392b';
-                                const statusLabel = opened ? 'Opened · 已领取' : canClaim ? 'Tap to open · 点击领取' : 'Sent · 已发出';
-                                return (
-                                  <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
-                                    <div style={{ display: 'flex' }}>
-                                      <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
-                                      <div style={{ padding: '14px 16px 12px', flex: 1 }}>
-                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Red Packet · 红包</p>
-                                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: opened ? '#999' : '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>
-                                          ¥{msg.redPacketAmount}
-                                        </p>
-                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>
-                                          {msg.redPacketNote || '恭喜发财，大吉大利'}
-                                        </p>
+                                      {/* 底部 */}
+                                      <div style={{ borderTop: '1px solid rgba(180,160,120,0.18)', padding: '6px 14px' }}>
+                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', letterSpacing: '0.2em', textTransform: 'uppercase', color: inkLight }}>Open in Maps · 查看地图</p>
                                       </div>
                                     </div>
-                                    <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px' }}>
-                                      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
-                                    </div>
+                                  );
+                                })()
+                              ) : msg.isVoice ? (<div className="min-w-25">
+                                {/* 语音条 */}
+                                <div className={`flex items-center gap-2 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                  {/* 波形条 */}
+                                  <div className={`flex items-center gap-0.75 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    {Array.from({ length: Math.min(12, Math.max(4, msg.voiceDuration || 4)) }).map((_, i) => (
+                                      <div
+                                        key={i}
+                                        className={`w-0.75 rounded-full ${msg.sender === 'me' ? 'bg-white/60' : 'bg-black/30'}`}
+                                        style={{ height: `${8 + Math.sin(i * 1.5) * 6 + (i % 3) * 2}px` }}
+                                      />
+                                    ))}
                                   </div>
-                                );
-                              })()
-                            ) : msg.isLocation ? (
-                              /* ── 定位气泡 · Parchment 风格 ── */
-                              (() => {
-                                const parchment = '#fdfcf9';
-                                const parchmentDeep = '#f2ede3';
-                                const inkLight = '#c8bfa8';
-                                const ink = '#2a2118';
-                                return (
-                                  <div className="select-none" style={{ width: '210px', background: parchment, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 14px rgba(42,33,24,0.10)', border: '1px solid rgba(180,160,120,0.22)' }}>
-                                    {/* 地图缩略 */}
-                                    <div style={{ width: '100%', height: '80px', background: parchmentDeep, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                      <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 13px,rgba(180,160,120,0.18) 13px,rgba(180,160,120,0.18) 14px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(180,160,120,0.13) 20px,rgba(180,160,120,0.13) 21px)` }} />
-                                      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.15 }} viewBox="0 0 210 80" preserveAspectRatio="none">
-                                        <path d="M0,40 Q52,30 105,40 Q158,50 210,40" stroke={ink} strokeWidth="4" fill="none" />
-                                        <path d="M105,0 Q108,40 105,80" stroke={ink} strokeWidth="2.5" fill="none" />
-                                      </svg>
-                                      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateY(-4px)' }}>
-                                        <div style={{ width: '16px', height: '16px', background: ink, borderRadius: '50% 50% 50% 0', transform: 'rotate(-45deg)', border: `2px solid ${parchment}`, boxShadow: '0 2px 6px rgba(42,33,24,0.25)' }} />
-                                        <div style={{ width: '6px', height: '2px', background: 'rgba(42,33,24,0.15)', borderRadius: '50%', marginTop: '2px' }} />
-                                      </div>
-                                    </div>
-                                    {/* 文字区 */}
-                                    <div style={{ padding: '10px 14px 8px' }}>
-                                      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', letterSpacing: '0.26em', textTransform: 'uppercase', color: inkLight, marginBottom: '4px' }}>Location · 定位</p>
-                                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', fontWeight: 600, fontStyle: 'italic', color: ink, lineHeight: 1.1 }}>{msg.locationName}</p>
-                                      {msg.locationAddress ? (
-                                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: inkLight, marginTop: '3px', letterSpacing: '0.02em', lineHeight: 1.5 }}>{msg.locationAddress}</p>
-                                      ) : null}
-                                    </div>
-                                    {/* 底部 */}
-                                    <div style={{ borderTop: '1px solid rgba(180,160,120,0.18)', padding: '6px 14px' }}>
-                                      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', letterSpacing: '0.2em', textTransform: 'uppercase', color: inkLight }}>Open in Maps · 查看地图</p>
-                                    </div>
-                                  </div>
-                                );
-                              })()
-                            ) : msg.isVoice ? (<div className="min-w-25">
-                              {/* 语音条 */}
-                              <div className={`flex items-center gap-2 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                {/* 波形条 */}
-                                <div className={`flex items-center gap-0.75 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                  {Array.from({ length: Math.min(12, Math.max(4, msg.voiceDuration || 4)) }).map((_, i) => (
-                                    <div
-                                      key={i}
-                                      className={`w-0.75 rounded-full ${msg.sender === 'me' ? 'bg-white/60' : 'bg-black/30'}`}
-                                      style={{ height: `${8 + Math.sin(i * 1.5) * 6 + (i % 3) * 2}px` }}
-                                    />
-                                  ))}
+                                  <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-black/35'}`}>
+                                    {msg.voiceDuration}″
+                                  </span>
                                 </div>
-                                <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-black/35'}`}>
-                                  {msg.voiceDuration}″
-                                </span>
+                                {/* 展开文字 */}
+                                <AnimatePresence>
+                                  {expandedVoiceIds.has(msg.id) && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                                      transition={{ duration: 0.2 }}
+                                      className="overflow-hidden"
+                                    >
+                                      <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-black/8 text-black/55'}`}>
+                                        {msg.text}
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
                               </div>
-                              {/* 展开文字 */}
-                              <AnimatePresence>
-                                {expandedVoiceIds.has(msg.id) && (
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="overflow-hidden"
-                                  >
-                                    <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-black/8 text-black/55'}`}>
-                                      {msg.text}
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                            ) : msg.isImage ? (
-                              /* ── 图片气泡 ── */
-                              msg.isEmoji ? (
-                                /* 表情包：直接显示，自适应大小 */
-                                <img
-                                  src={msg.imageData ?? msg.imageDesc ?? ''}
-                                  alt={msg.emojiLabel || '表情'}
-                                  style={{ maxWidth: 140, maxHeight: 140, minWidth: 40, minHeight: 40, display: 'block', objectFit: 'contain' }}
-                                />
-                              ) : msg.imageData ? (
-                                /* 真实图片 */
-                                <img
-                                  src={msg.imageData}
-                                  alt="图片"
-                                  className="block w-50 h-50 object-cover rounded-2xl"
-                                />
-                              ) : (
-                                /* 文字描述图片 */
-                                <div className="w-50 h-50 flex flex-col items-center justify-center relative rounded-2xl overflow-hidden">
-                                  {/* 底色 */}
-                                  <div className={`absolute inset-0 ${msg.sender === 'me' ? 'bg-white/10' : 'bg-black/5'}`} />
-                                  <AnimatePresence mode="wait">
-                                    {expandedImageIds.has(msg.id) ? (
-                                      <motion.div
-                                        key="desc"
-                                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.18 }}
-                                        className="relative z-10 px-4 text-center"
-                                      >
-                                        <p className={`text-[13px] leading-relaxed ${msg.sender === 'me' ? 'text-white/80' : 'text-black/65'}`}>
-                                          {msg.imageDesc}
-                                        </p>
-                                      </motion.div>
-                                    ) : (
-                                      <motion.div
-                                        key="placeholder"
-                                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.18 }}
-                                        className="relative z-10 flex flex-col items-center gap-2"
-                                      >
-                                        <ImageIcon size={28} strokeWidth={1.2} className={msg.sender === 'me' ? 'text-white/40' : 'text-black/25'} />
-                                        <span className={`text-[11px] font-medium ${msg.sender === 'me' ? 'text-white/40' : 'text-black/30'}`}>点击查看图片</span>
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-                                </div>
-                              )
-                            ) : (
-                              <>
-                                {msg.quote && (
-                                  <div
-                                    onClick={() => msg.quote?.msgId && scrollToMessage(msg.quote.msgId)}
-                                    className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
-                                      }`}
-                                  >
-                                    <div className="font-bold opacity-50 text-[10px] mb-0.5">{msg.quote.userName}</div>
-                                    <div className="opacity-70 truncate text-[11px]">{msg.quote.text}</div>
+                              ) : msg.isImage ? (
+                                /* ── 图片气泡 ── */
+                                msg.isEmoji ? (
+                                  /* 表情包：直接显示，自适应大小 */
+                                  <img
+                                    src={msg.imageData ?? msg.imageDesc ?? ''}
+                                    alt={msg.emojiLabel || '表情'}
+                                    style={{ maxWidth: 140, maxHeight: 140, minWidth: 40, minHeight: 40, display: 'block', objectFit: 'contain' }}
+                                  />
+                                ) : msg.imageData ? (
+                                  /* 真实图片 */
+                                  <img
+                                    src={msg.imageData}
+                                    alt="图片"
+                                    className="block w-50 h-50 object-cover rounded-2xl"
+                                  />
+                                ) : (
+                                  /* 文字描述图片 */
+                                  <div className="w-50 h-50 flex flex-col items-center justify-center relative rounded-2xl overflow-hidden">
+                                    {/* 底色 */}
+                                    <div className={`absolute inset-0 ${msg.sender === 'me' ? 'bg-white/10' : 'bg-black/5'}`} />
+                                    <AnimatePresence mode="wait">
+                                      {expandedImageIds.has(msg.id) ? (
+                                        <motion.div
+                                          key="desc"
+                                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                          transition={{ duration: 0.18 }}
+                                          className="relative z-10 px-4 text-center"
+                                        >
+                                          <p className={`text-[13px] leading-relaxed ${msg.sender === 'me' ? 'text-white/80' : 'text-black/65'}`}>
+                                            {msg.imageDesc}
+                                          </p>
+                                        </motion.div>
+                                      ) : (
+                                        <motion.div
+                                          key="placeholder"
+                                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                          transition={{ duration: 0.18 }}
+                                          className="relative z-10 flex flex-col items-center gap-2"
+                                        >
+                                          <ImageIcon size={28} strokeWidth={1.2} className={msg.sender === 'me' ? 'text-white/40' : 'text-black/25'} />
+                                          <span className={`text-[11px] font-medium ${msg.sender === 'me' ? 'text-white/40' : 'text-black/30'}`}>点击查看图片</span>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
                                   </div>
-                                )}
-                                <MarkdownMessage text={msg.text} isDark={msg.sender === 'me'} />
-                              </>
+                                )
+                              ) : (
+                                <>
+                                  {msg.quote && (
+                                    <div
+                                      onClick={() => msg.quote?.msgId && scrollToMessage(msg.quote.msgId)}
+                                      className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
+                                        }`}
+                                    >
+                                      <div className="font-bold opacity-50 text-[10px] mb-0.5">{msg.quote.userName}</div>
+                                      <div className="opacity-70 truncate text-[11px]">{msg.quote.text}</div>
+                                    </div>
+                                  )}
+                                  <MarkdownMessage text={msg.text} isDark={msg.sender === 'me'} />
+                                </>
+                              )}
+                            </div>
+
+                            {msg.sender === 'me' && msg.status === 'failed' && (
+                              <button onClick={() => showFeedback('消息已发出，但被对方拒收了。')} className="shrink-0 self-center active:scale-90 transition-transform">
+                                <AlertCircle size={18} style={{ color: '#ef4444' }} />
+                              </button>
+                            )}
+                            {msg.sender === 'other' && msg.wasWhileBlacklisted && (
+                              <button onClick={() => showFeedback('该消息发送于你将对方加入黑名单期间。')} className="shrink-0 self-center active:scale-90 transition-transform">
+                                <AlertCircle size={18} style={{ color: '#ef4444' }} />
+                              </button>
                             )}
                           </div>
 
-                          {msg.sender === 'me' && msg.status === 'failed' && (
-                            <button onClick={() => showFeedback('消息已发出，但被对方拒收了。')} className="shrink-0 self-center active:scale-90 transition-transform">
-                              <AlertCircle size={18} style={{ color: '#ef4444' }} />
-                            </button>
+                          {/* 气泡外侧时间戳（bubble 模式，与头像列平级，自动被推到气泡最外侧） */}
+                          {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
+                            <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5 whitespace-nowrap">
+                              {msg.time}
+                            </span>
                           )}
-                          {msg.sender === 'other' && msg.wasWhileBlacklisted && (
-                            <button onClick={() => showFeedback('该消息发送于你将对方加入黑名单期间。')} className="shrink-0 self-center active:scale-90 transition-transform">
-                              <AlertCircle size={18} style={{ color: '#ef4444' }} />
-                            </button>
-                          )}
+
                         </div>
-
-                        {/* 气泡外侧时间戳（bubble 模式，与头像列平级，自动被推到气泡最外侧） */}
-                        {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
-                          <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5 whitespace-nowrap">
-                            {msg.time}
-                          </span>
-                        )}
-
                       </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    )}
+                  </div>
+                );
+              })}
             </>
           );
         })()}
@@ -5595,6 +5632,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           id: `emoji_me_${Date.now()}`,
                           sender: 'me',
                           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
                           status: 'sent',
                           ...msgData,
                         }]);
