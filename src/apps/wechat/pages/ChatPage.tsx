@@ -179,11 +179,11 @@ const Switch = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
     className="relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
     style={{ WebkitTapHighlightColor: 'transparent' }}
   >
-    <div className={`absolute inset-0 rounded-full ${checked ? 'bg-zinc-800' : 'bg-white/10'} transition-colors duration-200`} />
+    <div className={`absolute inset-0 rounded-full ${checked ? 'bg-zinc-800' : 'bg-black/10'} transition-colors duration-200`} />
     <motion.div
       layout
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-      className="relative w-5 h-5 bg-white rounded-full shadow-sm border border-white/5"
+      className="relative w-5 h-5 bg-white rounded-full shadow-sm border border-black/5"
       style={{ x: checked ? 22 : 2 }}
     />
   </button>
@@ -192,17 +192,17 @@ const Switch = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 // ─── 通用确认弹窗 ────────────────────────────────────────────────────────────
 const ConfirmActionModal = ({ title, desc, confirmText, isDanger, onConfirm, onCancel }: any) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-600 flex items-center justify-center px-10 bg-black/60 backdrop-blur-md" onClick={onCancel}>
-    <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-[#1a1a1a] rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-white/8" onClick={e => e.stopPropagation()}>
+    <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-black/5" onClick={e => e.stopPropagation()}>
       <div className="p-8 flex flex-col items-center text-center">
         <div className={`w-16 h-16 ${isDanger ? 'bg-red-50 text-red-500' : 'bg-amber-50 text-amber-500'} rounded-full flex items-center justify-center mb-4`}>
           {isDanger ? <UserMinus size={28} /> : <Eraser size={28} />}
         </div>
-        <h3 className="font-bold text-white/85 text-lg mb-2">{title}</h3>
-        <p className="text-white/40 text-sm leading-relaxed">{desc}</p>
+        <h3 className="font-bold text-gray-800 text-lg mb-2">{title}</h3>
+        <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
       </div>
-      <div className="flex border-t border-white/6">
-        <button onClick={onCancel} className="flex-1 py-4 font-bold text-white/30 border-r border-white/6 active:bg-white/5 transition-colors">取消</button>
-        <button onClick={onConfirm} className={`flex-1 py-4 font-bold ${isDanger ? 'text-red-400' : 'text-amber-400'} active:bg-white/5 transition-colors`}>{confirmText}</button>
+      <div className="flex border-t border-gray-100">
+        <button onClick={onCancel} className="flex-1 py-4 font-bold text-gray-400 border-r border-gray-100 active:bg-gray-50 transition-colors">取消</button>
+        <button onClick={onConfirm} className={`flex-1 py-4 font-bold ${isDanger ? 'text-red-500' : 'text-amber-600'} active:bg-gray-50 transition-colors`}>{confirmText}</button>
       </div>
     </motion.div>
   </motion.div>
@@ -228,22 +228,22 @@ const SearchModal = ({ messages, contactName, onClose, onJump }: {
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: 'tween', duration: 0.3 }}
-      className="fixed inset-0 z-200 flex flex-col" style={{ background: '#0d0d0d' }}
+      className="fixed inset-0 z-200 bg-[#F7F7F7] flex flex-col"
     >
       {/* 头部 */}
-      <div className="px-4 pt-4 pb-3 bg-[#111] border-b border-white/6 flex items-center gap-2">
-        <button onClick={onClose} className="p-2 -ml-2 text-white/40"><ChevronLeft size={24} /></button>
-        <div className="flex-1 bg-[#1a1a1a]/5 rounded-xl px-3 py-2 flex items-center gap-2">
-          <Search size={16} className="text-white/30 shrink-0" />
+      <div className="px-4 pt-4 pb-3 bg-white border-b border-black/3 flex items-center gap-2">
+        <button onClick={onClose} className="p-2 -ml-2 text-black/40"><ChevronLeft size={24} /></button>
+        <div className="flex-1 bg-black/5 rounded-xl px-3 py-2 flex items-center gap-2">
+          <Search size={16} className="text-black/30 shrink-0" />
           <input
             ref={inputRef}
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="搜索聊天记录..."
-            className="flex-1 bg-transparent outline-none text-sm text-white/70 placeholder:text-white/20"
+            className="flex-1 bg-transparent outline-none text-sm text-black/70 placeholder:text-black/20"
           />
           {query && (
-            <button onClick={() => setQuery('')}><X size={14} className="text-white/30" /></button>
+            <button onClick={() => setQuery('')}><X size={14} className="text-black/30" /></button>
           )}
         </div>
       </div>
@@ -251,31 +251,31 @@ const SearchModal = ({ messages, contactName, onClose, onJump }: {
       {/* 结果列表 */}
       <div className="flex-1 overflow-y-auto">
         {query.trim() === '' ? (
-          <div className="flex flex-col items-center justify-center h-64 text-white/20">
+          <div className="flex flex-col items-center justify-center h-64 text-black/20">
             <Search size={40} className="mb-3 opacity-30" />
             <p className="text-sm">输入关键词搜索消息</p>
           </div>
         ) : results.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-white/20">
+          <div className="flex flex-col items-center justify-center h-64 text-black/20">
             <MessageSquare size={40} className="mb-3 opacity-30" />
             <p className="text-sm">没有找到相关消息</p>
           </div>
         ) : (
           <div className="py-2">
-            <div className="px-5 py-2 text-[11px] font-bold text-white/20 uppercase tracking-widest">
+            <div className="px-5 py-2 text-[11px] font-bold text-black/20 uppercase tracking-widest">
               找到 {results.length} 条结果
             </div>
             {results.map(msg => (
               <button
                 key={msg.id}
                 onClick={() => { onJump(msg.id); onClose(); }}
-                className="w-full bg-white px-5 py-4 flex flex-col items-start text-left border-b border-white/3 active:bg-white/2 transition-colors"
+                className="w-full bg-white px-5 py-4 flex flex-col items-start text-left border-b border-black/3 active:bg-black/2 transition-colors"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[11px] font-bold text-white/30">
+                  <span className="text-[11px] font-bold text-black/30">
                     {msg.sender === 'me' ? '我' : contactName}
                   </span>
-                  <span className="text-[10px] text-white/20">{msg.time}</span>
+                  <span className="text-[10px] text-black/20">{msg.time}</span>
                 </div>
                 {/* 高亮关键词 */}
                 <HighlightText text={msg.text} query={query} />
@@ -290,13 +290,13 @@ const SearchModal = ({ messages, contactName, onClose, onJump }: {
 
 // 高亮关键词组件
 const HighlightText = ({ text, query }: { text: string; query: string }) => {
-  if (!query) return <span className="text-sm text-white/70 line-clamp-2">{text}</span>;
+  if (!query) return <span className="text-sm text-black/70 line-clamp-2">{text}</span>;
   const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
   return (
-    <span className="text-sm text-white/70 line-clamp-2">
+    <span className="text-sm text-black/70 line-clamp-2">
       {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase()
-          ? <mark key={i} className="bg-white/20 text-white rounded px-0.5">{part}</mark>
+          ? <mark key={i} className="bg-yellow-200 text-black rounded px-0.5">{part}</mark>
           : part
       )}
     </span>
@@ -364,27 +364,27 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
         initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.93, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-        className="bg-[#1a1a1a] rounded-[28px] w-full max-w-sm shadow-2xl overflow-hidden border border-white/7"
+        className="bg-white rounded-[28px] w-full max-w-sm shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-5">
           <h3 className="font-bold text-[17px] text-black/80 mb-1 flex items-center gap-2">
-            <SlidersHorizontal size={18} className="text-white/30" /> 对话参数
+            <SlidersHorizontal size={18} className="text-black/30" /> 对话参数
           </h3>
-          <p className="text-[11px] text-white/30">调整 AI 的记忆与回复风格</p>
+          <p className="text-[11px] text-black/30">调整 AI 的记忆与回复风格</p>
         </div>
 
         <div className="px-6 pb-6 space-y-5">
           {/* 上下文条数 — 自由输入，无上限 */}
-          <div className="bg-[#1a1a1a]/2.5 rounded-2xl px-4 py-4">
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4">
             <div className="mb-3">
-              <div className="font-bold text-[13px] text-white/70">AI 记忆上下文条数</div>
-              <div className="text-[11px] text-white/30 mt-0.5">AI 每次回复时能看到的历史消息数量，无上限</div>
+              <div className="font-bold text-[13px] text-black/70">AI 记忆上下文条数</div>
+              <div className="text-[11px] text-black/30 mt-0.5">AI 每次回复时能看到的历史消息数量，无上限</div>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setLocal(p => ({ ...p, contextSize: Math.max(1, p.contextSize - 1) }))}
-                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5 shrink-0"
+                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
               >−</button>
               <input
                 type="number"
@@ -394,21 +394,21 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
                   const v = parseInt(e.target.value);
                   if (!isNaN(v) && v >= 1) setLocal(p => ({ ...p, contextSize: v }));
                 }}
-                className="flex-1 text-center bg-[#1a1a1a] rounded-xl border border-white/5 shadow-sm py-2 font-bold text-white/70 text-[15px] outline-none focus:ring-2 focus:ring-black/10"
+                className="flex-1 text-center bg-white rounded-xl border border-black/5 shadow-sm py-2 font-bold text-black/70 text-[15px] outline-none focus:ring-2 focus:ring-black/10"
               />
               <button
                 onClick={() => setLocal(p => ({ ...p, contextSize: p.contextSize + 1 }))}
-                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5 shrink-0"
+                className="w-9 h-9 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5 shrink-0"
               >+</button>
             </div>
           </div>
 
           {/* 气泡数范围 */}
-          <div className="bg-[#1a1a1a]/2.5 rounded-2xl px-4 py-4">
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4">
             <div className="flex items-center justify-between mb-1">
               <div>
-                <div className="font-bold text-[13px] text-white/70">每轮回复气泡数范围</div>
-                <div className="text-[11px] text-white/30 mt-0.5">
+                <div className="font-bold text-[13px] text-black/70">每轮回复气泡数范围</div>
+                <div className="text-[11px] text-black/30 mt-0.5">
                   {local.bubbleControlEnabled ? 'AI 每次回复最少和最多发几条消息' : 'AI 自主决定发几条消息'}
                 </div>
               </div>
@@ -417,20 +417,20 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
             {local.bubbleControlEnabled && (
               <div className="flex items-center gap-3 mt-3">
                 <div className="flex-1">
-                  <div className="text-[10px] text-white/30 mb-1.5 text-center uppercase tracking-widest">最少</div>
+                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最少</div>
                   <div className="flex items-center gap-2 justify-center">
-                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles - 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5">−</button>
-                    <span className="w-6 text-center font-bold text-white/70 text-[15px]">{local.minBubbles}</span>
-                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles + 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5">+</button>
+                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles - 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
+                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.minBubbles}</span>
+                    <button onClick={() => setLocal(p => ({ ...p, minBubbles: clamp(p.minBubbles + 1, 1, p.maxBubbles) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
                   </div>
                 </div>
                 <div className="text-black/15 text-xl font-light">—</div>
                 <div className="flex-1">
-                  <div className="text-[10px] text-white/30 mb-1.5 text-center uppercase tracking-widest">最多</div>
+                  <div className="text-[10px] text-black/30 mb-1.5 text-center uppercase tracking-widest">最多</div>
                   <div className="flex items-center gap-2 justify-center">
-                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles - 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5">−</button>
-                    <span className="w-6 text-center font-bold text-white/70 text-[15px]">{local.maxBubbles}</span>
-                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles + 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-white/5 flex items-center justify-center font-bold text-white/50 active:bg-white/5">+</button>
+                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles - 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">−</button>
+                    <span className="w-6 text-center font-bold text-black/70 text-[15px]">{local.maxBubbles}</span>
+                    <button onClick={() => setLocal(p => ({ ...p, maxBubbles: clamp(p.maxBubbles + 1, p.minBubbles, 8) }))} className="w-8 h-8 rounded-xl bg-white shadow-sm border border-black/5 flex items-center justify-center font-bold text-black/50 active:bg-black/5">+</button>
                   </div>
                 </div>
               </div>
@@ -439,9 +439,9 @@ const ChatSettingsModal = ({ settings, onSave, onClose, contactId }: {
         </div>
 
         {/* 底部按钮 */}
-        <div className="flex border-t border-white/4">
-          <button onClick={onClose} className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/4 active:bg-white/2 transition-colors">取消</button>
-          <button onClick={() => { onSave(local); onClose(); }} className="flex-1 py-4 font-bold text-[14px] text-white/75 active:bg-white/2 transition-colors">保存设置</button>
+        <div className="flex border-t border-black/4">
+          <button onClick={onClose} className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors">取消</button>
+          <button onClick={() => { onSave(local); onClose(); }} className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors">保存设置</button>
         </div>
       </motion.div>
     </motion.div>
@@ -472,7 +472,7 @@ const InnerVoiceCard = ({
       onClick={onClose}
     >
       {/* 轻遮罩 */}
-      <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: -12 }}
@@ -480,28 +480,28 @@ const InnerVoiceCard = ({
         exit={{ opacity: 0, scale: 0.92, y: -12 }}
         transition={{ type: 'spring', stiffness: 380, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-sm bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/8"
+        className="relative w-full max-w-sm bg-white rounded-[28px] shadow-2xl overflow-hidden border border-black/4"
       >
         {/* 头部 */}
         <div className="px-6 pt-6 pb-4 flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.18em] mb-1">TA 的心声</p>
-            <h3 className="text-[17px] font-bold text-white/70">{name}</h3>
+            <p className="text-[10px] font-bold text-black/20 uppercase tracking-[0.18em] mb-1">TA 的心声</p>
+            <h3 className="text-[17px] font-bold text-black/70">{name}</h3>
           </div>
           {latest && (
-            <div className="bg-[#1a1a1a]/4 rounded-2xl px-3 py-1.5 flex items-center gap-1.5">
+            <div className="bg-black/4 rounded-2xl px-3 py-1.5 flex items-center gap-1.5">
               <span className="text-[16px] leading-none">{latest.emoji}</span>
-              <span className="text-[12px] font-bold text-white/40">{latest.mood}</span>
+              <span className="text-[12px] font-bold text-black/40">{latest.mood}</span>
             </div>
           )}
         </div>
 
         {/* 分割线 */}
-        <div className="mx-6 h-px bg-white/5" />
+        <div className="mx-6 h-px bg-black/5" />
 
         {/* 内容行 / 空状态 */}
         {history.length === 0 ? (
-          <div className="py-10 flex flex-col items-center text-white/20">
+          <div className="py-10 flex flex-col items-center text-black/20">
             <Heart size={28} className="mb-2 opacity-25" />
             <p className="text-[13px]">与 TA 聊天后会自动生成</p>
           </div>
@@ -510,36 +510,36 @@ const InnerVoiceCard = ({
             {rows.map((row, i) => (
               <div key={i}>
                 <div className="py-3.5 flex items-start gap-3.5">
-                  <div className="w-7 h-7 rounded-xl bg-white/3 flex items-center justify-center shrink-0 text-[13px]">
+                  <div className="w-7 h-7 rounded-xl bg-black/3 flex items-center justify-center shrink-0 text-[13px]">
                     {row.icon}
                   </div>
                   <div className="flex-1 min-w-0 pt-0.5">
                     <p className={`text-[9px] font-bold uppercase tracking-[0.18em] mb-0.5 ${row.color}`}>{row.label}</p>
-                    <p className={`text-[13px] text-white/60 leading-snug ${row.italic ? 'italic' : ''}`}>
+                    <p className={`text-[13px] text-black/60 leading-snug ${row.italic ? 'italic' : ''}`}>
                       {row.italic ? `「${row.value}」` : row.value}
                     </p>
                   </div>
                 </div>
-                {i < rows.length - 1 && <div className="h-px bg-white/4 ml-11" />}
+                {i < rows.length - 1 && <div className="h-px bg-black/4 ml-11" />}
               </div>
             ))}
             {latest && (
-              <p className="text-[10px] text-white/20 text-right pb-2">{latest.timestamp}</p>
+              <p className="text-[10px] text-black/20 text-right pb-2">{latest.timestamp}</p>
             )}
           </div>
         )}
 
         {/* 分割线 */}
-        <div className="mx-6 h-px bg-white/5" />
+        <div className="mx-6 h-px bg-black/5" />
 
         {/* 历史记录入口 */}
         <button
           onClick={() => setShowHistory(v => !v)}
-          className="w-full px-6 py-4 flex items-center justify-between active:bg-white/2 transition-colors"
+          className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors"
         >
-          <span className="text-[13px] font-bold text-white/40">历史记录</span>
+          <span className="text-[13px] font-bold text-black/40">历史记录</span>
           <motion.div animate={{ rotate: showHistory ? 90 : 0 }} transition={{ duration: 0.2 }}>
-            <ChevronRight size={15} className="text-white/20" />
+            <ChevronRight size={15} className="text-black/20" />
           </motion.div>
         </button>
 
@@ -553,19 +553,19 @@ const InnerVoiceCard = ({
               transition={{ duration: 0.22 }}
               className="overflow-hidden"
             >
-              <div className="border-t border-white/4 max-h-52 overflow-y-auto">
+              <div className="border-t border-black/4 max-h-52 overflow-y-auto">
                 {history.length <= 1 ? (
-                  <p className="text-[12px] text-white/25 text-center py-5">暂无更多历史记录</p>
+                  <p className="text-[12px] text-black/25 text-center py-5">暂无更多历史记录</p>
                 ) : (
                   [...history].reverse().slice(1).map((entry, i) => (
-                    <div key={i} className="px-6 py-3.5 flex items-start gap-3 border-b border-white/3 last:border-none">
+                    <div key={i} className="px-6 py-3.5 flex items-start gap-3 border-b border-black/3 last:border-none">
                       <span className="text-[18px] leading-none shrink-0 mt-0.5">{entry.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[11px] font-bold text-white/40">{entry.mood}</span>
-                          <span className="text-[10px] text-white/20">{entry.timestamp}</span>
+                          <span className="text-[11px] font-bold text-black/40">{entry.mood}</span>
+                          <span className="text-[10px] text-black/20">{entry.timestamp}</span>
                         </div>
-                        <p className="text-[12px] text-white/45 italic leading-snug">「{entry.innerVoice}」</p>
+                        <p className="text-[12px] text-black/45 italic leading-snug">「{entry.innerVoice}」</p>
                       </div>
                     </div>
                   ))
@@ -603,25 +603,25 @@ const ExportConfirmModal = ({ messages, contactName, onConfirm, onCancel }: {
         initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.93, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-        className="bg-[#1a1a1a] rounded-[28px] shadow-2xl w-full max-w-xs overflow-hidden border border-white/8"
+        className="bg-white rounded-[28px] shadow-2xl w-full max-w-xs overflow-hidden border border-black/5"
         onClick={e => e.stopPropagation()}
       >
         <div className="p-7 flex flex-col items-center text-center">
           <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 mb-4">
             <Download size={24} />
           </div>
-          <h3 className="font-bold text-[17px] text-white/75 mb-1">导出聊天记录</h3>
-          <p className="text-[13px] text-white/35 leading-relaxed">
-            与 <span className="font-bold text-white/50">{contactName}</span> 的聊天记录
+          <h3 className="font-bold text-[17px] text-black/75 mb-1">导出聊天记录</h3>
+          <p className="text-[13px] text-black/35 leading-relaxed">
+            与 <span className="font-bold text-black/50">{contactName}</span> 的聊天记录
           </p>
-          <div className="mt-4 bg-[#1a1a1a]/3 rounded-2xl px-5 py-3 w-full flex items-center justify-between">
-            <span className="text-[12px] text-white/35">{messages.filter(m => !m.isRevoked).length} 条消息</span>
-            <span className="text-[12px] font-bold text-white/50">{sizeStr}</span>
+          <div className="mt-4 bg-black/3 rounded-2xl px-5 py-3 w-full flex items-center justify-between">
+            <span className="text-[12px] text-black/35">{messages.filter(m => !m.isRevoked).length} 条消息</span>
+            <span className="text-[12px] font-bold text-black/50">{sizeStr}</span>
           </div>
         </div>
-        <div className="flex border-t border-white/4">
-          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/4 active:bg-white/2 transition-colors">取消</button>
-          <button onClick={onConfirm} className="flex-1 py-4 font-bold text-[14px] text-blue-500 active:bg-white/2 transition-colors">导出</button>
+        <div className="flex border-t border-black/4">
+          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors">取消</button>
+          <button onClick={onConfirm} className="flex-1 py-4 font-bold text-[14px] text-blue-500 active:bg-black/2 transition-colors">导出</button>
         </div>
       </motion.div>
     </motion.div>
@@ -664,24 +664,24 @@ const ContactPickerModal = ({
         initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.93, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="w-full max-w-sm bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/7"
+        className="w-full max-w-sm bg-white rounded-[28px] shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* 头部 */}
         <div className="px-5 pt-5 pb-3">
-          <h3 className="font-bold text-[16px] text-white/75 mb-3">选择联系人</h3>
+          <h3 className="font-bold text-[16px] text-black/75 mb-3">选择联系人</h3>
           {/* 搜索框 */}
-          <div className="flex items-center gap-2 bg-[#1a1a1a]/5 rounded-xl px-3 py-2">
-            <Search size={14} className="text-white/30 shrink-0" />
+          <div className="flex items-center gap-2 bg-black/5 rounded-xl px-3 py-2">
+            <Search size={14} className="text-black/30 shrink-0" />
             <input
               ref={inputRef}
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="搜索联系人..."
-              className="flex-1 bg-transparent outline-none text-[13px] text-white/70 placeholder:text-white/25"
+              className="flex-1 bg-transparent outline-none text-[13px] text-black/70 placeholder:text-black/25"
             />
             {query && (
-              <button onClick={() => setQuery('')}><X size={13} className="text-white/30" /></button>
+              <button onClick={() => setQuery('')}><X size={13} className="text-black/30" /></button>
             )}
           </div>
         </div>
@@ -689,25 +689,25 @@ const ContactPickerModal = ({
         {/* 联系人列表 */}
         <div className="max-h-[50vh] overflow-y-auto pb-2">
           {filtered.length === 0 ? (
-            <div className="py-10 text-center text-[13px] text-white/25">没有找到联系人</div>
+            <div className="py-10 text-center text-[13px] text-black/25">没有找到联系人</div>
           ) : (
             filtered.map(c => (
               <button
                 key={c.id}
                 onClick={() => onSelect(c)}
-                className="w-full px-5 py-3 flex items-center gap-3 active:bg-white/3 transition-colors"
+                className="w-full px-5 py-3 flex items-center gap-3 active:bg-black/3 transition-colors"
               >
                 {/* 头像 */}
-                <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/6 shrink-0 bg-white/4 flex items-center justify-center text-[11px] font-bold text-white/35">
+                <div className="w-10 h-10 rounded-xl overflow-hidden border border-black/6 shrink-0 bg-black/4 flex items-center justify-center text-[11px] font-bold text-black/35">
                   {c.avatar
                     ? <img src={c.avatar} className="w-full h-full object-cover" alt="" />
                     : (c.initials || c.name[0])}
                 </div>
                 {/* 名字 */}
-                <span className="flex-1 text-left text-[15px] font-medium text-white/70">{c.name}</span>
+                <span className="flex-1 text-left text-[15px] font-medium text-black/70">{c.name}</span>
                 {/* 当前对话标签 */}
                 {c.id === currentContactId && (
-                  <span className="text-[10px] font-bold text-white/25 bg-white/4 px-2 py-0.5 rounded-full">当前对话</span>
+                  <span className="text-[10px] font-bold text-black/25 bg-black/4 px-2 py-0.5 rounded-full">当前对话</span>
                 )}
               </button>
             ))
@@ -715,10 +715,10 @@ const ContactPickerModal = ({
         </div>
 
         {/* 取消 */}
-        <div className="border-t border-white/5">
+        <div className="border-t border-black/5">
           <button
             onClick={onCancel}
-            className="w-full py-4 font-bold text-[14px] text-white/35 active:bg-white/2 transition-colors"
+            className="w-full py-4 font-bold text-[14px] text-black/35 active:bg-black/2 transition-colors"
           >取消</button>
         </div>
       </motion.div>
@@ -747,17 +747,17 @@ const ForwardPreviewModal = ({
       initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.93, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-      className="w-full max-w-sm bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/7"
+      className="w-full max-w-sm bg-white rounded-[28px] shadow-2xl overflow-hidden"
       onClick={e => e.stopPropagation()}
     >
       {/* 头部 */}
-      <div className="px-6 pt-6 pb-4 border-b border-white/5 flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#1a1a1a]/4 rounded-2xl flex items-center justify-center shrink-0">
-          <FileText size={18} className="text-white/40" />
+      <div className="px-6 pt-6 pb-4 border-b border-black/5 flex items-center gap-3">
+        <div className="w-10 h-10 bg-black/4 rounded-2xl flex items-center justify-center shrink-0">
+          <FileText size={18} className="text-black/40" />
         </div>
         <div className="min-w-0">
-          <h3 className="font-bold text-[16px] text-white/75">发送给 {targetName}</h3>
-          <p className="text-[12px] text-white/30 mt-0.5">共 {snapshots.length} 条消息</p>
+          <h3 className="font-bold text-[16px] text-black/75">发送给 {targetName}</h3>
+          <p className="text-[12px] text-black/30 mt-0.5">共 {snapshots.length} 条消息</p>
         </div>
       </div>
 
@@ -765,23 +765,23 @@ const ForwardPreviewModal = ({
       <div className="px-6 py-4 space-y-2.5 max-h-[40vh] overflow-y-auto">
         {snapshots.map((s, i) => (
           <div key={i} className="flex items-start gap-2.5">
-            <span className="text-[12px] font-bold text-white/35 shrink-0 pt-0.5 min-w-9">
+            <span className="text-[12px] font-bold text-black/35 shrink-0 pt-0.5 min-w-9">
               {s.senderName}
             </span>
-            <span className="text-[13px] text-white/60 leading-snug line-clamp-2">{s.text}</span>
+            <span className="text-[13px] text-black/60 leading-snug line-clamp-2">{s.text}</span>
           </div>
         ))}
       </div>
 
       {/* 按钮 */}
-      <div className="flex border-t border-white/5">
+      <div className="flex border-t border-black/5">
         <button
           onClick={onCancel}
-          className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/5 active:bg-white/2 transition-colors"
+          className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/5 active:bg-black/2 transition-colors"
         >取消</button>
         <button
           onClick={onConfirm}
-          className="flex-1 py-4 font-bold text-[14px] text-white/75 active:bg-white/2 transition-colors"
+          className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors"
         >确认发送</button>
       </div>
     </motion.div>
@@ -801,33 +801,33 @@ const ForwardRecordViewer = ({
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: 'tween', duration: 0.28 }}
-      className="fixed inset-0 z-200 flex flex-col" style={{ background: '#0d0d0d' }}
+      className="fixed inset-0 z-200 bg-[#F7F7F7] flex flex-col"
     >
       {/* 头部 */}
-      <div className="px-4 pt-4 pb-3 bg-[#111] border-b border-white/6 flex items-center gap-2">
-        <button onClick={onClose} className="p-2 -ml-2 text-white/40">
+      <div className="px-4 pt-4 pb-3 bg-white border-b border-black/3 flex items-center gap-2">
+        <button onClick={onClose} className="p-2 -ml-2 text-black/40">
           <ChevronLeft size={24} />
         </button>
         <div className="flex-1">
-          <h2 className="font-bold text-[16px] text-white/75">聊天记录</h2>
-          <p className="text-[11px] text-white/30">{records.length} 条消息</p>
+          <h2 className="font-bold text-[16px] text-black/75">聊天记录</h2>
+          <p className="text-[11px] text-black/30">{records.length} 条消息</p>
         </div>
       </div>
 
       {/* 消息列表 */}
       <div className="flex-1 overflow-y-auto py-3">
         {records.map((r, i) => (
-          <div key={i} className="px-5 py-3 flex items-start gap-3 border-b border-white/3 last:border-none">
+          <div key={i} className="px-5 py-3 flex items-start gap-3 border-b border-black/3 last:border-none">
             {/* 头像占位 */}
-            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-[10px] font-bold ${r.sender === 'me' ? 'bg-black text-white' : 'bg-black/7 text-white/40'
+            <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-[10px] font-bold ${r.sender === 'me' ? 'bg-black text-white' : 'bg-black/7 text-black/40'
               }`}>
               {r.sender === 'me' ? 'ME' : r.senderName[0]}
             </div>
             {/* 内容 */}
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-[12px] font-bold text-white/50">{r.senderName}</span>
-                <span className="text-[10px] text-white/25">{r.time}</span>
+                <span className="text-[12px] font-bold text-black/50">{r.senderName}</span>
+                <span className="text-[10px] text-black/25">{r.time}</span>
               </div>
               <p className="text-[14px] text-black/65 leading-relaxed wrap-break-word">{r.text}</p>
             </div>
@@ -1115,7 +1115,7 @@ const CallOverlay = ({
               className="flex-1 bg-transparent outline-none text-white text-[14px] placeholder:text-white/30 min-w-0"
             />
             <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/15 text-white shrink-0">发送</button>
-            <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/10 text-white border border-white/15 shrink-0">回复</button>
+            <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white text-black shrink-0">回复</button>
           </div>
           <div className="flex items-center justify-center gap-10">
             <button onClick={() => setIsMuted(v => !v)} className="flex flex-col items-center gap-2">
@@ -1191,7 +1191,7 @@ const CallOverlay = ({
             className="flex-1 bg-transparent outline-none text-white text-[14px] placeholder:text-white/30 min-w-0"
           />
           <button onClick={handleSendOnly} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/20 text-white shrink-0">发送</button>
-          <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white/10 text-white border border-white/15 shrink-0">回复</button>
+          <button onClick={handleReply} className="px-2.5 py-1.5 rounded-xl text-[12px] font-bold transition-all active:scale-95 bg-white text-black shrink-0">回复</button>
         </div>
         <div className="flex items-center justify-center gap-8">
           <button onClick={() => setIsMuted(v => !v)} className="flex flex-col items-center gap-2">
@@ -1315,26 +1315,26 @@ const ContactAppearancePage = ({
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: 'tween', duration: 0.28 }}
-      className="fixed inset-0 z-200 flex flex-col" style={{ background: '#0d0d0d' }}
+      className="fixed inset-0 z-200 bg-[#F7F7F7] flex flex-col"
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 bg-[#111] border-b border-white/6 flex items-center gap-2">
-        <button onClick={onClose} className="p-2 -ml-2 text-white/40 active:bg-[#1a1a1a]/4 rounded-xl transition-colors">
+      <div className="px-4 pt-4 pb-3 bg-white border-b border-black/3 flex items-center gap-2">
+        <button onClick={onClose} className="p-2 -ml-2 text-black/40 active:bg-black/4 rounded-xl transition-colors">
           <ChevronLeft size={24} />
         </button>
         <div>
           <h2 className="text-[16px] font-bold text-black/80 leading-tight">聊天页面外观</h2>
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">APPEARANCE / THIS CHAT</p>
+          <p className="text-[10px] font-bold text-black/20 uppercase tracking-widest">APPEARANCE / THIS CHAT</p>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4">
 
         {/* Override toggle */}
-        <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 px-5 py-4 flex items-center justify-between">
+        <div className="bg-white rounded-[20px] border border-black/3 px-5 py-4 flex items-center justify-between">
           <div>
-            <div className="text-[14px] font-bold text-white/70">单独设置此聊天</div>
-            <div className="text-[11px] text-white/30 mt-0.5">
+            <div className="text-[14px] font-bold text-black/70">单独设置此聊天</div>
+            <div className="text-[11px] text-black/30 mt-0.5">
               {local.override ? '使用独立外观，不受全局影响' : '跟随全局外观设置'}
             </div>
           </div>
@@ -1342,8 +1342,8 @@ const ContactAppearancePage = ({
         </div>
 
         {/* Live preview — always visible */}
-        <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 p-4">
-          <p className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-3">实时预览</p>
+        <div className="bg-white rounded-[20px] border border-black/3 p-4">
+          <p className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-3">实时预览</p>
           <style>{`
             .cap-preview .cap-sent { background: black; color: white; }
             .cap-preview .cap-recv { background: white; color: black; border: 1px solid rgba(0,0,0,0.08); }
@@ -1351,7 +1351,7 @@ const ContactAppearancePage = ({
             ${effectiveThemeCss}
           `}</style>
           <div
-            className="cap-preview rounded-xl overflow-hidden border border-white/4"
+            className="cap-preview rounded-xl overflow-hidden border border-black/4"
             style={{
               background: effectiveBg ? `url(${effectiveBg}) center/cover no-repeat` : '#F4F4F4',
               minHeight: 130,
@@ -1379,26 +1379,26 @@ const ContactAppearancePage = ({
               className="space-y-4"
             >
               {/* ── Combined presets ── */}
-              <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 p-5 space-y-3">
+              <div className="bg-white rounded-[20px] border border-black/3 p-5 space-y-3">
                 <div>
-                  <div className="text-[14px] font-bold text-white/70">外观方案预设</div>
-                  <div className="text-[11px] text-white/30 mt-0.5">将当前背景 + 气泡 + 主题统一保存，或应用已有方案</div>
+                  <div className="text-[14px] font-bold text-black/70">外观方案预设</div>
+                  <div className="text-[11px] text-black/30 mt-0.5">将当前背景 + 气泡 + 主题统一保存，或应用已有方案</div>
                 </div>
 
                 {/* Preset chips */}
                 {combinedPresets.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {combinedPresets.map(p => (
-                      <div key={p.id} className="flex items-center gap-0.5 bg-[#1a1a1a]/4 rounded-xl overflow-hidden">
+                      <div key={p.id} className="flex items-center gap-0.5 bg-black/4 rounded-xl overflow-hidden">
                         <button
                           onClick={() => applyPreset(p)}
-                          className="px-3 py-1.5 text-[12px] font-bold text-white/60 active:bg-white/8 transition-colors"
+                          className="px-3 py-1.5 text-[12px] font-bold text-black/60 active:bg-black/8 transition-colors"
                         >
                           {p.name}
                         </button>
                         <button
                           onClick={() => handleDeletePreset(p.id)}
-                          className="pr-2.5 pl-1 py-1.5 text-white/20 active:text-red-400 transition-colors"
+                          className="pr-2.5 pl-1 py-1.5 text-black/20 active:text-red-400 transition-colors"
                         >
                           <X size={11} />
                         </button>
@@ -1421,7 +1421,7 @@ const ContactAppearancePage = ({
                         onChange={e => setPresetName(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleSavePreset(); if (e.key === 'Escape') { setSaveMode(false); setPresetName(''); } }}
                         placeholder="方案名称..."
-                        className="flex-1 bg-[#1a1a1a]/2.5 border border-white/5 rounded-xl px-3 py-2 text-[13px] text-white/70 outline-none focus:ring-2 focus:ring-black/8"
+                        className="flex-1 bg-black/2.5 border border-black/5 rounded-xl px-3 py-2 text-[13px] text-black/70 outline-none focus:ring-2 focus:ring-black/8"
                       />
                       <button
                         onClick={handleSavePreset}
@@ -1432,7 +1432,7 @@ const ContactAppearancePage = ({
                       </button>
                       <button
                         onClick={() => { setSaveMode(false); setPresetName(''); }}
-                        className="px-3 py-2 bg-[#1a1a1a]/4 text-white/40 rounded-xl active:scale-95 transition-all text-[13px] font-bold"
+                        className="px-3 py-2 bg-black/4 text-black/40 rounded-xl active:scale-95 transition-all text-[13px] font-bold"
                       >
                         ✕
                       </button>
@@ -1442,7 +1442,7 @@ const ContactAppearancePage = ({
                       key="save-btn"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                       onClick={() => setSaveMode(true)}
-                      className="flex items-center gap-1.5 text-[12px] font-bold text-white/30 active:text-white/60 transition-colors"
+                      className="flex items-center gap-1.5 text-[12px] font-bold text-black/30 active:text-black/60 transition-colors"
                     >
                       <Plus size={13} />
                       保存当前为新方案
@@ -1452,14 +1452,14 @@ const ContactAppearancePage = ({
               </div>
 
               {/* ── Background ── */}
-              <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 p-5 space-y-3">
+              <div className="bg-white rounded-[20px] border border-black/3 p-5 space-y-3">
                 <div>
-                  <div className="text-[14px] font-bold text-white/70">聊天背景</div>
-                  <div className="text-[11px] text-white/30 mt-0.5">为此对话单独设置背景图</div>
+                  <div className="text-[14px] font-bold text-black/70">聊天背景</div>
+                  <div className="text-[11px] text-black/30 mt-0.5">为此对话单独设置背景图</div>
                 </div>
                 {local.bgImage && (
                   <div
-                    className="w-full h-16 rounded-xl border border-white/5"
+                    className="w-full h-16 rounded-xl border border-black/5"
                     style={{ background: `url(${local.bgImage}) center/cover no-repeat` }}
                   />
                 )}
@@ -1474,7 +1474,7 @@ const ContactAppearancePage = ({
                   {local.bgImage && (
                     <button
                       onClick={() => update({ bgImage: null })}
-                      className="px-4 py-2.5 bg-[#1a1a1a]/4 text-white/45 rounded-xl active:bg-white/8 transition-colors"
+                      className="px-4 py-2.5 bg-black/4 text-black/45 rounded-xl active:bg-black/8 transition-colors"
                     >
                       <RotateCcw size={14} />
                     </button>
@@ -1484,10 +1484,10 @@ const ContactAppearancePage = ({
               </div>
 
               {/* ── Bubble CSS ── */}
-              <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 p-5 space-y-3">
+              <div className="bg-white rounded-[20px] border border-black/3 p-5 space-y-3">
                 <div>
-                  <div className="text-[14px] font-bold text-white/70">气泡 CSS</div>
-                  <div className="text-[11px] text-white/30 mt-0.5">选择全局预设，或输入自定义 CSS</div>
+                  <div className="text-[14px] font-bold text-black/70">气泡 CSS</div>
+                  <div className="text-[11px] text-black/30 mt-0.5">选择全局预设，或输入自定义 CSS</div>
                 </div>
                 {globalApp?.bubblePresets?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -1497,7 +1497,7 @@ const ContactAppearancePage = ({
                         onClick={() => update({ bubbleDraftCss: p.css, activeBubblePresetId: p.id })}
                         className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.activeBubblePresetId === p.id
                           ? 'bg-black text-white'
-                          : 'bg-white/4 text-white/50 active:bg-white/8'
+                          : 'bg-black/4 text-black/50 active:bg-black/8'
                           }`}
                       >
                         {p.name}
@@ -1506,7 +1506,7 @@ const ContactAppearancePage = ({
                     {local.activeBubblePresetId && (
                       <button
                         onClick={() => update({ bubbleDraftCss: '', activeBubblePresetId: null })}
-                        className="px-3 py-1.5 rounded-xl text-[12px] font-bold bg-white/3 text-white/30 active:bg-white/6"
+                        className="px-3 py-1.5 rounded-xl text-[12px] font-bold bg-black/3 text-black/30 active:bg-black/6"
                       >
                         清除
                       </button>
@@ -1519,15 +1519,15 @@ const ContactAppearancePage = ({
                   placeholder={`.message.sent {\n  background: #333 !important;\n  color: white !important;\n}\n.message.received {\n  background: #f5f5f5 !important;\n}`}
                   rows={5}
                   spellCheck={false}
-                  className="w-full bg-[#1a1a1a]/2 border border-white/5 rounded-xl px-3 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/8 placeholder:text-black/15 leading-[1.7]"
+                  className="w-full bg-black/2 border border-black/5 rounded-xl px-3 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/8 placeholder:text-black/15 leading-[1.7]"
                 />
               </div>
 
               {/* ── Theme CSS ── */}
-              <div className="bg-[#1e1e1e] rounded-[20px] border border-white/3 p-5 space-y-3">
+              <div className="bg-white rounded-[20px] border border-black/3 p-5 space-y-3">
                 <div>
-                  <div className="text-[14px] font-bold text-white/70">主题 CSS</div>
-                  <div className="text-[11px] text-white/30 mt-0.5">全局主题覆盖，选择全局预设或输入自定义</div>
+                  <div className="text-[14px] font-bold text-black/70">主题 CSS</div>
+                  <div className="text-[11px] text-black/30 mt-0.5">全局主题覆盖，选择全局预设或输入自定义</div>
                 </div>
                 {globalApp?.themePresets?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -1537,7 +1537,7 @@ const ContactAppearancePage = ({
                         onClick={() => update({ themeDraftCss: p.css })}
                         className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all ${local.themeDraftCss === p.css && local.themeDraftCss !== ''
                           ? 'bg-black text-white'
-                          : 'bg-white/4 text-white/50 active:bg-white/8'
+                          : 'bg-black/4 text-black/50 active:bg-black/8'
                           }`}
                       >
                         {p.name}
@@ -1546,7 +1546,7 @@ const ContactAppearancePage = ({
                     {local.themeDraftCss && (
                       <button
                         onClick={() => update({ themeDraftCss: '' })}
-                        className="px-3 py-1.5 rounded-xl text-[12px] font-bold bg-white/3 text-white/30 active:bg-white/6"
+                        className="px-3 py-1.5 rounded-xl text-[12px] font-bold bg-black/3 text-black/30 active:bg-black/6"
                       >
                         清除
                       </button>
@@ -1559,7 +1559,7 @@ const ContactAppearancePage = ({
                   placeholder={`:root {\n  --theme-primary: #000;\n}`}
                   rows={4}
                   spellCheck={false}
-                  className="w-full bg-[#1a1a1a]/2 border border-white/5 rounded-xl px-3 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/8 placeholder:text-black/15 leading-[1.7]"
+                  className="w-full bg-black/2 border border-black/5 rounded-xl px-3 py-3 text-[12px] font-mono text-black/65 outline-none resize-none focus:ring-2 focus:ring-black/8 placeholder:text-black/15 leading-[1.7]"
                 />
               </div>
 
@@ -1568,7 +1568,7 @@ const ContactAppearancePage = ({
         </AnimatePresence>
 
         {!local.override && (
-          <p className="px-1 text-[11px] text-white/30 leading-relaxed">
+          <p className="px-1 text-[11px] text-black/30 leading-relaxed">
             当前跟随全局外观。开启上方开关可单独配置此聊天的背景和样式，不影响其他联系人。全局外观在 Core → 界面外观 中修改。
           </p>
         )}
@@ -1610,29 +1610,29 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
         initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.93, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-        className="bg-[#1a1a1a] rounded-[28px] w-full max-w-sm shadow-2xl overflow-hidden border border-white/7"
+        className="bg-white rounded-[28px] w-full max-w-sm shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-5">
           <h3 className="font-bold text-[17px] text-black/80 mb-1 flex items-center gap-2">
-            <UserCog size={18} className="text-white/30" /> 好友设置
+            <UserCog size={18} className="text-black/30" /> 好友设置
           </h3>
-          <p className="text-[11px] text-white/30">自定义与 {contactName} 的互动偏好</p>
+          <p className="text-[11px] text-black/30">自定义与 {contactName} 的互动偏好</p>
         </div>
 
         <div className="px-6 pb-6 space-y-4">
 
           {/* ── 面具选择 ── */}
-          <div className="bg-[#1a1a1a]/2.5 rounded-2xl px-4 py-4 space-y-3">
-            <div className="font-bold text-[13px] text-white/70 flex items-center gap-2">
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-3">
+            <div className="font-bold text-[13px] text-black/70 flex items-center gap-2">
               <span>◈</span> 我的面具
             </div>
-            <div className="text-[11px] text-white/35 leading-relaxed">
+            <div className="text-[11px] text-black/35 leading-relaxed">
               选择一个面具，AI 将以该身份认识你。
             </div>
 
             {masks.length === 0 ? (
-              <div className="text-[11px] text-white/30 bg-[#1a1a1a]/3 rounded-xl px-3 py-2.5">
+              <div className="text-[11px] text-black/30 bg-black/3 rounded-xl px-3 py-2.5">
                 暂无面具 — 前往 Core → 个人设定 创建
               </div>
             ) : (
@@ -1642,14 +1642,14 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                   onClick={() => setActiveMaskId('')}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${activeMaskId === ''
                     ? 'bg-black text-white'
-                    : 'bg-white/3 active:bg-white/6'
+                    : 'bg-black/3 active:bg-black/6'
                     }`}
                 >
-                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-white/20 text-white/30'
+                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[11px] ${activeMaskId === '' ? 'border-white/40 text-white/60' : 'border-black/20 text-black/30'
                     }`}>
                     ∅
                   </div>
-                  <span className={`text-[13px] font-medium ${activeMaskId === '' ? 'text-white' : 'text-white/60'}`}>
+                  <span className={`text-[13px] font-medium ${activeMaskId === '' ? 'text-white' : 'text-black/60'}`}>
                     不使用面具
                   </span>
                 </button>
@@ -1662,26 +1662,26 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
                     <button
                       key={mask.id}
                       onClick={() => setActiveMaskId(mask.id)}
-                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${isActive ? 'bg-black text-white' : 'bg-white/3 active:bg-white/6'
+                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors ${isActive ? 'bg-black text-white' : 'bg-black/3 active:bg-black/6'
                         }`}
                     >
                       {/* 头像 */}
-                      <div className={`w-7 h-7 shrink-0 overflow-hidden border ${isActive ? 'border-white/30' : 'border-white/10'}`}
+                      <div className={`w-7 h-7 shrink-0 overflow-hidden border ${isActive ? 'border-white/30' : 'border-black/10'}`}
                         style={{ borderRadius: 2 }}
                       >
                         {mask.avatar
                           ? <img src={mask.avatar} alt={mask.name} className="w-full h-full object-cover" />
-                          : <div className={`w-full h-full flex items-center justify-center text-[11px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-white/40'}`}>
+                          : <div className={`w-full h-full flex items-center justify-center text-[11px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-black/10 text-black/40'}`}>
                             {initial}
                           </div>
                         }
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className={`text-[13px] font-bold leading-tight ${isActive ? 'text-white' : 'text-white/75'}`}>
+                        <span className={`text-[13px] font-bold leading-tight ${isActive ? 'text-white' : 'text-black/75'}`}>
                           {mask.name}
                         </span>
                         {mask.persona && (
-                          <span className={`text-[10px] truncate leading-tight mt-0.5 ${isActive ? 'text-white/50' : 'text-white/30'}`}>
+                          <span className={`text-[10px] truncate leading-tight mt-0.5 ${isActive ? 'text-white/50' : 'text-black/30'}`}>
                             {mask.persona}
                           </span>
                         )}
@@ -1697,18 +1697,18 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
 
             {/* 当前状态预览 */}
             {activeMask && (
-              <div className="text-[11px] text-white/30 bg-[#1a1a1a]/3 rounded-xl px-3 py-2 leading-relaxed">
-                当前：<span className="text-white/50 font-medium">以「{activeMask.name}」的身份与 {contactName} 聊天</span>
+              <div className="text-[11px] text-black/30 bg-black/3 rounded-xl px-3 py-2 leading-relaxed">
+                当前：<span className="text-black/50 font-medium">以「{activeMask.name}」的身份与 {contactName} 聊天</span>
               </div>
             )}
           </div>
 
           {/* ── 拍一拍 ── */}
-          <div className="bg-[#1a1a1a]/2.5 rounded-2xl px-4 py-4 space-y-2">
-            <div className="font-bold text-[13px] text-white/70 flex items-center gap-2">
+          <div className="bg-black/2.5 rounded-2xl px-4 py-4 space-y-2">
+            <div className="font-bold text-[13px] text-black/70 flex items-center gap-2">
               <span>👋</span> 我的拍一拍内容
             </div>
-            <div className="text-[11px] text-white/35 leading-relaxed">
+            <div className="text-[11px] text-black/35 leading-relaxed">
               双击 {contactName} 头像时会显示「你拍了拍 {contactName} ___」，在此填写横线处的内容，可以是任何东西。
             </div>
             <input
@@ -1716,24 +1716,24 @@ const FriendSettingsModal = ({ contactName, chatSettings, onSave, onClose }: {
               value={myPatTarget}
               onChange={e => setMyPatTarget(e.target.value)}
               placeholder="例如：的腹肌、的头、的肩膀、的手机..."
-              className="w-full bg-[#1a1a1a] rounded-xl border border-white/8 px-3 py-2.5 text-[14px] text-white/70 outline-none focus:ring-2 focus:ring-black/10 placeholder:text-white/20"
+              className="w-full bg-white rounded-xl border border-black/8 px-3 py-2.5 text-[14px] text-black/70 outline-none focus:ring-2 focus:ring-black/10 placeholder:text-black/20"
             />
             {myPatTarget.trim() && (
-              <div className="text-[11px] text-white/30 bg-[#1a1a1a]/3 rounded-xl px-3 py-2 leading-relaxed">
-                预览：<span className="text-white/50 font-medium">你拍了拍 {contactName} {myPatTarget.trim()}</span>
+              <div className="text-[11px] text-black/30 bg-black/3 rounded-xl px-3 py-2 leading-relaxed">
+                预览：<span className="text-black/50 font-medium">你拍了拍 {contactName} {myPatTarget.trim()}</span>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex border-t border-white/4">
+        <div className="flex border-t border-black/4">
           <button
             onClick={onClose}
-            className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/4 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/4 active:bg-black/2 transition-colors"
           >取消</button>
           <button
             onClick={() => { onSave({ ...chatSettings, myPatTarget: myPatTarget.trim(), activeMaskId }); onClose(); }}
-            className="flex-1 py-4 font-bold text-[14px] text-white/75 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/75 active:bg-black/2 transition-colors"
           >保存</button>
         </div>
       </motion.div>
@@ -1830,7 +1830,7 @@ const ChatSettingsPage = ({
   ];
 
   return (
-    <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "tween", duration: 0.3 }} className="fixed inset-0 z-100 bg-[#0d0d0d] flex flex-col">
+    <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "tween", duration: 0.3 }} className="fixed inset-0 z-100 bg-[#F7F7F7] flex flex-col">
       <AnimatePresence>
         {confirmConfig?.type === 'clear' && (
           <ConfirmActionModal title="清空聊天记录？" desc="清空后，当前会话的所有消息都将被永久删除。" confirmText="清空" onConfirm={() => { onClearMessages(); setConfirmConfig(null); }} onCancel={() => setConfirmConfig(null)} />
@@ -1864,32 +1864,32 @@ const ChatSettingsPage = ({
         )}
       </AnimatePresence>
 
-      <div className="px-4 pt-4 pb-2 bg-[#111] border-b border-white/6">
+      <div className="px-4 pt-4 pb-2 bg-white border-b border-black/3">
         <div className="flex items-center gap-1">
-          <button onClick={onClose} className="p-2 -ml-2 text-white/40"><ChevronLeft size={24} /></button>
+          <button onClick={onClose} className="p-2 -ml-2 text-black/40"><ChevronLeft size={24} /></button>
           <h2 className="text-lg font-bold text-black/80">聊天详情</h2>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-10">
-        <div className="bg-[#111] px-6 py-8 flex flex-col items-center mb-2">
-          <div className="w-20 h-20 rounded-[28px] overflow-hidden border border-white/5 shadow-sm mb-4">
+        <div className="bg-white px-6 py-8 flex flex-col items-center mb-2">
+          <div className="w-20 h-20 rounded-[28px] overflow-hidden border border-black/5 shadow-sm mb-4">
             {contact.avatar
               ? <img src={contact.avatar} className="w-full h-full object-cover" />
-              : <div className="w-full h-full bg-gray-100 flex items-center justify-center text-2xl font-bold text-white/20">{contact.name[0]}</div>
+              : <div className="w-full h-full bg-gray-100 flex items-center justify-center text-2xl font-bold text-black/20">{contact.name[0]}</div>
             }
           </div>
           <h3 className="font-bold text-xl text-black/80">{contact.name}</h3>
         </div>
 
         {/* ── TA 对你的备注名 ── */}
-        <div className="mx-4 mb-3 bg-[#1e1e1e] rounded-[18px] border border-white/5 px-5 py-4">
+        <div className="mx-4 mb-3 bg-white rounded-[18px] border border-black/5 px-5 py-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-white/25 uppercase tracking-widest">TA 对你的备注</span>
+            <span className="text-[11px] font-bold text-black/25 uppercase tracking-widest">TA 对你的备注</span>
             {noteData.history.length > 0 && (
               <button
                 onClick={() => setShowNoteHistory(v => !v)}
-                className="text-[10px] font-bold text-white/30 flex items-center gap-1 active:text-white/60 transition-colors"
+                className="text-[10px] font-bold text-black/30 flex items-center gap-1 active:text-black/60 transition-colors"
               >
                 历史
                 <motion.span
@@ -1903,13 +1903,13 @@ const ChatSettingsPage = ({
             )}
           </div>
           {/* 备注名展示框（只读，仿输入框风格） */}
-          <div className="w-full border border-white/8 rounded-xl px-4 py-3 bg-black/1.5 10.5 flex items-center">
+          <div className="w-full border border-black/8 rounded-xl px-4 py-3 bg-black/1.5 10.5 flex items-center">
             {noteData.nickname ? (
-              <span className="text-[15px] text-white/70" style={{ fontFamily: 'Georgia, serif' }}>
+              <span className="text-[15px] text-black/70" style={{ fontFamily: 'Georgia, serif' }}>
                 {noteData.nickname}
               </span>
             ) : (
-              <span className="text-[13px] text-white/20 italic" style={{ fontFamily: 'Georgia, serif' }}>
+              <span className="text-[13px] text-black/20 italic" style={{ fontFamily: 'Georgia, serif' }}>
                 暂无备注，聊一段时间后 {contact.name} 会给你起名…
               </span>
             )}
@@ -1924,12 +1924,12 @@ const ChatSettingsPage = ({
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="mt-3 border-t border-white/4 pt-3 space-y-2">
-                  <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">曾用名</p>
+                <div className="mt-3 border-t border-black/4 pt-3 space-y-2">
+                  <p className="text-[10px] font-bold text-black/20 uppercase tracking-widest mb-1">曾用名</p>
                   {noteData.history.map((h, i) => (
                     <div key={i} className="flex items-center justify-between">
-                      <span className="text-[13px] text-white/40 line-through" style={{ fontFamily: 'Georgia, serif' }}>{h.nickname}</span>
-                      <span className="text-[10px] text-white/20">{h.updatedAt}</span>
+                      <span className="text-[13px] text-black/40 line-through" style={{ fontFamily: 'Georgia, serif' }}>{h.nickname}</span>
+                      <span className="text-[10px] text-black/20">{h.updatedAt}</span>
                     </div>
                   ))}
                 </div>
@@ -1940,26 +1940,26 @@ const ChatSettingsPage = ({
 
         {menuGroups.map((group, idx) => (
           <div key={idx} className="mb-2">
-            <div className="px-6 py-2 text-[11px] font-bold text-white/20 uppercase tracking-widest">{group.title}</div>
-            <div className="bg-[#1a1a1a] border-y border-white/6">
+            <div className="px-6 py-2 text-[11px] font-bold text-black/20 uppercase tracking-widest">{group.title}</div>
+            <div className="bg-white border-y border-black/3">
               {group.items.map((item) => {
                 const isBlacklist = item.id === 'blacklist';
                 const isTimestamps = item.id === 'timestamps';
                 const isTimeAwareness = item.id === 'timeAwareness';
                 const isMemory = item.id === 'memory';
-                const iconColor = item.id === 'delete' ? 'text-red-500/80' : 'text-white/30';
+                const iconColor = item.id === 'delete' ? 'text-red-500/80' : 'text-black/30';
                 const textColor = item.id === 'delete' ? 'text-red-500' : 'text-black/80';
                 return (
                   <React.Fragment key={item.id}>
-                    <button onClick={() => { if (!isBlacklist && !isTimestamps && !isTimeAwareness && !isMemory) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-white/2 transition-colors">
+                    <button onClick={() => { if (!isBlacklist && !isTimestamps && !isTimeAwareness && !isMemory) item.action?.(); }} className="w-full px-6 py-4 flex items-center justify-between active:bg-black/2 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={iconColor}>{item.icon}</div>
                         <div className="text-left">
                           <div className={`text-[15px] font-bold ${textColor}`}>{item.label}</div>
-                          {item.desc && <div className="text-[11px] text-white/20">{item.desc}</div>}
+                          {item.desc && <div className="text-[11px] text-black/20">{item.desc}</div>}
                           {/* memory 行内嵌统计小字 */}
                           {isMemory && (
-                            <div className="text-[11px] text-white/30 mt-0.5">
+                            <div className="text-[11px] text-black/30 mt-0.5">
                               消息总数：{totalMsgs} 条　待总结：{pendingMsgs}/{memStats.interval} 条
                             </div>
                           )}
@@ -1976,25 +1976,25 @@ const ChatSettingsPage = ({
                     </button>
                     {/* 记忆总结展开面板：始终展开 */}
                     {isMemory && (
-                      <div className="border-t border-white/3 px-6 py-4 space-y-4">
+                      <div className="border-t border-black/3 px-6 py-4 space-y-4">
                         {/* 提取间隔调节 */}
                         <div>
-                          <div className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-2">自动提取间隔（条）</div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">自动提取间隔（条）</div>
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => saveInterval(Math.max(5, memStats.interval - 5))}
-                              className="w-9 h-9 rounded-xl bg-white/4 flex items-center justify-center font-bold text-white/50 active:bg-white/10 shrink-0"
+                              className="w-9 h-9 rounded-xl bg-black/4 flex items-center justify-center font-bold text-black/50 active:bg-black/10 shrink-0"
                             >−</button>
                             <input
                               type="number"
                               min={5}
                               value={memStats.interval}
                               onChange={e => { const v = parseInt(e.target.value); if (!isNaN(v) && v >= 5) saveInterval(v); }}
-                              className="flex-1 text-center bg-[#1a1a1a] rounded-xl border border-white/8 py-2 font-bold text-white/70 text-[15px] outline-none"
+                              className="flex-1 text-center bg-white rounded-xl border border-black/8 py-2 font-bold text-black/70 text-[15px] outline-none"
                             />
                             <button
                               onClick={() => saveInterval(memStats.interval + 5)}
-                              className="w-9 h-9 rounded-xl bg-white/4 flex items-center justify-center font-bold text-white/50 active:bg-white/10 shrink-0"
+                              className="w-9 h-9 rounded-xl bg-black/4 flex items-center justify-center font-bold text-black/50 active:bg-black/10 shrink-0"
                             >+</button>
                           </div>
                         </div>
@@ -2026,8 +2026,8 @@ const ChatSettingsPage = ({
                     )}
                     {/* 时间戳位置选择器：仅在开启时展开 */}
                     {isTimestamps && chatSettings.showTimestamps && (
-                      <div className="px-6 pb-4 flex items-center justify-between border-t border-white/7">
-                        <span className="text-[12px] text-white/40 font-medium">时间戳位置</span>
+                      <div className="px-6 pb-4 flex items-center justify-between border-t border-black/3">
+                        <span className="text-[12px] text-black/40 font-medium">时间戳位置</span>
                         <div className="flex gap-1">
                           {(['avatar', 'bubble'] as const).map(pos => (
                             <button
@@ -2035,7 +2035,7 @@ const ChatSettingsPage = ({
                               onClick={() => onToggleTimestampPosition(pos)}
                               className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${chatSettings.timestampPosition === pos
                                 ? 'bg-black text-white'
-                                : 'bg-white/6 text-white/40 active:bg-white/12'
+                                : 'bg-black/6 text-black/40 active:bg-black/12'
                                 }`}
                             >
                               {pos === 'avatar' ? '头像下方' : '气泡旁边'}
@@ -2046,13 +2046,13 @@ const ChatSettingsPage = ({
                     )}
                     {/* 时区选择：仅在时间感知开启时展开 */}
                     {isTimeAwareness && chatSettings.timeAwareness && (
-                      <div className="border-t border-white/3 px-6 py-4 space-y-3">
+                      <div className="border-t border-black/3 px-6 py-4 space-y-3">
                         <div>
-                          <div className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-2">我的时区</div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">我的时区</div>
                           <select
                             value={chatSettings.userTimezone}
                             onChange={e => onSaveChatSettings({ ...chatSettings, userTimezone: e.target.value })}
-                            className="w-full bg-[#1a1a1a]/2 border border-white/8 rounded-xl px-3 py-2 text-[12px] text-white/60 outline-none"
+                            className="w-full bg-black/2 border border-black/8 rounded-xl px-3 py-2 text-[12px] text-black/60 outline-none"
                           >
                             {TIMEZONE_OPTIONS.map(tz => (
                               <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -2060,11 +2060,11 @@ const ChatSettingsPage = ({
                           </select>
                         </div>
                         <div>
-                          <div className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-2">角色的时区</div>
+                          <div className="text-[10px] font-bold text-black/25 uppercase tracking-widest mb-2">角色的时区</div>
                           <select
                             value={chatSettings.charTimezone}
                             onChange={e => onSaveChatSettings({ ...chatSettings, charTimezone: e.target.value })}
-                            className="w-full bg-[#1a1a1a]/2 border border-white/8 rounded-xl px-3 py-2 text-[12px] text-white/60 outline-none"
+                            className="w-full bg-black/2 border border-black/8 rounded-xl px-3 py-2 text-[12px] text-black/60 outline-none"
                           >
                             {TIMEZONE_OPTIONS.map(tz => (
                               <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -2087,13 +2087,13 @@ const ChatSettingsPage = ({
 // ─── 其他小弹窗 ──────────────────────────────────────────────────────────────
 const ErrorDetailModal = ({ info, onClose }: { info: any, onClose: () => void }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-400 flex items-center justify-center px-6 bg-black/60 backdrop-blur-md" onClick={onClose}>
-    <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-[#1a1a1a] rounded-4xl shadow-2xl w-full max-w-sm overflow-hidden border border-white/8" onClick={e => e.stopPropagation()}>
+    <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-white rounded-4xl shadow-2xl w-full max-w-sm overflow-hidden border border-black/5" onClick={e => e.stopPropagation()}>
       <div className="p-8 flex flex-col items-center text-center">
         <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4"><AlertCircle size={32} /></div>
-        <h3 className="font-bold text-white/85 text-lg mb-2">通信异常</h3>
-        <div className="w-full bg-gray-50 rounded-2xl p-4 text-left border border-white/5 text-xs">
-          <div className="flex justify-between mb-2"><span className="text-white/40 font-bold uppercase tracking-widest text-[10px]">Status:</span><span className="font-mono font-bold text-red-500">{info.status || 'Error'}</span></div>
-          <div className="text-white/40 leading-relaxed break-all font-mono bg-black/30 p-3 rounded-lg border border-white/8 max-h-37.5 overflow-y-auto whitespace-pre-wrap">{info.detail}</div>
+        <h3 className="font-bold text-gray-800 text-lg mb-2">通信异常</h3>
+        <div className="w-full bg-gray-50 rounded-2xl p-4 text-left border border-black/5 text-xs">
+          <div className="flex justify-between mb-2"><span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Status:</span><span className="font-mono font-bold text-red-500">{info.status || 'Error'}</span></div>
+          <div className="text-gray-600 leading-relaxed break-all font-mono bg-white p-3 rounded-lg border border-black/5 max-h-37.5 overflow-y-auto whitespace-pre-wrap">{info.detail}</div>
         </div>
       </div>
       <button onClick={onClose} className="w-full py-5 font-bold text-black border-t border-gray-100 hover:bg-gray-50">确认</button>
@@ -2103,14 +2103,14 @@ const ErrorDetailModal = ({ info, onClose }: { info: any, onClose: () => void })
 
 const DeleteConfirmModal = ({ onConfirm, onCancel }: any) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-300 flex items-center justify-center px-10 bg-black/60 backdrop-blur-md" onClick={onCancel}>
-    <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#1a1a1a] rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-white/7" onClick={e => e.stopPropagation()}>
+    <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-white rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="p-8 flex flex-col items-center text-center">
         <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4"><Trash2 size={24} /></div>
-        <h3 className="font-bold text-white/85 text-lg mb-1">确认删除？</h3>
-        <p className="text-white/40 text-sm">删除后该消息将无法找回。</p>
+        <h3 className="font-bold text-gray-800 text-lg mb-1">确认删除？</h3>
+        <p className="text-gray-400 text-sm">删除后该消息将无法找回。</p>
       </div>
-      <div className="flex border-t border-white/6">
-        <button onClick={onCancel} className="flex-1 py-4 font-bold text-white/40 border-r border-gray-100">取消</button>
+      <div className="flex border-t border-gray-100">
+        <button onClick={onCancel} className="flex-1 py-4 font-bold text-gray-400 border-r border-gray-100">取消</button>
         <button onClick={onConfirm} className="flex-1 py-4 font-bold text-red-500">确定删除</button>
       </div>
     </motion.div>
@@ -2119,14 +2119,14 @@ const DeleteConfirmModal = ({ onConfirm, onCancel }: any) => (
 
 const BatchDeleteConfirmModal = ({ count, onConfirm, onCancel }: { count: number; onConfirm: () => void; onCancel: () => void }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-300 flex items-center justify-center px-10 bg-black/60 backdrop-blur-md" onClick={onCancel}>
-    <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#1a1a1a] rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-white/7" onClick={e => e.stopPropagation()}>
+    <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-white rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="p-8 flex flex-col items-center text-center">
         <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4"><Trash2 size={24} /></div>
-        <h3 className="font-bold text-white/85 text-lg mb-1">批量删除消息？</h3>
-        <p className="text-white/40 text-sm">将删除已选中的 <span className="font-bold text-white/60">{count}</span> 条消息，删除后无法找回。</p>
+        <h3 className="font-bold text-gray-800 text-lg mb-1">批量删除消息？</h3>
+        <p className="text-gray-400 text-sm">将删除已选中的 <span className="font-bold text-gray-600">{count}</span> 条消息，删除后无法找回。</p>
       </div>
-      <div className="flex border-t border-white/6">
-        <button onClick={onCancel} className="flex-1 py-4 font-bold text-white/40 border-r border-gray-100">取消</button>
+      <div className="flex border-t border-gray-100">
+        <button onClick={onCancel} className="flex-1 py-4 font-bold text-gray-400 border-r border-gray-100">取消</button>
         <button onClick={onConfirm} className="flex-1 py-4 font-bold text-red-500">确定删除</button>
       </div>
     </motion.div>
@@ -2146,7 +2146,7 @@ const VoiceModal = ({ onConfirm, onCancel }: { onConfirm: (text: string, duratio
       <motion.div
         initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="w-full max-w-sm mx-4 mb-8 bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/7"
+        className="w-full max-w-sm mx-4 mb-8 bg-white rounded-[28px] shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-2 flex items-center gap-3">
@@ -2155,7 +2155,7 @@ const VoiceModal = ({ onConfirm, onCancel }: { onConfirm: (text: string, duratio
           </div>
           <div>
             <p className="font-bold text-[15px] text-black/80">发送语音</p>
-            <p className="text-[11px] text-white/30 mt-0.5">输入内容，将以语音形式发送</p>
+            <p className="text-[11px] text-black/30 mt-0.5">输入内容，将以语音形式发送</p>
           </div>
         </div>
 
@@ -2166,30 +2166,30 @@ const VoiceModal = ({ onConfirm, onCancel }: { onConfirm: (text: string, duratio
             onChange={e => setText(e.target.value)}
             placeholder="输入语音内容..."
             rows={3}
-            className="w-full bg-[#1a1a1a]/3 border border-white/6 rounded-2xl px-4 py-3 text-[14px] text-white/70 placeholder:text-white/20 outline-none resize-none leading-relaxed focus:ring-2 focus:ring-black/10"
+            className="w-full bg-black/3 border border-black/6 rounded-2xl px-4 py-3 text-[14px] text-black/70 placeholder:text-black/20 outline-none resize-none leading-relaxed focus:ring-2 focus:ring-black/10"
           />
           {text.trim().length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className="mt-2 flex items-center gap-1.5 px-1"
             >
-              <Mic size={11} className="text-white/25" strokeWidth={1.5} />
-              <span className="text-[11px] text-white/25 font-medium">{duration}″</span>
+              <Mic size={11} className="text-black/25" strokeWidth={1.5} />
+              <span className="text-[11px] text-black/25 font-medium">{duration}″</span>
             </motion.div>
           )}
         </div>
 
-        <div className="flex border-t border-white/5">
+        <div className="flex border-t border-black/5">
           <button
             onClick={onCancel}
-            className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/5 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/5 active:bg-black/2 transition-colors"
           >
             取消
           </button>
           <button
             onClick={() => { if (text.trim()) onConfirm(text.trim(), duration); }}
             disabled={!text.trim()}
-            className="flex-1 py-4 font-bold text-[14px] text-white/75 disabled:text-white/20 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/75 disabled:text-black/20 active:bg-black/2 transition-colors"
           >
             发送
           </button>
@@ -2213,7 +2213,7 @@ const ImagePickerModal = ({ onChooseDesc, onChooseReal, onCancel }: {
     <motion.div
       initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 400, damping: 34 }}
-      className="w-full max-w-sm mx-4 mb-8 bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/7"
+      className="w-full max-w-sm mx-4 mb-8 bg-white rounded-[28px] shadow-2xl overflow-hidden"
       onClick={e => e.stopPropagation()}
     >
       <div className="px-6 pt-6 pb-4 flex items-center gap-3">
@@ -2222,32 +2222,32 @@ const ImagePickerModal = ({ onChooseDesc, onChooseReal, onCancel }: {
         </div>
         <div>
           <p className="font-bold text-[15px] text-black/80">发送图片</p>
-          <p className="text-[11px] text-white/30 mt-0.5">选择图片类型</p>
+          <p className="text-[11px] text-black/30 mt-0.5">选择图片类型</p>
         </div>
       </div>
       <div className="px-4 pb-6 flex flex-col gap-2">
         <button
           onClick={onChooseDesc}
-          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/3 border border-white/5 active:bg-black/7 transition-colors text-left"
+          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl bg-black/3 border border-black/5 active:bg-black/7 transition-colors text-left"
         >
-          <div className="w-10 h-10 rounded-xl bg-white/6 flex items-center justify-center shrink-0">
-            <Pencil size={16} className="text-white/50" strokeWidth={1.8} />
+          <div className="w-10 h-10 rounded-xl bg-black/6 flex items-center justify-center shrink-0">
+            <Pencil size={16} className="text-black/50" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-bold text-[14px] text-white/75">文字描述</p>
-            <p className="text-[11px] text-white/30 mt-0.5">用文字描述一张图片</p>
+            <p className="font-bold text-[14px] text-black/75">文字描述</p>
+            <p className="text-[11px] text-black/30 mt-0.5">用文字描述一张图片</p>
           </div>
         </button>
         <button
           onClick={onChooseReal}
-          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/3 border border-white/5 active:bg-black/7 transition-colors text-left"
+          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl bg-black/3 border border-black/5 active:bg-black/7 transition-colors text-left"
         >
-          <div className="w-10 h-10 rounded-xl bg-white/6 flex items-center justify-center shrink-0">
-            <ImageIcon size={16} className="text-white/50" strokeWidth={1.8} />
+          <div className="w-10 h-10 rounded-xl bg-black/6 flex items-center justify-center shrink-0">
+            <ImageIcon size={16} className="text-black/50" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-bold text-[14px] text-white/75">真实图片</p>
-            <p className="text-[11px] text-white/30 mt-0.5">从本地相册选择图片</p>
+            <p className="font-bold text-[14px] text-black/75">真实图片</p>
+            <p className="text-[11px] text-black/30 mt-0.5">从本地相册选择图片</p>
           </div>
         </button>
       </div>
@@ -2270,7 +2270,7 @@ const ImageDescModal = ({ onConfirm, onCancel }: {
       <motion.div
         initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="w-full max-w-sm mx-4 mb-8 bg-[#1a1a1a] rounded-[28px] shadow-2xl overflow-hidden border border-white/7"
+        className="w-full max-w-sm mx-4 mb-8 bg-white rounded-[28px] shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-2 flex items-center gap-3">
@@ -2279,7 +2279,7 @@ const ImageDescModal = ({ onConfirm, onCancel }: {
           </div>
           <div>
             <p className="font-bold text-[15px] text-black/80">文字描述图片</p>
-            <p className="text-[11px] text-white/30 mt-0.5">输入图片内容描述</p>
+            <p className="text-[11px] text-black/30 mt-0.5">输入图片内容描述</p>
           </div>
         </div>
         <div className="px-6 py-4">
@@ -2289,15 +2289,15 @@ const ImageDescModal = ({ onConfirm, onCancel }: {
             onChange={e => setDesc(e.target.value)}
             placeholder="描述这张图片的内容..."
             rows={3}
-            className="w-full bg-[#1a1a1a]/3 border border-white/6 rounded-2xl px-4 py-3 text-[14px] text-white/70 placeholder:text-white/20 outline-none resize-none leading-relaxed focus:ring-2 focus:ring-black/10"
+            className="w-full bg-black/3 border border-black/6 rounded-2xl px-4 py-3 text-[14px] text-black/70 placeholder:text-black/20 outline-none resize-none leading-relaxed focus:ring-2 focus:ring-black/10"
           />
         </div>
-        <div className="flex border-t border-white/5">
-          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/5 active:bg-white/2 transition-colors">取消</button>
+        <div className="flex border-t border-black/5">
+          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/5 active:bg-black/2 transition-colors">取消</button>
           <button
             onClick={() => { if (desc.trim()) onConfirm(desc.trim()); }}
             disabled={!desc.trim()}
-            className="flex-1 py-4 font-bold text-[14px] text-white/75 disabled:text-white/20 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/75 disabled:text-black/20 active:bg-black/2 transition-colors"
           >发送</button>
         </div>
       </motion.div>
@@ -2343,7 +2343,7 @@ const RedPacketModal = ({ senderName, onConfirm, onCancel }: {
         </div>
 
         {/* 金额输入 */}
-        <div className="mx-5 mb-3 bg-[#1a1a1a]/10 rounded-2xl px-5 py-4 border border-white/10">
+        <div className="mx-5 mb-3 bg-white/10 rounded-2xl px-5 py-4 border border-white/10">
           <div className="flex items-center gap-2">
             <span className="text-white/60 text-[18px] font-bold">¥</span>
             <input
@@ -2363,7 +2363,7 @@ const RedPacketModal = ({ senderName, onConfirm, onCancel }: {
         </div>
 
         {/* 备注 */}
-        <div className="mx-5 mb-5 bg-[#1a1a1a]/10 rounded-2xl px-5 py-3 border border-white/10">
+        <div className="mx-5 mb-5 bg-white/10 rounded-2xl px-5 py-3 border border-white/10">
           <input
             type="text"
             value={note}
@@ -2411,27 +2411,27 @@ const TransferModal = ({ receiverName, onConfirm, onCancel }: {
       <motion.div
         initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="w-full max-w-sm rounded-[28px] overflow-hidden shadow-2xl bg-[#1a1a1a] border border-white/7"
+        className="w-full max-w-sm rounded-[28px] overflow-hidden shadow-2xl bg-white"
         onClick={e => e.stopPropagation()}
       >
         {/* 顶栏 */}
-        <div className="px-6 pt-6 pb-4 flex items-center gap-3 border-b border-white/5">
+        <div className="px-6 pt-6 pb-4 flex items-center gap-3 border-b border-black/5">
           <div className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center shrink-0">
             <ArrowRightLeft size={17} className="text-white" strokeWidth={2} />
           </div>
           <div>
             <p className="font-bold text-[16px] text-black/80">转账</p>
-            <p className="text-[11px] text-white/30 mt-0.5">转给 {receiverName}</p>
+            <p className="text-[11px] text-black/30 mt-0.5">转给 {receiverName}</p>
           </div>
-          <button onClick={onCancel} className="ml-auto p-1.5 rounded-xl bg-white/5 active:bg-white/10 transition-colors">
-            <X size={16} className="text-white/40" />
+          <button onClick={onCancel} className="ml-auto p-1.5 rounded-xl bg-black/5 active:bg-black/10 transition-colors">
+            <X size={16} className="text-black/40" />
           </button>
         </div>
 
         {/* 金额区 */}
         <div className="px-6 pt-6 pb-4">
-          <div className="flex items-end gap-2 pb-3 border-b-2 border-white/10 focus-within:border-black/40 transition-colors">
-            <span className="text-white/25 text-[22px] font-light mb-0.5">¥</span>
+          <div className="flex items-end gap-2 pb-3 border-b-2 border-black/10 focus-within:border-black/40 transition-colors">
+            <span className="text-black/25 text-[22px] font-light mb-0.5">¥</span>
             <input
               autoFocus
               type="number"
@@ -2444,30 +2444,30 @@ const TransferModal = ({ receiverName, onConfirm, onCancel }: {
               className="flex-1 bg-transparent outline-none text-black/80 text-[36px] font-light placeholder:text-black/10 w-full"
             />
           </div>
-          <p className="mt-2 text-[10px] text-white/25 uppercase tracking-widest">转账金额（元）</p>
+          <p className="mt-2 text-[10px] text-black/25 uppercase tracking-widest">转账金额（元）</p>
         </div>
 
         {/* 备注 */}
-        <div className="mx-6 mb-6 bg-[#1a1a1a]/3 rounded-2xl px-4 py-3 border border-white/5">
+        <div className="mx-6 mb-6 bg-black/3 rounded-2xl px-4 py-3 border border-black/5">
           <input
             type="text"
             value={note}
             onChange={e => setNote(e.target.value)}
             placeholder="添加备注（选填）"
             maxLength={30}
-            className="w-full bg-transparent outline-none text-white/60 text-[14px] placeholder:text-white/20"
+            className="w-full bg-transparent outline-none text-black/60 text-[14px] placeholder:text-black/20"
           />
         </div>
 
         {/* 按钮 */}
-        <div className="flex border-t border-white/5">
-          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-white/35 border-r border-white/5 active:bg-white/2 transition-colors">
+        <div className="flex border-t border-black/5">
+          <button onClick={onCancel} className="flex-1 py-4 font-bold text-[14px] text-black/35 border-r border-black/5 active:bg-black/2 transition-colors">
             取消
           </button>
           <button
             onClick={() => { if (isValid) onConfirm(Number(amount).toFixed(2), note.trim()); }}
             disabled={!isValid}
-            className="flex-1 py-4 font-bold text-[14px] text-black/80 disabled:text-white/20 active:bg-white/2 transition-colors"
+            className="flex-1 py-4 font-bold text-[14px] text-black/80 disabled:text-black/20 active:bg-black/2 transition-colors"
           >
             转账
           </button>
@@ -2493,7 +2493,7 @@ const TransferActionModal = ({ msg, contactName, onAccept, onReturn, onCancel }:
     <motion.div
       initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-      className="w-full max-w-xs bg-[#1a1a1a] rounded-3xl overflow-hidden shadow-2xl border border-white/7"
+      className="w-full max-w-xs bg-white rounded-3xl overflow-hidden shadow-2xl"
       onClick={e => e.stopPropagation()}
       style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif" }}
     >
@@ -2501,7 +2501,7 @@ const TransferActionModal = ({ msg, contactName, onAccept, onReturn, onCancel }:
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 border-b border-white/6">
+      <div className="px-6 pt-6 pb-4 border-b border-black/6">
         <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#aaa', marginBottom: '10px' }}>
           Transfer · 转账
         </p>
@@ -2520,14 +2520,14 @@ const TransferActionModal = ({ msg, contactName, onAccept, onReturn, onCancel }:
       <div className="flex">
         <button
           onClick={onReturn}
-          className="flex-1 py-4 border-r border-white/6 active:bg-white/3 transition-colors"
+          className="flex-1 py-4 border-r border-black/6 active:bg-black/3 transition-colors"
         >
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999' }}>Return</p>
           <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '16px', fontWeight: 600, color: '#555', marginTop: '2px' }}>退还</p>
         </button>
         <button
           onClick={onAccept}
-          className="flex-1 py-4 active:bg-white/3 transition-colors"
+          className="flex-1 py-4 active:bg-black/3 transition-colors"
         >
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#111' }}>Accept</p>
           <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '16px', fontWeight: 600, color: '#111', marginTop: '2px' }}>收款</p>
@@ -2641,12 +2641,12 @@ const EditModal = ({ initialText, onSave, onCancel }: any) => {
   const [text, setText] = useState(initialText);
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-300 flex items-center justify-center px-6 bg-black/60 backdrop-blur-md">
-      <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#1a1a1a] rounded-4xl shadow-2xl w-full max-w-sm overflow-hidden">
+      <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-white rounded-4xl shadow-2xl w-full max-w-sm overflow-hidden">
         <div className="p-6">
-          <textarea value={text} onChange={(e) => setText(e.target.value)} className="w-full bg-gray-50 rounded-2xl p-4 border border-white/5 min-h-30 outline-none text-gray-700 leading-relaxed resize-none" />
+          <textarea value={text} onChange={(e) => setText(e.target.value)} className="w-full bg-gray-50 rounded-2xl p-4 border border-black/5 min-h-30 outline-none text-gray-700 leading-relaxed resize-none" />
         </div>
-        <div className="flex border-t border-white/6">
-          <button onClick={onCancel} className="flex-1 py-4 font-bold text-white/40 border-r border-gray-100">取消</button>
+        <div className="flex border-t border-gray-100">
+          <button onClick={onCancel} className="flex-1 py-4 font-bold text-gray-400 border-r border-gray-100">取消</button>
           <button onClick={() => onSave(text)} className="flex-1 py-4 font-bold text-black">确认修改</button>
         </div>
       </motion.div>
@@ -2656,12 +2656,12 @@ const EditModal = ({ initialText, onSave, onCancel }: any) => {
 
 const RevokeViewer = ({ msg, onClose }: any) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-200 flex items-center justify-center px-8 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-    <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-[#1a1a1a] rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+    <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="p-6">
-        <h3 className="font-bold text-white/85 text-lg mb-4 flex items-center gap-2"><Eye size={18} className="text-amber-500" /> 原内容查看</h3>
-        <div className="bg-gray-50 rounded-2xl p-4 border border-white/5 text-gray-700 leading-relaxed wrap-break-word">{msg.text}</div>
+        <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2"><Eye size={18} className="text-amber-500" /> 原内容查看</h3>
+        <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 text-gray-700 leading-relaxed wrap-break-word">{msg.text}</div>
       </div>
-      <button onClick={onClose} className="w-full py-4 bg-gray-50 border-t border-gray-100 font-bold text-white/50">我知道了</button>
+      <button onClick={onClose} className="w-full py-4 bg-gray-50 border-t border-gray-100 font-bold text-gray-500">我知道了</button>
     </motion.div>
   </motion.div>
 );
@@ -2720,14 +2720,14 @@ const MessageMenu = ({ rect, onAction, isAi, canRevoke }: {
       transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
       style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: -9999 }}
       onClick={(e) => e.stopPropagation()}
-      className="fixed z-100 bg-[#1a1a1a]/92 backdrop-blur-xl rounded-2xl shadow-xl border border-white/5 p-1.5"
+      className="fixed z-100 bg-white/92 backdrop-blur-xl rounded-2xl shadow-xl border border-black/5 p-1.5"
     >
       {rows.map((row, ri) => (
-        <div key={ri} className={`flex gap-0.5 items-center ${ri > 0 ? 'border-t border-white/5 mt-0.5 pt-0.5' : ''}`}>
+        <div key={ri} className={`flex gap-0.5 items-center ${ri > 0 ? 'border-t border-black/5 mt-0.5 pt-0.5' : ''}`}>
           {row.map(item => (
-            <button key={item.id} onClick={(e) => { e.stopPropagation(); onAction(item.id); }} className="flex flex-col items-center min-w-12.5 py-1.5 hover:bg-[#1a1a1a]/5 rounded-xl active:bg-white/10 transition-colors">
-              <div className="text-white/70 mb-0.5">{item.icon}</div>
-              <span className="text-[10px] font-bold text-white/40">{item.label}</span>
+            <button key={item.id} onClick={(e) => { e.stopPropagation(); onAction(item.id); }} className="flex flex-col items-center min-w-12.5 py-1.5 hover:bg-black/5 rounded-xl active:bg-black/10 transition-colors">
+              <div className="text-black/70 mb-0.5">{item.icon}</div>
+              <span className="text-[10px] font-bold text-black/40">{item.label}</span>
             </button>
           ))}
         </div>
@@ -2776,17 +2776,17 @@ const SystemNoticeMenu = ({
       transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
       style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: -9999 }}
       onClick={(e) => e.stopPropagation()}
-      className="fixed z-100 bg-[#1a1a1a]/92 backdrop-blur-xl rounded-2xl shadow-xl border border-white/5 p-1.5"
+      className="fixed z-100 bg-white/92 backdrop-blur-xl rounded-2xl shadow-xl border border-black/5 p-1.5"
     >
       <div className="flex gap-0.5 items-center">
         {items.map(item => (
           <button
             key={item.id}
             onClick={(e) => { e.stopPropagation(); onAction(item.id); }}
-            className="flex flex-col items-center min-w-12.5 py-1.5 hover:bg-[#1a1a1a]/5 rounded-xl active:bg-white/10 transition-colors"
+            className="flex flex-col items-center min-w-12.5 py-1.5 hover:bg-black/5 rounded-xl active:bg-black/10 transition-colors"
           >
-            <div className="text-white/70 mb-0.5">{item.icon}</div>
-            <span className="text-[10px] font-bold text-white/40">{item.label}</span>
+            <div className="text-black/70 mb-0.5">{item.icon}</div>
+            <span className="text-[10px] font-bold text-black/40">{item.label}</span>
           </button>
         ))}
       </div>
@@ -2816,7 +2816,7 @@ const MarkdownMessage = ({ text, isDark }: { text: string; isDark: boolean }) =>
       components={{
         p: ({ children }) => <p className="my-0 leading-relaxed">{children}</p>,
         blockquote: ({ children }) => (
-          <div className={`mb-1.5 px-2 py-1.5 rounded-lg text-[11px] leading-relaxed opacity-80 ${isDark ? 'bg-white/10 border-l-2 border-white/25' : 'bg-white/5 border-l-2 border-black/15'}`}>
+          <div className={`mb-1.5 px-2 py-1.5 rounded-lg text-[11px] leading-relaxed opacity-80 ${isDark ? 'bg-white/10 border-l-2 border-white/25' : 'bg-black/5 border-l-2 border-black/15'}`}>
             {children}
           </div>
         ),
@@ -3374,7 +3374,7 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
       return <div className="w-full h-full bg-black flex items-center justify-center text-white font-bold text-[10px]">ME</div>;
     }
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center overflow-hidden text-white/30 text-[10px] font-bold">
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center overflow-hidden text-black/30 text-[10px] font-bold">
         {contact.avatar ? <img src={contact.avatar} className="w-full h-full object-cover" alt="av" /> : (contact.initials || contact.name[0])}
       </div>
     );
@@ -4374,7 +4374,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: "tween", duration: 0.3 }}
-      className="fixed inset-0 z-70 flex flex-col overflow-hidden" style={{ background: '#0d0d0d' }}
+      className="fixed inset-0 z-70 bg-[#fcfcfc] flex flex-col overflow-hidden"
     >
       <AnimatePresence mode="wait">
         {/* 聊天设置页 */}
@@ -4741,23 +4741,23 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             <motion.div
               initial={{ scale: 0.93, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.93, opacity: 0, y: 16 }} transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-              className="w-full max-w-sm bg-[#1a1a1a] rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+              className="w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col"
               style={{ maxHeight: '72vh' }}
               onClick={e => e.stopPropagation()}
             >
               {/* 标题栏 */}
-              <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/6">
+              <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-black/6">
                 <div className="flex items-center gap-2">
                   {callLogModal.callType === 'video'
-                    ? <Video size={15} className="text-white/40" />
-                    : <PhoneCall size={15} className="text-white/40" />}
-                  <span className="text-[15px] font-semibold text-white/75">
+                    ? <Video size={15} className="text-black/40" />
+                    : <PhoneCall size={15} className="text-black/40" />}
+                  <span className="text-[15px] font-semibold text-black/75">
                     {callLogModal.callType === 'video' ? '视频' : '语音'}通话记录
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[12px] text-white/30">{callLogModal.displayText?.split('·')[1]?.trim() ?? ''}</span>
-                  <button onClick={() => setCallLogModal(null)} className="text-white/30 hover:text-white/60 transition-colors">
+                  <span className="text-[12px] text-black/30">{callLogModal.displayText?.split('·')[1]?.trim() ?? ''}</span>
+                  <button onClick={() => setCallLogModal(null)} className="text-black/30 hover:text-black/60 transition-colors">
                     <X size={18} />
                   </button>
                 </div>
@@ -4765,20 +4765,20 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               {/* 消息列表 */}
               <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
                 {(callLogModal.callLog?.length ?? 0) === 0 ? (
-                  <p className="text-center text-white/25 text-[13px] py-8">暂无记录</p>
+                  <p className="text-center text-black/25 text-[13px] py-8">暂无记录</p>
                 ) : (
                   callLogModal.callLog!.map((r, i) => (
                     <div key={i} className={`flex gap-2 ${r.sender === 'me' ? 'flex-row-reverse' : 'flex-row'} items-end`}>
-                      <div className={`text-[11px] font-bold shrink-0 mb-1 ${r.sender === 'me' ? 'text-white/25' : 'text-white/30'}`}>
+                      <div className={`text-[11px] font-bold shrink-0 mb-1 ${r.sender === 'me' ? 'text-black/25' : 'text-black/30'}`}>
                         {r.senderName}
                       </div>
                       <div className={`max-w-[72%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-snug ${r.sender === 'me'
                         ? 'bg-[#95EC69] text-black rounded-br-sm'
-                        : 'bg-white/6 text-black/80 rounded-bl-sm'
+                        : 'bg-black/6 text-black/80 rounded-bl-sm'
                         }`}>
                         {r.text}
                       </div>
-                      <span className="text-[10px] text-white/20 shrink-0 mb-1">{r.time}</span>
+                      <span className="text-[10px] text-black/20 shrink-0 mb-1">{r.time}</span>
                     </div>
                   ))
                 )}
@@ -4841,29 +4841,29 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
       {/* 顶部导航 */}
       <div style={{
-        background: 'rgba(12,12,12,0.92)',
+        background: 'rgba(255,255,255,0.82)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         paddingTop: 'env(safe-area-inset-top)',
-        borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+        borderBottom: '0.5px solid rgba(0,0,0,0.10)',
         zIndex: 20,
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 62, paddingLeft: 4, paddingRight: 8 }}>
           {/* 左：返回 + 头像 + 名字 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 6px', color: '#f0f0f0', display: 'flex', alignItems: 'center' }}>
+            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 6px', color: '#111', display: 'flex', alignItems: 'center' }}>
               <ChevronLeft size={24} />
             </button>
             <div style={{ width: 34, height: 34, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
               {renderAvatar(false)}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 6 }}>
-              <span style={{ fontSize: 16, fontWeight: 600, color: '#f0f0f0', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+              <span style={{ fontSize: 16, fontWeight: 600, color: '#111', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
                 {contact.name}
               </span>
               {isAiThinking && (
-                <span style={{ fontSize: 11, color: '#606060', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', lineHeight: 1.3 }}>
+                <span style={{ fontSize: 11, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', lineHeight: 1.3 }}>
                   正在输入…
                 </span>
               )}
@@ -4873,7 +4873,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <button
               onClick={() => setShowInnerVoice(v => !v)}
-              style={{ background: showInnerVoice ? '#e0e0e0' : 'none', borderRadius: '50%', border: 'none', cursor: 'pointer', padding: '7px', color: showInnerVoice ? '#000' : '#e0e0e0', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
+              style={{ background: showInnerVoice ? '#111' : 'none', borderRadius: '50%', border: 'none', cursor: 'pointer', padding: '7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
               title="查看心声"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -4890,9 +4890,9 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         <AnimatePresence>
           {isBlacklisted && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-              <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#181818' }}>
-                <Ban size={11} style={{ color: '#555' }} />
-                <span style={{ fontSize: 11, color: '#555', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+              <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#fafafa' }}>
+                <Ban size={11} style={{ color: '#c0c0c0' }} />
+                <span style={{ fontSize: 11, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                   {blockedBy === 'other' ? '对方已将你拉入黑名单' : '已将对方加入黑名单'}
                 </span>
               </div>
@@ -4913,7 +4913,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 borderTop: '0.5px solid rgba(0,0,0,0.06)',
                 padding: '7px 16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                background: memoryBanner === 'done' ? '#0a1f14' : '#181818',
+                background: memoryBanner === 'done' ? '#f0fdf4' : '#fafafa',
                 transition: 'background 0.3s',
               }}>
                 {memoryBanner === 'extracting' ? (
@@ -4921,9 +4921,9 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
-                      style={{ width: 11, height: 11, border: '1.5px solid #333', borderTopColor: '#aaa', borderRadius: '50%', flexShrink: 0 }}
+                      style={{ width: 11, height: 11, border: '1.5px solid #ddd', borderTopColor: '#555', borderRadius: '50%', flexShrink: 0 }}
                     />
-                    <span style={{ fontSize: 11, color: '#555', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+                    <span style={{ fontSize: 11, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                       正在整理记忆…
                     </span>
                   </>
@@ -4947,7 +4947,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         ref={scrollRef}
         onClick={() => { if (showPlusPanel) setShowPlusPanel(false); }}
         className="flex-1 overflow-y-auto p-4 pt-4 no-scrollbar flex flex-col"
-        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: 'rgba(255,255,255,0.07)' }}
+        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: '#f2f2f7' }}
       >
         {effectiveBubbleCss && <style>{effectiveBubbleCss}</style>}
         {effectiveThemeCss && <style>{effectiveThemeCss}</style>}
@@ -4967,11 +4967,11 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                   onClick={() => setVisibleCount(v => v + PAGE)}
                   className="w-full flex items-center justify-center gap-2 py-2 mb-1 active:opacity-70 transition-opacity"
                 >
-                  <div className="flex-1 h-px bg-white/6" />
-                  <span className="text-[11px] font-bold text-white/30 shrink-0 px-2">
+                  <div className="flex-1 h-px bg-black/6" />
+                  <span className="text-[11px] font-bold text-black/30 shrink-0 px-2">
                     展开更早的 {Math.min(PAGE, hiddenCount)} 条消息
                   </span>
-                  <div className="flex-1 h-px bg-white/6" />
+                  <div className="flex-1 h-px bg-black/6" />
                 </button>
               )}
 
@@ -4999,7 +4999,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       >
                         {isMultiSelect && (
                           <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-white/20 bg-white'
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
                               }`}>
                               {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                             </div>
@@ -5028,7 +5028,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                             onMouseUp={endPress}
                             onTouchEnd={endPress}
                             onClick={() => { if (!isMultiSelect) (msg.callLog?.length ?? 0) > 0 && setCallLogModal(msg); }}
-                            className={`flex items-center gap-1.5 bg-white/4.5 text-white/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-white/8 active:bg-white/12 cursor-pointer' : 'cursor-default'}`}
+                            className={`flex items-center gap-1.5 bg-black/4.5 text-black/35 text-[11px] px-4 py-1.5 rounded-full transition-colors ${(msg.callLog?.length ?? 0) > 0 ? 'hover:bg-black/8 active:bg-black/12 cursor-pointer' : 'cursor-default'}`}
                           >
                             {msg.callType === 'video' ? <Video size={11} className="opacity-60" /> : <PhoneCall size={11} className="opacity-60" />}
                             <span className="font-medium">{msg.displayText ?? msg.text.replace('[系统通知] ', '')}</span>
@@ -5056,7 +5056,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                             }}
                             onMouseUp={endPress}
                             onTouchEnd={endPress}
-                            className="bg-white/8 text-white/35 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug select-none"
+                            className="bg-black/4 text-black/30 text-[11px] px-4 py-1.5 rounded-full max-w-[85%] text-center leading-snug select-none"
                           >
                             {msg.displayText ?? msg.text.replace('[系统通知] ', '')}
                           </div>
@@ -5066,7 +5066,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       <div className="flex justify-center my-2 relative">
                         {isMultiSelect && (
                           <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-white/20 bg-white'
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id) ? 'bg-black border-black' : 'border-black/20 bg-white'
                               }`}>
                               {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                             </div>
@@ -5094,7 +5094,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           onMouseUp={endPress}
                           onTouchEnd={endPress}
                           onClick={() => { if (isMultiSelect) { toggleSelectMsg(msg.id); return; } setViewingRevoked(msg); }}
-                          className="bg-white/8 text-white/35 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-white/12 transition-colors select-none"
+                          className="bg-black/5 text-black/30 text-[11px] px-4 py-1.5 rounded-full cursor-pointer hover:bg-black/10 transition-colors select-none"
                         >
                           {msg.sender === 'me' ? "你撤回了一条消息" : `${contact.name} 撤回了一条消息`}
                         </div>
@@ -5111,7 +5111,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                             <div className={`shrink-0 self-center ${msg.sender === 'me' ? 'order-last ml-1' : 'order-first mr-1'}`}>
                               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMsgIds.has(msg.id)
                                 ? 'bg-black border-black'
-                                : 'border-white/20 bg-white'
+                                : 'border-black/20 bg-white'
                                 }`}>
                                 {selectedMsgIds.has(msg.id) && <Check size={11} className="text-white" strokeWidth={3} />}
                               </div>
@@ -5128,7 +5128,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 {renderAvatar(msg.sender === 'me')}
                               </div>
                               {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
-                                <span className="text-[9px] text-white/25 leading-none">{msg.time}</span>
+                                <span className="text-[9px] text-black/25 leading-none">{msg.time}</span>
                               )}
                             </div>
                           ) : (
@@ -5165,8 +5165,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
                                   ? ''
                                   : msg.sender === 'me'
-                                    ? 'bg-[#f5f5f5] text-black'
-                                    : 'bg-white/10 text-white'
+                                    ? 'bg-black text-white'
+                                    : 'bg-white text-black'
                                 } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
                                 }`}
                               style={(() => {
@@ -5178,13 +5178,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   else if (isFirstInGroup) radius = '22px 22px 8px 22px';
                                   else if (isLastInGroup) radius = '22px 8px 6px 22px';
                                   else radius = '22px 8px 8px 22px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, boxShadow: '0 1px 8px rgba(0,0,0,0.3)' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, boxShadow: 'none' };
                                 } else {
                                   if (isFirstInGroup && isLastInGroup) radius = '22px 22px 22px 6px';
                                   else if (isFirstInGroup) radius = '22px 22px 22px 8px';
                                   else if (isLastInGroup) radius = '8px 22px 22px 6px';
                                   else radius = '8px 22px 22px 8px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(255,255,255,0.12)', boxShadow: 'none', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.10)', boxShadow: 'none' };
                                 }
                               })()}
                             >
@@ -5205,17 +5205,17 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                     {(msg.forwardedMessages ?? []).slice(0, 3).map((r, i) => (
                                       <div key={i} style={{ display: 'flex', gap: '6px', marginBottom: i < 2 ? '5px' : 0 }}>
                                         <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.3)', flexShrink: 0, whiteSpace: 'nowrap' }}>{r.senderName}:</span>
-                                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.text}</span>
+                                        <span style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.text}</span>
                                       </div>
                                     ))}
                                     {(msg.forwardedMessages?.length ?? 0) > 3 && (
-                                      <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>…共 {msg.forwardedMessages!.length} 条</p>
+                                      <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)', marginTop: '4px' }}>…共 {msg.forwardedMessages!.length} 条</p>
                                     )}
                                   </div>
                                   {/* 底部提示 */}
-                                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '7px 14px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '4px' }}>
-                                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>查看全部</span>
-                                    <ChevronRight size={11} style={{ color: 'rgba(255,255,255,0.2)' }} />
+                                  <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '7px 14px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '4px' }}>
+                                    <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.25)' }}>查看全部</span>
+                                    <ChevronRight size={11} style={{ color: 'rgba(0,0,0,0.2)' }} />
                                   </div>
                                 </div>
                               ) : msg.isTransfer ? (
@@ -5226,26 +5226,26 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   const statusLabel = isAccepted ? 'Accepted · 已收款' : msg.transferStatus === 'returned' ? 'Returned · 已退还' : 'Pending · 待收款';
                                   const accentColor = isAccepted ? '#1a5c38' : msg.transferStatus === 'returned' ? '#555' : '#111';
                                   return (
-                                    <div className="select-none" style={{ width: '210px', background: '#1c1c1c', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                    <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
                                       <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&display=swap');`}</style>
                                       {/* 左色条 + 内容 */}
                                       <div style={{ display: 'flex' }}>
                                         <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
                                         <div style={{ padding: '14px 16px 12px', flex: 1 }}>
-                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '8px' }}>Transfer · 转账</p>
-                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: isPending ? '#e8e8e8' : 'rgba(255,255,255,0.35)', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Transfer · 转账</p>
+                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: isPending ? '#111' : '#999', lineHeight: 1, letterSpacing: '-0.02em' }}>
                                             ¥{msg.transferAmount}
                                           </p>
                                           {msg.transferNote ? (
-                                            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '5px', letterSpacing: '0.02em' }}>{msg.transferNote}</p>
+                                            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>{msg.transferNote}</p>
                                           ) : null}
                                         </div>
                                       </div>
                                       {/* 底部状态栏 */}
-                                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                         <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
                                         {isPending && msg.sender !== 'me' && (
-                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em' }}>tap to act</p>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#ccc', letterSpacing: '0.1em' }}>tap to act</p>
                                         )}
                                       </div>
                                     </div>
@@ -5259,20 +5259,20 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   const accentColor = opened ? '#1a5c38' : '#c0392b';
                                   const statusLabel = opened ? 'Opened · 已领取' : canClaim ? 'Tap to open · 点击领取' : 'Sent · 已发出';
                                   return (
-                                    <div className="select-none" style={{ width: '210px', background: '#1c1c1c', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                    <div className="select-none" style={{ width: '210px', background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.10)', border: '1px solid rgba(0,0,0,0.07)' }}>
                                       <div style={{ display: 'flex' }}>
                                         <div style={{ width: '3px', background: accentColor, flexShrink: 0 }} />
                                         <div style={{ padding: '14px 16px 12px', flex: 1 }}>
-                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '8px' }}>Red Packet · 红包</p>
-                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: opened ? 'rgba(255,255,255,0.35)' : '#e8e8e8', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.24em', textTransform: 'uppercase', color: '#bbb', marginBottom: '8px' }}>Red Packet · 红包</p>
+                                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '32px', fontWeight: 600, fontStyle: 'italic', color: opened ? '#999' : '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>
                                             ¥{msg.redPacketAmount}
                                           </p>
-                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '5px', letterSpacing: '0.02em' }}>
+                                          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#bbb', marginTop: '5px', letterSpacing: '0.02em' }}>
                                             {msg.redPacketNote || '恭喜发财，大吉大利'}
                                           </p>
                                         </div>
                                       </div>
-                                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '7px 16px' }}>
+                                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', padding: '7px 16px' }}>
                                         <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: accentColor }}>{statusLabel}</p>
                                       </div>
                                     </div>
@@ -5327,7 +5327,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                       />
                                     ))}
                                   </div>
-                                  <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-white/35'}`}>
+                                  <span className={`text-[12px] font-medium tabular-nums shrink-0 ${msg.sender === 'me' ? 'text-white/50' : 'text-black/35'}`}>
                                     {msg.voiceDuration}″
                                   </span>
                                 </div>
@@ -5339,7 +5339,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                       transition={{ duration: 0.2 }}
                                       className="overflow-hidden"
                                     >
-                                      <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-white/8 text-black/55'}`}>
+                                      <div className={`mt-2.5 pt-2.5 text-[13px] leading-relaxed border-t ${msg.sender === 'me' ? 'border-white/15 text-white/70' : 'border-black/8 text-black/55'}`}>
                                         {msg.text}
                                       </div>
                                     </motion.div>
@@ -5366,7 +5366,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   /* 文字描述图片 */
                                   <div className="w-50 h-50 flex flex-col items-center justify-center relative rounded-2xl overflow-hidden">
                                     {/* 底色 */}
-                                    <div className={`absolute inset-0 ${msg.sender === 'me' ? 'bg-white/10' : 'bg-white/5'}`} />
+                                    <div className={`absolute inset-0 ${msg.sender === 'me' ? 'bg-white/10' : 'bg-black/5'}`} />
                                     <AnimatePresence mode="wait">
                                       {expandedImageIds.has(msg.id) ? (
                                         <motion.div
@@ -5386,8 +5386,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                           transition={{ duration: 0.18 }}
                                           className="relative z-10 flex flex-col items-center gap-2"
                                         >
-                                          <ImageIcon size={28} strokeWidth={1.2} className={msg.sender === 'me' ? 'text-white/40' : 'text-white/25'} />
-                                          <span className={`text-[11px] font-medium ${msg.sender === 'me' ? 'text-white/40' : 'text-white/30'}`}>点击查看图片</span>
+                                          <ImageIcon size={28} strokeWidth={1.2} className={msg.sender === 'me' ? 'text-white/40' : 'text-black/25'} />
+                                          <span className={`text-[11px] font-medium ${msg.sender === 'me' ? 'text-white/40' : 'text-black/30'}`}>点击查看图片</span>
                                         </motion.div>
                                       )}
                                     </AnimatePresence>
@@ -5398,7 +5398,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   {msg.quote && (
                                     <div
                                       onClick={() => msg.quote?.msgId && scrollToMessage(msg.quote.msgId)}
-                                      className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/10'
+                                      className={`mb-1.5 p-2 text-xs border-l-2 rounded-lg cursor-pointer active:opacity-70 transition-opacity ${msg.sender === 'me' ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
                                         }`}
                                     >
                                       <div className="font-bold opacity-50 text-[10px] mb-0.5">{msg.quote.userName}</div>
@@ -5424,7 +5424,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
                           {/* 气泡外侧时间戳（bubble 模式，与头像列平级，自动被推到气泡最外侧） */}
                           {chatSettings.showTimestamps && chatSettings.timestampPosition === 'bubble' && (
-                            <span className="text-[9px] text-white/20 leading-none shrink-0 self-end pb-0.5 whitespace-nowrap">
+                            <span className="text-[9px] text-black/20 leading-none shrink-0 self-end pb-0.5 whitespace-nowrap">
                               {msg.time}
                             </span>
                           )}
@@ -5518,39 +5518,39 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     style={{ borderBottom: '0.5px solid rgba(0,0,0,0.08)', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f9f9f9' }}
                   >
                     <div style={{ flex: 1, minWidth: 0, borderLeft: '3px solid #111', borderRadius: 2, paddingLeft: 8 }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.45)', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', display: 'block', marginBottom: 2 }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', display: 'block', marginBottom: 2 }}>
                         引用 {quotingMsg.sender === 'me' ? '我' : contact.name}
                       </span>
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{quotingMsg.text}</span>
+                      <span style={{ fontSize: 12, color: '#666', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{quotingMsg.text}</span>
                     </div>
-                    <button onClick={() => setQuotingMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#555' }}><X size={14} /></button>
+                    <button onClick={() => setQuotingMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#ccc' }}><X size={14} /></button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 10px', gap: 8, background: '#111' }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 10px', gap: 8 }}>
                 <button onClick={() => { setShowEmojiPanel(v => !v); setShowPlusPanel(false); }}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer', padding: '6px',
-                    color: showEmojiPanel ? '#fff' : '#555', flexShrink: 0
+                    color: showEmojiPanel ? '#111' : '#8e8e93', flexShrink: 0
                   }}>
                   <Smile size={22} />
                 </button>
-                <div style={{ flex: '1 1 0%', minWidth: 0, maxWidth: 'calc(100% - 130px)', background: 'rgba(255,255,255,0.07)', borderRadius: 22, padding: '8px 14px', display: 'flex', alignItems: 'center', minHeight: 38, border: '0.5px solid rgba(255,255,255,0.10)' }}>
+                <div style={{ flex: '1 1 0%', minWidth: 0, maxWidth: 'calc(100% - 130px)', background: '#f2f2f7', borderRadius: 22, padding: '8px 14px', display: 'flex', alignItems: 'center', minHeight: 38 }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="消息"
-                    style={{ width: '100%', background: 'transparent', outline: 'none', border: 'none', fontSize: 15, color: '#f0f0f0', resize: 'none', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', padding: '1px 0', lineHeight: 1.4 }}
-                    className="placeholder:text-white/30"
+                    style={{ width: '100%', background: 'transparent', outline: 'none', border: 'none', fontSize: 15, color: '#111', resize: 'none', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', padding: '1px 0', lineHeight: 1.4 }}
+                    className="placeholder:text-black/30"
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                   />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#555' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#8e8e93' }}
                     onClick={() => setShowPlusPanel(v => !v)}
                   >
                     <motion.div animate={{ rotate: showPlusPanel ? 45 : 0 }} transition={{ type: 'spring', stiffness: 380, damping: 26 }}>
@@ -5569,8 +5569,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     style={{
                       width: 34, height: 34,
                       borderRadius: '50%',
-                      background: (inputText.trim() || quotingMsg) ? '#f0f0f0' : '#222',
-                      color: (inputText.trim() || quotingMsg) ? '#000' : '#555',
+                      background: (inputText.trim() || quotingMsg) ? '#111' : '#e5e5ea',
+                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#8e8e93',
                       border: 'none',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       cursor: isAiThinking ? 'not-allowed' : 'pointer',
@@ -5599,7 +5599,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(255,255,255,0.07)', background: '#111' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
                   >
                     {/* 第一行 */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '16px 8px 4px' }}>
@@ -5620,10 +5620,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e0e0e0', background: 'rgba(255,255,255,0.08)', transition: 'background 0.12s' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2', transition: 'background 0.12s' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#555', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5644,10 +5644,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e0e0e0', background: 'rgba(255,255,255,0.08)' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#555', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5662,7 +5662,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 220, opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(255,255,255,0.07)', background: '#111' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
                   >
                     <EmojiPanel
                       contactId={contact.id}
