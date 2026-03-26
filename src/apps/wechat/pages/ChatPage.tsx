@@ -4843,39 +4843,42 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       <div style={{
         background: '#ffffff',
         paddingTop: 'env(safe-area-inset-top)',
-        borderBottom: '2px solid #111',
+        borderBottom: '0.5px solid rgba(0,0,0,0.12)',
         zIndex: 20,
         flexShrink: 0,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 50, paddingLeft: 4, paddingRight: 8 }}>
-          {/* 左：返回 + 名字 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 8px', color: '#111', display: 'flex', alignItems: 'center' }}>
-              <ChevronLeft size={22} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52, paddingLeft: 4, paddingRight: 8 }}>
+          {/* 左：返回 + 头像 + 名字 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 6px', color: '#111', display: 'flex', alignItems: 'center' }}>
+              <ChevronLeft size={24} />
             </button>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#111', fontFamily: 'Georgia, serif', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+              {renderAvatar(false)}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 6 }}>
+              <span style={{ fontSize: 16, fontWeight: 600, color: '#111', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
                 {contact.name}
               </span>
               {isAiThinking && (
-                <span style={{ fontSize: 9, color: '#aaa', fontFamily: 'Georgia, serif', letterSpacing: '0.2em', textTransform: 'uppercase', lineHeight: 1.4 }}>
-                  正在输入中…
+                <span style={{ fontSize: 11, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', lineHeight: 1.3 }}>
+                  正在输入…
                 </span>
               )}
             </div>
           </div>
           {/* 右：心声 + 更多 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <button
               onClick={() => setShowInnerVoice(v => !v)}
-              style={{ background: showInnerVoice ? '#111' : 'none', border: 'none', cursor: 'pointer', padding: '5px 7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
+              style={{ background: showInnerVoice ? '#111' : 'none', borderRadius: '50%', border: 'none', cursor: 'pointer', padding: '7px', color: showInnerVoice ? '#fff' : '#111', display: 'flex', alignItems: 'center', transition: 'all 0.12s' }}
               title="查看心声"
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>
-            <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px 6px', color: '#111', display: 'flex', alignItems: 'center' }}>
+            <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '7px', color: '#111', display: 'flex', alignItems: 'center' }}>
               <MoreHorizontal size={20} />
             </button>
           </div>
@@ -4885,9 +4888,9 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         <AnimatePresence>
           {isBlacklisted && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-              <div style={{ borderTop: '1px solid #eee', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <Ban size={12} style={{ color: '#bbb' }} />
-                <span style={{ fontSize: 10, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+              <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)', padding: '7px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#fafafa' }}>
+                <Ban size={11} style={{ color: '#c0c0c0' }} />
+                <span style={{ fontSize: 11, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                   {blockedBy === 'other' ? '对方已将你拉入黑名单' : '已将对方加入黑名单'}
                 </span>
               </div>
@@ -4905,7 +4908,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
               style={{ overflow: 'hidden' }}
             >
               <div style={{
-                borderTop: '1px solid #eee',
+                borderTop: '0.5px solid rgba(0,0,0,0.06)',
                 padding: '7px 16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                 background: memoryBanner === 'done' ? '#f0fdf4' : '#fafafa',
@@ -4916,16 +4919,16 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
-                      style={{ width: 11, height: 11, border: '1.5px solid #ccc', borderTopColor: '#111', borderRadius: '50%', flexShrink: 0 }}
+                      style={{ width: 11, height: 11, border: '1.5px solid #ddd', borderTopColor: '#555', borderRadius: '50%', flexShrink: 0 }}
                     />
-                    <span style={{ fontSize: 10, color: '#999', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+                    <span style={{ fontSize: 11, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                       正在整理记忆…
                     </span>
                   </>
                 ) : (
                   <>
-                    <span style={{ fontSize: 11, color: '#22c55e' }}>✓</span>
-                    <span style={{ fontSize: 10, color: '#86efac', fontFamily: 'Georgia, serif', letterSpacing: '0.12em' }}>
+                    <span style={{ fontSize: 12, color: '#22c55e' }}>✓</span>
+                    <span style={{ fontSize: 11, color: '#86efac', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                       记忆已更新
                     </span>
                   </>
@@ -5117,13 +5120,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           {isLastInGroup ? (
                             <div className="flex flex-col items-center gap-1 shrink-0 self-end w-9">
                               <div
-                                className="w-9 h-9 rounded-xl overflow-hidden border border-black/5 shadow-sm"
+                                className="w-9 h-9 rounded-full overflow-hidden"
                                 onClick={msg.sender === 'other' ? handleAvatarTap : undefined}
                               >
                                 {renderAvatar(msg.sender === 'me')}
                               </div>
                               {chatSettings.showTimestamps && chatSettings.timestampPosition !== 'bubble' && (
-                                <span className="text-[9px] text-black/20 leading-none">{msg.time}</span>
+                                <span className="text-[9px] text-black/25 leading-none">{msg.time}</span>
                               )}
                             </div>
                           ) : (
@@ -5173,13 +5176,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   else if (isFirstInGroup) radius = '18px 18px 6px 18px';
                                   else if (isLastInGroup) radius = '18px 6px 4px 18px';
                                   else radius = '18px 6px 6px 18px';
-                                  return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, boxShadow: 'none' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, boxShadow: 'none' };
                                 } else {
                                   if (isFirstInGroup && isLastInGroup) radius = '18px 18px 18px 4px';
                                   else if (isFirstInGroup) radius = '18px 18px 18px 6px';
                                   else if (isLastInGroup) radius = '6px 18px 18px 4px';
                                   else radius = '6px 18px 18px 6px';
-                                  return { fontFamily: 'Georgia, "Times New Roman", serif', borderRadius: radius, border: '1px solid #d8d8d8', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.08)', boxShadow: 'none' };
                                 }
                               })()}
                             >
@@ -5436,29 +5439,27 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
         {/* 正在输入 */}
         {isTyping && (
-          <div className="flex gap-3 items-end">
-            <div className="w-9 h-9 rounded-xl border border-black/5 overflow-hidden shrink-0">{renderAvatar(false)}</div>
+          <div className="flex gap-3 items-end mt-4">
+            <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">{renderAvatar(false)}</div>
             <div style={{
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.10)',
-              borderRadius: '4px 16px 16px 16px',
-              padding: '10px 16px',
+              background: '#f2f2f2',
+              borderRadius: '18px 18px 18px 4px',
+              padding: '12px 16px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+              gap: '5px',
             }}>
               <style>{`
                 @keyframes typingDot {
-                  0%, 60%, 100% { opacity: 0.18; transform: scaleY(0.7); }
-                  30% { opacity: 1; transform: scaleY(1); }
+                  0%, 60%, 100% { opacity: 0.25; transform: translateY(0px); }
+                  30% { opacity: 1; transform: translateY(-3px); }
                 }
               `}</style>
-              {[0, 0.16, 0.32].map((delay, i) => (
+              {[0, 0.18, 0.36].map((delay, i) => (
                 <div key={i} style={{
-                  width: '5px', height: '5px',
-                  background: '#111',
-                  borderRadius: '1px',
+                  width: '6px', height: '6px',
+                  background: '#999',
+                  borderRadius: '50%',
                   animation: `typingDot 1.1s ${delay}s ease-in-out infinite`,
                 }} />
               ))}
@@ -5468,7 +5469,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </div>
 
       {/* 输入框区域 / 多选工具栏 */}
-      <div style={{ borderTop: '1px solid #111', background: '#ffffff', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
+      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)', background: '#ffffff', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
         <AnimatePresence mode="wait">
           {isMultiSelect ? (
             <motion.div
@@ -5479,19 +5480,19 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             >
               <button
                 onClick={exitMultiSelect}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: '#aaa', fontFamily: 'Georgia, serif', fontSize: 12, letterSpacing: '0.1em' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', fontSize: 13 }}
               >
                 <X size={15} />
                 取消
               </button>
-              <span style={{ fontSize: 11, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>
+              <span style={{ fontSize: 12, color: '#bbb', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
                 {selectedMsgIds.size > 0 ? `已选 ${selectedMsgIds.size} 条` : '点击消息以选择'}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button
                   onClick={() => { if (selectedMsgIds.size > 0) setShowContactPicker(true); }}
                   disabled={selectedMsgIds.size === 0}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: selectedMsgIds.size > 0 ? '#111' : '#eee', border: 'none', cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: 'Georgia, serif', fontSize: 11, letterSpacing: '0.1em' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', background: selectedMsgIds.size > 0 ? '#111' : '#eee', border: 'none', borderRadius: 20, cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', fontSize: 12 }}
                 >
                   <Share2 size={13} />
                   转发
@@ -5499,7 +5500,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 <button
                   onClick={() => { if (selectedMsgIds.size > 0) setShowBatchDeleteConfirm(true); }}
                   disabled={selectedMsgIds.size === 0}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: selectedMsgIds.size > 0 ? '#c00' : '#eee', border: 'none', cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: 'Georgia, serif', fontSize: 11, letterSpacing: '0.1em' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', background: selectedMsgIds.size > 0 ? '#ff3b30' : '#eee', border: 'none', borderRadius: 20, cursor: selectedMsgIds.size > 0 ? 'pointer' : 'not-allowed', color: selectedMsgIds.size > 0 ? '#fff' : '#bbb', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', fontSize: 12 }}
                 >
                   <Trash2 size={13} />
                   删除
@@ -5512,46 +5513,46 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 {quotingMsg && (
                   <motion.div
                     initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }}
-                    style={{ borderBottom: '1px solid #eee', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fafafa' }}
+                    style={{ borderBottom: '0.5px solid rgba(0,0,0,0.08)', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f9f9f9' }}
                   >
-                    <div style={{ flex: 1, minWidth: 0, borderLeft: '2px solid #111', paddingLeft: 8 }}>
-                      <span style={{ fontSize: 9, fontWeight: 700, color: '#bbb', fontFamily: 'Georgia, serif', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block' }}>
+                    <div style={{ flex: 1, minWidth: 0, borderLeft: '3px solid #111', borderRadius: 2, paddingLeft: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: '#aaa', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', display: 'block', marginBottom: 2 }}>
                         引用 {quotingMsg.sender === 'me' ? '我' : contact.name}
                       </span>
-                      <span style={{ fontSize: 12, color: '#666', fontFamily: 'Georgia, serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{quotingMsg.text}</span>
+                      <span style={{ fontSize: 12, color: '#666', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{quotingMsg.text}</span>
                     </div>
                     <button onClick={() => setQuotingMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#ccc' }}><X size={14} /></button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 10px 8px 8px', gap: 6 }}>
                 <button onClick={() => { setShowEmojiPanel(v => !v); setShowPlusPanel(false); }}
                   style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-                    color: showEmojiPanel ? '#111' : '#888', flexShrink: 0
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '6px',
+                    color: showEmojiPanel ? '#111' : '#8e8e93', flexShrink: 0
                   }}>
-                  <Smile size={20} />
+                  <Smile size={22} />
                 </button>
-                <div style={{ flex: 1, border: '1px solid #111', padding: '7px 12px', display: 'flex', alignItems: 'center', minHeight: 36, background: '#fff' }}>
+                <div style={{ flex: 1, background: '#f2f2f2', borderRadius: 22, padding: '7px 14px', display: 'flex', alignItems: 'center', minHeight: 36 }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="输入消息…"
-                    style={{ width: '100%', background: 'transparent', outline: 'none', border: 'none', fontSize: 15, color: '#111', resize: 'none', fontFamily: 'Georgia, serif', padding: '1px 0', lineHeight: 1.5 }}
-                    className="placeholder:text-black/20"
+                    placeholder="消息"
+                    style={{ width: '100%', background: 'transparent', outline: 'none', border: 'none', fontSize: 15, color: '#111', resize: 'none', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', padding: '1px 0', lineHeight: 1.4 }}
+                    className="placeholder:text-black/30"
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                   />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#111' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#8e8e93' }}
                     onClick={() => setShowPlusPanel(v => !v)}
                   >
                     <motion.div animate={{ rotate: showPlusPanel ? 45 : 0 }} transition={{ type: 'spring', stiffness: 380, damping: 26 }}>
-                      <Plus size={20} />
+                      <Plus size={22} />
                     </motion.div>
                   </button>
                   <button
@@ -5559,27 +5560,30 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       if (inputText.trim() || quotingMsg) {
                         handleSend();
                       } else {
-                        // 「回复」键：手动触发 AI，永远只在这里触发
                         if (!contact.isSystem) triggerAIResponse(messages);
                       }
                     }}
                     disabled={isAiThinking}
                     style={{
-                      background: (inputText.trim() || quotingMsg) ? '#111' : 'transparent',
-                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#111',
-                      border: '1px solid',
-                      borderColor: (inputText.trim() || quotingMsg) ? '#111' : '#111',
-                      padding: '6px 14px',
-                      fontFamily: 'Georgia, serif',
-                      fontSize: 12,
-                      letterSpacing: '0.1em',
+                      width: 34, height: 34,
+                      borderRadius: '50%',
+                      background: (inputText.trim() || quotingMsg) ? '#111' : '#e5e5ea',
+                      color: (inputText.trim() || quotingMsg) ? '#fff' : '#8e8e93',
+                      border: 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                       cursor: isAiThinking ? 'not-allowed' : 'pointer',
                       opacity: isAiThinking ? 0.5 : 1,
                       transition: 'all 0.15s',
-                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+                      fontSize: 13,
+                      fontWeight: 600,
                     }}
                   >
-                    {(inputText.trim() || quotingMsg) ? '发送' : (isAiThinking ? '回复中' : '回复')}
+                    {(inputText.trim() || quotingMsg)
+                      ? <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                      : <span style={{ fontSize: 11, fontWeight: 600 }}>{isAiThinking ? '…' : '回'}</span>
+                    }
                   </button>
                 </div>
               </div>
@@ -5593,7 +5597,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
                   >
                     {/* 第一行 */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '16px 8px 4px' }}>
@@ -5614,10 +5618,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 48, height: 48, border: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#fff', transition: 'background 0.12s' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2', transition: 'background 0.12s' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#888', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5638,10 +5642,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 48, height: 48, border: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#fff' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#888', fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5656,7 +5660,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 220, opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '1px solid #eee', background: '#fff' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
                   >
                     <EmojiPanel
                       contactId={contact.id}
