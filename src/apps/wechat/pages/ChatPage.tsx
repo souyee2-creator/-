@@ -4945,7 +4945,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         ref={scrollRef}
         onClick={() => { if (showPlusPanel) setShowPlusPanel(false); }}
         className="flex-1 overflow-y-auto p-4 pt-4 no-scrollbar flex flex-col"
-        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : undefined}
+        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: '#f2f2f7' }}
       >
         {effectiveBubbleCss && <style>{effectiveBubbleCss}</style>}
         {effectiveThemeCss && <style>{effectiveThemeCss}</style>}
@@ -5159,7 +5159,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   setTransferActionMsgId(msg.id);
                                 }
                               }}
-                              className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[15px] leading-relaxed transition-all ${msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-3 rounded-xl' : 'p-3 rounded-xl'
+                              className={`message ${msg.sender === 'me' ? 'sent' : 'received'} relative text-[14px] leading-relaxed transition-all ${msg.isImage ? 'p-0 overflow-hidden rounded-2xl' : (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord) ? 'p-0 overflow-hidden rounded-2xl border-0 shadow-none' : msg.sender === 'me' ? 'p-2.5 rounded-xl' : 'p-2.5 rounded-xl'
                                 } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
                                   ? ''
                                   : msg.sender === 'me'
@@ -5182,7 +5182,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   else if (isFirstInGroup) radius = '18px 18px 18px 6px';
                                   else if (isLastInGroup) radius = '6px 18px 18px 4px';
                                   else radius = '6px 18px 18px 6px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.08)', boxShadow: 'none' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.10)', boxShadow: 'none' };
                                 }
                               })()}
                             >
@@ -5534,7 +5534,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                   }}>
                   <Smile size={22} />
                 </button>
-                <div style={{ flex: 1, background: '#f2f2f2', borderRadius: 22, padding: '7px 14px', display: 'flex', alignItems: 'center', minHeight: 36 }}>
+                <div style={{ flex: 1, background: '#f2f2f7', borderRadius: 22, padding: '7px 14px', display: 'flex', alignItems: 'center', minHeight: 36 }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
