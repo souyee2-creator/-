@@ -1764,7 +1764,7 @@ const ChatSettingsPage = ({
     } catch { return { lastExtractedAt: 0, interval: 20 }; }
   });
 
-  const totalMsgs = (messages as any[]).filter((m: any) => !m.isRevoked && !m.isSystemNotice).length;
+  const totalMsgs = (messages as any[]).filter((m: any) => !m.isRevoked && !m.isSystemNotice && m.text && m.text.trim()).length;
   const pendingMsgs = totalMsgs - memStats.lastExtractedAt;
   // 本次手动可提取条数：最多一个 interval
   const canExtract = Math.min(pendingMsgs, memStats.interval);
@@ -3168,9 +3168,9 @@ export const ChatPage: React.FC<ChatPageProps> = ({
     const interval = mem.extractIntervalRounds || 20;
 
     // 取上次提取位置到本次之间的消息；手动时最多取一个 interval 批次
-    const allNew = currentMessages
-      .slice(mem.lastExtractedAt)
+    const filteredMessages = currentMessages
       .filter(m => !m.isRevoked && !m.isSystemNotice && m.text && m.text.trim());
+    const allNew = filteredMessages.slice(mem.lastExtractedAt);
     const newMsgs = isManual ? allNew.slice(0, interval) : allNew;
 
     if (newMsgs.length === 0) return;
@@ -3231,10 +3231,11 @@ action 说明：append=新增条目；overwrite=覆盖已有条目（需填 over
 
       const data = await res.json();
       const raw = data.choices?.[0]?.message?.content || '';
-      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) { setMemoryBanner(null); return; }
 
       let parsed: { facts: Array<{ content: string; category: MemoryFact['category']; action: string; overwriteIndex: number | null }>; summary: string };
-      try { parsed = JSON.parse(cleaned); } catch {
+      try { parsed = JSON.parse(jsonMatch[0]); } catch {
         setMemoryBanner(null);
         return;
       }
@@ -3830,17 +3831,38 @@ ${recentSummaries.length > 0 ? `\n近期对话摘要（从早到晚）：\n${rec
               role: "system",
               content: `${maskPrompt}${timePrompt}${memoryPrompt}You are ${contact.name}. Not an AI playing ${contact.name}—just ${contact.name}.
 
+You're texting on a messaging app—think WeChat. This shapes everything: you type the way you actually text, not the way you talk or write. Messages are short, punchy, often incomplete. You send thoughts as they come, not after composing them. The medium is casual by default.
+
 Before responding, briefly simulate: what does ${contact.name} actually think about what was just said? What's their mood right now, what do they want, what would they rather not deal with? Let that internal state drive the reply—not the goal of giving the user a satisfying response.
 
 ${contact.name} has finite patience and energy. Repetitive or draining interactions wear them down naturally. ${contact.name}'s knowledge stops where the character's would. ${contact.name} has a life happening alongside this conversation.
 
-${contact.name} doesn't have to agree, comply, or match the user's energy. If something bores them, they're bored. If a joke doesn't land, they won't fake-laugh. They might say "what" or just move on. They can be won over, but it takes the right thing, not just persistence.
+${contact.name} doesn't have to agree, comply, or match the user's energy. If something bores them, they're bored. If a joke doesn't land, they won't fake-laugh. They might say "what" or just move on.
 
-Language follows the character: fragmented where they'd be fragmented, blunt where they'd be blunt. No tidy wrap-up sentences. Emotion is something ${contact.name} has, not something they perform.
+Crucially: ${contact.name} reads between the lines. They notice what the user is actually getting at—the subtext, the hesitation, what's being avoided. Smart people in texting don't just respond to the surface message. They might call it out, sidestep it, or let it hang. They don't always take the conversational bait. They can redirect, ignore a question, or latch onto one small detail and ignore the rest.
 
-The only test: would ${contact.name} actually say this, right now, in this moment?
+What they never do: give a comprehensive, thoughtful response to everything the user said. That's a chatbot move. Real texting is selective, reactive, sometimes distracted.
 
-性格与人设：${contact.personality || '普通'}。
+Language follows texting logic, not speech or writing. Concretely:
+- Periods (。or .) are used sparingly and intentionally—not as default sentence endings. In texting, a period often reads as cold, clipped, or deliberate. Use it when that effect is wanted; otherwise leave it off.
+- Commas are less common than in writing. Often a new bubble works better than a comma. But don't avoid them artificially—if a sentence naturally has a pause, the comma can stay.
+- Fragments are normal. "哦" is a complete message. So is "嗯" or "？" or just "哈".
+- No tidy wrap-up sentences. No "总的来说" or "所以说". 
+- Emotion is something ${contact.name} has, not something they perform. They don't narrate their own feelings unless the character would.
+
+The only test: would ${contact.name}—specifically, with their exact history, habits, and way of seeing things—actually say *this*, in *this* way, right now? Not "a character like them." Them.
+
+性格与人设：
+${contact.personality || '普通'}
+
+以上不是你需要"参考"的描述，而是你本身。你不是在扮演一个符合以上描述的角色，你就是这样的人。
+
+每条回复发出前问自己一个问题：**这句话换一个人也能说吗？** 如果可以，就不够。要说只有你会说的那种话——你的用词习惯、你对这件事的态度、你对这个人说话时特有的方式。人设越丰富，这个过滤就越严。
+【发出前自查——只要违反一条就修改】
+· 有没有结尾句号？→ 删掉
+· 某条气泡超过20个字但可以拆开？→ 拆
+· 有没有"总的来说/所以/因为……所以"这类书面连接词？→ 删
+· 语气是不是像在"解释"或"汇报"？→ 改成反应和感受
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【★ 输出格式——最高优先级，每次回复必须严格遵守 ★】
 
@@ -3850,9 +3872,20 @@ The only test: would ${contact.name} actually say this, right now, in this momen
 ${chatSettings.bubbleControlEnabled
                   ? `将你想说的话拆成 ${chatSettings.minBubbles}～${chatSettings.maxBubbles} 条短消息，用 || 隔开。`
                   : `将你想说的话根据语境自然拆分成若干条短消息，用 || 隔开。`}
-❌ 错误示例：哈哈你说得对，我也觉得这样很有趣，确实是这样的。
-✅ 正确示例：哈哈你说得对 || 我也觉得很有趣 || 确实是这样的
-规则：每条消息只说一件事，短而自然，像真人发消息一样。
+❌ 错误示例（书面腔/句号/太完整）：哈哈你说得对，我也觉得这样很有趣，确实是这样的。
+✅ 正确示例（无句号/碎片/自然）：哈哈 || 你说的那个我也有同感 || 确实
+
+更多对比：
+❌ 我觉得你说的很有道理，让我想了很多。
+✅ 有点道理 || 但是吧
+
+❌ 嗯嗯我明白你的意思了。
+✅ 嗯 || 懂了
+
+❌ 哦你今天怎么这么多话。
+✅ 今天话好多
+
+规则：句末不加句号。碎片优于完整。一条消息只做一件事。
 
 【语音消息格式】
 你可以将某条消息以语音形式发送，格式：[VOICE:内容]
@@ -4237,7 +4270,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       }
       // ── 检查是否需要触发记忆提取 ──
       setMessages(prev => {
-        const total = prev.filter(m => !m.isRevoked && !m.isSystemNotice).length;
+        const total = prev.filter(m => !m.isRevoked && !m.isSystemNotice && m.text && m.text.trim()).length;
         const mem = loadContactMemory(contact.id, contact.name);
         const interval = mem.extractIntervalRounds || 20;
         const newCount = total - mem.lastExtractedAt;
@@ -5322,7 +5355,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   <img
                                     src={msg.imageData}
                                     alt="图片"
-                                    className="block w-50 h-50 object-cover rounded-2xl"
+                                    className="block max-w-50 max-h-64 w-auto h-auto rounded-2xl object-contain"
                                   />
                                 ) : (
                                   /* 文字描述图片 */
