@@ -4841,13 +4841,15 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
       {/* 顶部导航 */}
       <div style={{
-        background: '#ffffff',
+        background: 'rgba(255,255,255,0.82)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         paddingTop: 'env(safe-area-inset-top)',
-        borderBottom: '0.5px solid rgba(0,0,0,0.12)',
+        borderBottom: '0.5px solid rgba(0,0,0,0.10)',
         zIndex: 20,
         flexShrink: 0,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52, paddingLeft: 4, paddingRight: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 62, paddingLeft: 4, paddingRight: 8 }}>
           {/* 左：返回 + 头像 + 名字 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 6px', color: '#111', display: 'flex', alignItems: 'center' }}>
@@ -5170,18 +5172,18 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                               style={(() => {
                                 if (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage) return {};
 
-                                let radius = '18px';
+                                let radius = '22px';
                                 if (msg.sender === 'me') {
-                                  if (isFirstInGroup && isLastInGroup) radius = '18px 18px 4px 18px';
-                                  else if (isFirstInGroup) radius = '18px 18px 6px 18px';
-                                  else if (isLastInGroup) radius = '18px 6px 4px 18px';
-                                  else radius = '18px 6px 6px 18px';
+                                  if (isFirstInGroup && isLastInGroup) radius = '22px 22px 6px 22px';
+                                  else if (isFirstInGroup) radius = '22px 22px 8px 22px';
+                                  else if (isLastInGroup) radius = '22px 8px 6px 22px';
+                                  else radius = '22px 8px 8px 22px';
                                   return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, boxShadow: 'none' };
                                 } else {
-                                  if (isFirstInGroup && isLastInGroup) radius = '18px 18px 18px 4px';
-                                  else if (isFirstInGroup) radius = '18px 18px 18px 6px';
-                                  else if (isLastInGroup) radius = '6px 18px 18px 4px';
-                                  else radius = '6px 18px 18px 6px';
+                                  if (isFirstInGroup && isLastInGroup) radius = '22px 22px 22px 6px';
+                                  else if (isFirstInGroup) radius = '22px 22px 22px 8px';
+                                  else if (isLastInGroup) radius = '8px 22px 22px 6px';
+                                  else radius = '8px 22px 22px 8px';
                                   return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.10)', boxShadow: 'none' };
                                 }
                               })()}
@@ -5469,7 +5471,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </div>
 
       {/* 输入框区域 / 多选工具栏 */}
-      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)', background: '#ffffff', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
+      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
         <AnimatePresence mode="wait">
           {isMultiSelect ? (
             <motion.div
@@ -5526,7 +5528,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                 )}
               </AnimatePresence>
 
-              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 10px 8px 8px', gap: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 10px', gap: 8 }}>
                 <button onClick={() => { setShowEmojiPanel(v => !v); setShowPlusPanel(false); }}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer', padding: '6px',
@@ -5534,7 +5536,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                   }}>
                   <Smile size={22} />
                 </button>
-                <div style={{ flex: 1, background: '#f2f2f7', borderRadius: 22, padding: '7px 14px', display: 'flex', alignItems: 'center', minHeight: 36 }}>
+                <div style={{ flex: '1 1 0%', minWidth: 0, maxWidth: 'calc(100% - 130px)', background: '#f2f2f7', borderRadius: 22, padding: '8px 14px', display: 'flex', alignItems: 'center', minHeight: 38 }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
