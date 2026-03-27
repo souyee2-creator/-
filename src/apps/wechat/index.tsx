@@ -5,7 +5,6 @@ import { SoulsPage } from './pages/SoulsPage';
 import { OrbitPage } from './pages/OrbitPage';
 import { CorePage } from './pages/Core/CorePage';
 import { ChatPage } from './pages/ChatPage';
-import { WeChatNav } from './components/WeChatNav';
 import { AICharacter } from './types';
 import { FavoriteMessage } from './pages/Core/CollectionsPage';
 
@@ -16,27 +15,42 @@ interface WeChatAppProps {
 const STORAGE_KEY = 'souyee_os_wechat_characters';
 const FAVORITES_KEY = 'souyee_os_wechat_favorites';
 
-/* ─── Design tokens ─────────────────────────────────────────── */
+/* ─── Design tokens — B&W high-end INS ──────────────────────── */
 const t = {
-  bg:            '#f5f5f3',
-  bgWarm:        '#fafaf8',
-  surface:       'rgba(255,255,255,0.72)',
-  surfaceStrong: 'rgba(255,255,255,0.92)',
-  border:        'rgba(0,0,0,0.07)',
-  borderMid:     'rgba(0,0,0,0.12)',
-  borderStrong:  'rgba(0,0,0,0.20)',
-  ink:           '#111110',
-  inkMid:        'rgba(17,17,16,0.50)',
-  inkFaint:      'rgba(17,17,16,0.28)',
-  inkGhost:      'rgba(17,17,16,0.14)',
-  glass:         'rgba(245,245,243,0.80)',
-  blur:          'blur(32px) saturate(180%)',
-  fontDisplay:   '"Didot", "Bodoni MT", "Playfair Display", Georgia, serif',
+  // Pure black & white core
+  bg:            '#FFFFFF',
+  bgOff:         '#F8F8F8',
+  surface:       'rgba(255,255,255,0.96)',
+  surfaceStrong: '#FFFFFF',
+
+  // Ink scale
+  ink:           '#000000',
+  inkDark:       '#111111',
+  inkMid:        'rgba(0,0,0,0.45)',
+  inkFaint:      'rgba(0,0,0,0.25)',
+  inkGhost:      'rgba(0,0,0,0.10)',
+  inkHair:       'rgba(0,0,0,0.07)',
+
+  // Borders — ultra-thin editorial lines
+  border:        'rgba(0,0,0,0.09)',
+  borderMid:     'rgba(0,0,0,0.18)',
+  borderStrong:  '#000000',
+
+  // Glass
+  glass:         'rgba(255,255,255,0.94)',
+  blur:          'blur(24px) saturate(160%)',
+
+  // Typography — editorial contrast pairing
+  fontDisplay:   '"Didot", "Bodoni MT", "Playfair Display", "Times New Roman", serif',
   fontSans:      '"Helvetica Neue", Helvetica, Arial, sans-serif',
-  fontMono:      '"SF Mono", "Fira Code", monospace',
+  fontMono:      '"SF Mono", "Fira Code", "Courier New", monospace',
+
+  // Spacing rhythm
+  radius:        '0px',   // no radius — stark/editorial
+  radiusSm:      '2px',
 };
 
-/* ─── Noise grain overlay (磨砂感) ──────────────────────────── */
+/* ─── Noise grain overlay ────────────────────────────────────── */
 const GrainOverlay: React.FC = () => (
   <svg
     aria-hidden
@@ -45,19 +59,19 @@ const GrainOverlay: React.FC = () => (
       width: '100%', height: '100%',
       pointerEvents: 'none',
       zIndex: 9998,
-      opacity: 0.032,
+      opacity: 0.018,
       mixBlendMode: 'multiply',
     }}
   >
-    <filter id="g">
-      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch" />
+    <filter id="grain-bw">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" />
       <feColorMatrix type="saturate" values="0" />
     </filter>
-    <rect width="100%" height="100%" filter="url(#g)" />
+    <rect width="100%" height="100%" filter="url(#grain-bw)" />
   </svg>
 );
 
-/* ─── Soft background blobs ─────────────────────────────────── */
+/* ─── Clean white canvas — no blobs, just structure ─────────── */
 const BgCanvas: React.FC = () => (
   <div
     aria-hidden
@@ -66,33 +80,39 @@ const BgCanvas: React.FC = () => (
       pointerEvents: 'none',
       zIndex: 0,
       background: t.bg,
-      backgroundImage: `
-        radial-gradient(ellipse 70% 55% at 15% 10%,  rgba(220,220,218,0.60) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 45% at 88% 78%,  rgba(200,200,198,0.40) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 35% at 60% 30%,  rgba(235,235,232,0.70) 0%, transparent 55%)
-      `,
     }}
-  />
+  >
+    {/* Subtle vertical rhythm lines — INS grid feel */}
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: `
+        linear-gradient(90deg, ${t.inkHair} 1px, transparent 1px)
+      `,
+      backgroundSize: '25% 100%',
+      backgroundPosition: '0 0',
+    }} />
+  </div>
 );
 
 /* ─── Tab config ─────────────────────────────────────────────── */
 const TABS = [
-  { id: 'signals', label: 'Signals' },
-  { id: 'souls',   label: 'Souls'   },
-  { id: 'orbit',   label: 'Orbit'   },
-  { id: 'core',    label: 'Core'    },
+  { id: 'signals', label: 'Signals', num: '01' },
+  { id: 'souls',   label: 'Souls',   num: '02' },
+  { id: 'orbit',   label: 'Orbit',   num: '03' },
+  { id: 'core',    label: 'Core',    num: '04' },
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
-/* ─── Bottom nav ─────────────────────────────────────────────── */
+/* ─── Bottom nav — stark editorial bar ──────────────────────── */
 const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ active, onChange }) => (
   <div
     style={{
       flexShrink: 0,
-      background: t.glass,
+      background: t.surface,
       backdropFilter: t.blur,
       WebkitBackdropFilter: t.blur,
-      borderTop: `1px solid ${t.border}`,
+      borderTop: `1px solid ${t.borderStrong}`,
       paddingBottom: 'env(safe-area-inset-bottom)',
       display: 'flex',
       position: 'relative',
@@ -110,44 +130,38 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 3,
-            padding: '11px 0 13px',
-            background: 'none',
+            gap: 4,
+            padding: '14px 0 16px',
+            background: on ? t.ink : 'none',
             border: 'none',
+            borderRight: `1px solid ${t.borderMid}`,
             cursor: 'pointer',
             position: 'relative',
+            transition: 'background 0.22s cubic-bezier(0.4,0,0.2,1)',
           }}
         >
-          {on && (
-            <motion.div
-              layoutId="nav-bar"
-              style={{
-                position: 'absolute',
-                top: 0, left: '22%', right: '22%',
-                height: 1.5,
-                background: t.ink,
-                borderRadius: 99,
-              }}
-              transition={{ type: 'spring', stiffness: 480, damping: 42 }}
-            />
-          )}
-          <div
+          {/* Number indicator */}
+          <span
             style={{
-              width: 4, height: 4,
-              borderRadius: '50%',
-              background: on ? t.ink : t.inkGhost,
-              transition: 'background 0.25s',
+              fontFamily: t.fontMono,
+              fontSize: 7,
+              letterSpacing: '0.20em',
+              color: on ? 'rgba(255,255,255,0.40)' : t.inkGhost,
+              transition: 'color 0.22s',
             }}
-          />
+          >
+            {tab.num}
+          </span>
+          {/* Label */}
           <span
             style={{
               fontFamily: t.fontSans,
-              fontSize: 9,
-              letterSpacing: '0.18em',
+              fontSize: 9.5,
+              letterSpacing: '0.22em',
               textTransform: 'uppercase',
-              fontWeight: on ? 600 : 400,
-              color: on ? t.ink : t.inkMid,
-              transition: 'color 0.25s',
+              fontWeight: on ? 700 : 400,
+              color: on ? '#FFFFFF' : t.inkMid,
+              transition: 'color 0.22s, font-weight 0.22s',
             }}
           >
             {tab.label}
@@ -158,35 +172,36 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
   </div>
 );
 
-/* ─── Top bar ────────────────────────────────────────────────── */
+/* ─── Top bar — magazine masthead style ──────────────────────── */
 const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
   const dateStr = new Date()
     .toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
     .toUpperCase();
+  const yearStr = new Date().getFullYear();
 
   return (
     <div
       style={{
         flexShrink: 0,
-        background: t.glass,
+        background: t.surface,
         backdropFilter: t.blur,
         WebkitBackdropFilter: t.blur,
-        borderBottom: `1px solid ${t.border}`,
-        paddingTop: 'calc(env(safe-area-inset-top) + 16px)',
-        paddingLeft: 24,
-        paddingRight: 24,
+        borderBottom: `1px solid ${t.borderStrong}`,
+        paddingTop: 'calc(env(safe-area-inset-top) + 14px)',
+        paddingLeft: 20,
+        paddingRight: 20,
         paddingBottom: 0,
         zIndex: 10,
         position: 'relative',
       }}
     >
-      {/* Row 1: back / wordmark */}
+      {/* Row 1: meta strip */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: 16,
+          marginBottom: 12,
         }}
       >
         <button
@@ -194,62 +209,82 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 5,
+            gap: 6,
             background: 'none',
             border: 'none',
             padding: 0,
             cursor: 'pointer',
             color: t.inkMid,
             fontFamily: t.fontSans,
-            fontSize: 11,
-            letterSpacing: '0.08em',
+            fontSize: 10,
+            letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            transition: 'color 0.2s',
+            transition: 'color 0.15s',
           }}
           onMouseEnter={e => (e.currentTarget.style.color = t.ink)}
           onMouseLeave={e => (e.currentTarget.style.color = t.inkMid)}
         >
-          <span style={{ fontSize: 17, lineHeight: 1, marginTop: -2 }}>←</span>
+          {/* Arrow glyph */}
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+            <path d="M5 1L1 5L5 9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <line x1="1" y1="5" x2="13" y2="5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
           Back
         </button>
 
+        {/* Wordmark — SOUYEE · OS */}
         <span
           style={{
             fontFamily: t.fontMono,
-            fontSize: 8,
-            letterSpacing: '0.34em',
+            fontSize: 7.5,
+            letterSpacing: '0.40em',
             textTransform: 'uppercase',
             color: t.inkFaint,
           }}
         >
-          SOUYEE · OS
+          SOUYEE&nbsp;·&nbsp;OS
+        </span>
+
+        {/* Year */}
+        <span
+          style={{
+            fontFamily: t.fontMono,
+            fontSize: 7.5,
+            letterSpacing: '0.18em',
+            color: t.inkGhost,
+          }}
+        >
+          {yearStr}
         </span>
       </div>
 
-      {/* Row 2: editorial title + date */}
+      {/* Hairline divider */}
+      <div style={{ height: 1, background: t.border, marginBottom: 14 }} />
+
+      {/* Row 2: editorial title block */}
       <div
         style={{
           display: 'flex',
           alignItems: 'flex-end',
           justifyContent: 'space-between',
-          paddingBottom: 14,
+          paddingBottom: 16,
         }}
       >
         <AnimatePresence mode="wait">
           <motion.h1
             key={title}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{    opacity: 0, y: -5 }}
-            transition={{ duration: 0.2, ease: [0.25, 0, 0, 1] }}
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1,  x: 0   }}
+            exit={{    opacity: 0,  x:  8  }}
+            transition={{ duration: 0.18, ease: [0.25, 0, 0, 1] }}
             style={{
               margin: 0,
               fontFamily: t.fontDisplay,
-              fontSize: 48,
+              fontSize: 52,
               fontWeight: 700,
               fontStyle: 'italic',
-              letterSpacing: '-0.025em',
-              lineHeight: 1,
+              letterSpacing: '-0.03em',
+              lineHeight: 0.92,
               color: t.ink,
             }}
           >
@@ -257,37 +292,48 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
           </motion.h1>
         </AnimatePresence>
 
+        {/* Date stamp — rotated editorial feel */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
-            gap: 3,
-            paddingBottom: 5,
+            gap: 4,
+            paddingBottom: 4,
           }}
         >
+          <div
+            style={{
+              width: 1,
+              height: 28,
+              background: t.borderMid,
+              marginBottom: 6,
+              alignSelf: 'flex-end',
+            }}
+          />
           <span
             style={{
               fontFamily: t.fontMono,
-              fontSize: 7.5,
-              letterSpacing: '0.24em',
+              fontSize: 7,
+              letterSpacing: '0.26em',
               color: t.inkFaint,
               textTransform: 'uppercase',
+              writingMode: 'vertical-rl',
+              transform: 'rotate(180deg)',
             }}
           >
             {dateStr}
           </span>
-          <div style={{ width: 24, height: 1, background: t.inkGhost }} />
         </div>
       </div>
 
-      {/* hairline */}
+      {/* Bold bottom border accent */}
       <div
         style={{
           position: 'absolute',
           bottom: 0, left: 0, right: 0,
-          height: 1,
-          background: `linear-gradient(90deg, ${t.borderMid} 0%, ${t.border} 60%, transparent 100%)`,
+          height: 2,
+          background: t.ink,
         }}
       />
     </div>
@@ -317,10 +363,10 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
   }, [favorites]);
 
-  const handleAddCharacter     = (c: AICharacter) => setCharacters(p => [c, ...p]);
-  const handleUpdateCharacter  = (u: AICharacter) => setCharacters(p => p.map(c => c.id === u.id ? u : c));
-  const handleDeleteCharacter  = (id: string)      => setCharacters(p => p.filter(c => c.id !== id));
-  const handleUpdateMessages   = (id: string, messages: any[]) =>
+  const handleAddCharacter    = (c: AICharacter) => setCharacters(p => [c, ...p]);
+  const handleUpdateCharacter = (u: AICharacter) => setCharacters(p => p.map(c => c.id === u.id ? u : c));
+  const handleDeleteCharacter = (id: string)      => setCharacters(p => p.filter(c => c.id !== id));
+  const handleUpdateMessages  = (id: string, messages: any[]) =>
     setCharacters(p => p.map(c => c.id === id ? { ...c, messages } : c));
   const handleForwardToContact = (contactId: string, msg: any) =>
     setCharacters(p => p.map(c =>
@@ -357,7 +403,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       initial={{ y: '100%', opacity: 0 }}
       animate={{ y: 0,      opacity: 1 }}
       exit={{    y: '100%', opacity: 0 }}
-      transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+      transition={{ type: 'spring', damping: 32, stiffness: 300 }}
       onClick={e => e.stopPropagation()}
       style={{
         position: 'fixed',
@@ -367,6 +413,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
         flexDirection: 'column',
         overflow: 'hidden',
         fontFamily: t.fontSans,
+        background: t.bg,
       }}
     >
       <BgCanvas />
@@ -379,10 +426,10 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1,  y: 0  }}
-          exit={{    opacity: 0,  y: -8 }}
-          transition={{ duration: 0.20, ease: [0.25, 0, 0, 1] }}
+          exit={{    opacity: 0,  y: -10 }}
+          transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
           style={{
             flex: 1,
             overflow: 'hidden',
