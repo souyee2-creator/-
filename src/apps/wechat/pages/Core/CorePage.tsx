@@ -59,7 +59,7 @@ const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   }} />
 );
 
-/* ── 气泡卡片菜单项（紧凑间距，无加粗）── */
+/* ── 磨砂气泡卡片菜单项（无缝紧贴，磨砂质感）── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -71,7 +71,7 @@ const MenuItem: React.FC<{
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.05 + index * 0.03, duration: 0.3 }}
-    whileHover={{ y: -2, backgroundColor: '#f2f2f2', boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }}
+    whileHover={{ y: -1, backgroundColor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)' }}
     whileTap={{ scale: 0.99 }}
     onClick={onClick}
     style={{
@@ -79,12 +79,14 @@ const MenuItem: React.FC<{
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '14px 18px',
-      marginBottom: 6,                // 紧凑间距，连在一起
+      marginBottom: 0,                     // 无缝紧贴
       cursor: 'pointer',
-      background: '#fafafa',
+      background: 'rgba(255, 255, 255, 0.7)',   // 半透白
+      backdropFilter: 'blur(16px)',              // 磨砂模糊
+      WebkitBackdropFilter: 'blur(16px)',
       borderRadius: 24,
-      border: '1px solid rgba(0,0,0,0.04)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+      border: '1px solid rgba(255, 255, 255, 0.8)', // 淡色边框增加层次
+      boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
       transition: 'all 0.2s ease',
     }}
   >
@@ -92,12 +94,13 @@ const MenuItem: React.FC<{
       <div style={{
         width: 38,
         height: 38,
-        background: '#ffffff',
+        background: 'rgba(255,255,255,0.9)',
         borderRadius: 14,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: '1px solid rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.05)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
       }}>
         <div style={{ color: '#1a1a1a' }}>{icon}</div>
       </div>
@@ -127,19 +130,19 @@ const MenuItem: React.FC<{
     <div style={{
       width: 26,
       height: 26,
-      border: '1px solid rgba(0,0,0,0.15)',
+      border: '1px solid rgba(0,0,0,0.12)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#ffffff',
+      background: 'rgba(255,255,255,0.8)',
     }}>
       <ChevronRight size={12} strokeWidth={2} color="#2c2c2c" />
     </div>
   </motion.div>
 );
 
-/* ── 头像：80px，适中大小，紧凑留白 ── */
+/* ── 头像：80px，适中 ── */
 const Avatar: React.FC<{
   avatar: string;
   name: string;
@@ -262,7 +265,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         flexDirection: 'column',
         overflow: 'hidden',
         padding: '0 20px',
-        paddingTop: 32,               // 整体下移一点，不贴顶
+        paddingTop: 32,
       }}>
         <div style={{
           maxWidth: 680,
@@ -314,7 +317,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent />
 
-            {/* 头像区域：压缩上下内边距，紧凑 */}
+            {/* 头像区域：紧凑 */}
             <div style={{
               padding: '12px 0 8px',
               display: 'flex',
@@ -401,15 +404,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               Navigation
             </motion.div>
 
-            {/* 气泡卡片列表：紧凑连在一起 */}
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+            {/* 气泡卡片列表：无缝紧贴，无间距 */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {menuItems.map((item, i) => (
                 <MenuItem key={item.label} {...item} index={i} />
               ))}
             </div>
           </div>
 
-          {/* 底部版本信息，留白减小 */}
+          {/* 底部版本信息 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
