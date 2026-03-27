@@ -10,30 +10,41 @@ interface SoulsPageProps {
   onDeleteCharacter: (id: string) => void;
 }
 
+/* ── 统一高对比度样式定义 ── */
+const T = {
+  black: '#000000',
+  white: '#ffffff',
+  accent: '#000000',
+  error: '#ff0000',
+  fontSerif: '"Didot", "Bodoni MT", "Playfair Display", Georgia, serif',
+  fontSans: '"Helvetica Neue", "Inter", Helvetica, Arial, sans-serif',
+};
+
 const ef: Record<string, React.CSSProperties> = {
-  serif: { fontFamily: 'Georgia, "Times New Roman", serif' },
+  serif: { fontFamily: T.fontSerif },
+  sans:  { fontFamily: T.fontSans },
   label: {
-    fontFamily: 'Georgia, "Times New Roman", serif',
-    fontSize: 9,
-    letterSpacing: '0.28em',
-    textTransform: 'uppercase' as const,
-    color: '#aaa',
+    fontFamily: T.fontSans,
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase',
+    color: T.black,
     display: 'block',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   input: {
-    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontFamily: T.fontSans,
     width: '100%',
     background: 'transparent',
-    border: 'none',
-    borderBottom: '1px solid #ccc',
+    border: '2px solid #000000', // 强化边框
     outline: 'none',
     fontSize: 14,
-    color: '#111',
-    padding: '6px 0',
+    color: T.black,
+    padding: '12px',
+    boxSizing: 'border-box',
   },
-  rule: { height: 1, background: '#111', width: '100%' },
-  ruleThin: { height: '0.5px', background: '#ddd', width: '100%' },
+  rule: { height: 2, background: T.black, width: '100%' },
 };
 
 export const SoulsPage: React.FC<SoulsPageProps> = ({
@@ -75,7 +86,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
 
   const handleSave = () => {
     if (!formData.realName?.trim() || !formData.personality?.trim()) {
-      setError('真实姓名和人设为必填项');
+      setError('REQUIRED FIELDS MISSING');
       setTimeout(() => setError(null), 3000);
       return;
     }
@@ -112,194 +123,176 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     (char.remark?.trim() || char.realName?.trim() || '?').charAt(0).toUpperCase();
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#ffffff', ...ef.serif }}>
-      <div style={{ maxWidth: 440, margin: '0 auto' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: T.white }}>
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
 
-        {/* ── Add button row ── */}
-        <div style={{ marginBottom: 20 }}>
+        {/* ── Add button (极简黑白) ── */}
+        <div style={{ marginBottom: 32 }}>
           <motion.button
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.98 }}
             onClick={openCreateModal}
             style={{
               width: '100%',
-              background: '#111',
-              color: '#ffffff',
+              background: T.black,
+              color: T.white,
               border: 'none',
-              padding: '14px 20px',
+              padding: '18px 24px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               cursor: 'pointer',
-              ...ef.serif,
+              ...ef.sans,
             }}
           >
-            <span style={{ fontSize: 13, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-              添加联系人
+            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+              Add New Soul
             </span>
-            <span style={{ fontSize: 22, lineHeight: 1, fontWeight: 300 }}>+</span>
+            <span style={{ fontSize: 24, fontWeight: 300 }}>+</span>
           </motion.button>
         </div>
 
-        {/* ── Character list ── */}
         <div style={ef.rule} />
+
+        {/* ── Character list ── */}
         {characters.length === 0 ? (
-          <div style={{ padding: '48px 0', textAlign: 'center' }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.3em', color: '#ccc', textTransform: 'uppercase', ...ef.serif }}>
-              No Souls Found
+          <div style={{ padding: '64px 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 11, letterSpacing: '0.4em', color: T.black, opacity: 0.3, textTransform: 'uppercase', ...ef.sans }}>
+              Empty Database
             </p>
           </div>
         ) : (
-          characters.map((char, i) => (
-            <React.Fragment key={char.id}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0' }}>
-                {/* Avatar */}
-                <div style={{
-                  width: 44, height: 44, flexShrink: 0,
-                  border: '1px solid #111', overflow: 'hidden',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: '#eee',
-                }}>
-                  {char.avatar
-                    ? <img src={char.avatar} alt={char.realName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
-                    : <span style={{ fontSize: 18, color: '#999', ...ef.serif }}>{getInitial(char)}</span>
-                  }
-                </div>
-
-                {/* Name */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111', ...ef.serif, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {char.remark || char.realName}
-                  </p>
-                  {char.remark && (
-                    <p style={{ margin: '2px 0 0', fontSize: 9, color: '#bbb', letterSpacing: '0.18em', textTransform: 'uppercase', ...ef.serif }}>
-                      {char.realName}
-                    </p>
-                  )}
-                </div>
-
-                {/* Edit button */}
-                <button
-                  onClick={() => openEditModal(char)}
-                  style={{ background: 'none', border: '1px solid #ddd', padding: '5px 10px', cursor: 'pointer', color: '#999', ...ef.serif, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase' }}
-                >
-                  Edit
-                </button>
+          characters.map((char) => (
+            <div key={char.id} style={{ 
+              display: 'flex', alignItems: 'center', gap: 16, padding: '20px 0',
+              borderBottom: `2px solid ${T.black}` // 使用粗黑线分割
+            }}>
+              {/* Avatar (方框黑边) */}
+              <div style={{
+                width: 52, height: 52, flexShrink: 0,
+                border: `2px solid ${T.black}`, overflow: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: T.white,
+              }}>
+                {char.avatar
+                  ? <img src={char.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <span style={{ fontSize: 20, fontWeight: 700, color: T.black, ...ef.serif }}>{getInitial(char)}</span>
+                }
               </div>
-              <div style={ef.ruleThin} />
-            </React.Fragment>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: T.black, ...ef.serif }}>
+                  {char.remark || char.realName}
+                </p>
+                {char.remark && (
+                  <p style={{ margin: '4px 0 0', fontSize: 10, fontWeight: 600, color: T.black, opacity: 0.4, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    {char.realName}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={() => openEditModal(char)}
+                style={{ 
+                  background: T.white, border: `2px solid ${T.black}`, 
+                  padding: '6px 12px', cursor: 'pointer', color: T.black, 
+                  fontWeight: 800, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' 
+                }}
+              >
+                Edit
+              </button>
+            </div>
           ))
         )}
       </div>
 
-      {/* ── Create / Edit Modal ── */}
+      {/* ── Create / Edit Modal (全屏高对比) ── */}
       <AnimatePresence>
         {isModalOpen && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsModalOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.9)', backdropFilter: 'grayscale(1)' }}
             />
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+              transition={{ type: 'spring', damping: 35, stiffness: 350 }}
               style={{
-                position: 'relative', width: '100%', maxWidth: 480,
-                background: '#ffffff', maxHeight: '90vh',
-                display: 'flex', flexDirection: 'column', ...ef.serif,
+                position: 'relative', width: '100%', maxWidth: 500,
+                background: T.white, borderTop: `4px solid ${T.black}`, // 极粗顶部边框
+                boxShadow: '0 -20px 40px rgba(0,0,0,0.1)',
+                maxHeight: '92vh', display: 'flex', flexDirection: 'column',
               }}
             >
-              {/* Modal header */}
-              <div style={{ padding: '16px 24px 0' }}>
-                <div style={ef.rule} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0 4px' }}>
-                  <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#999' }}>
-                    {editingChar ? 'Edit Soul' : 'New Soul'}
+              <div style={{ padding: '24px 24px 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    {editingChar ? 'Identity Update' : 'New Identity'}
                   </span>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    {editingChar && (
-                      <button onClick={() => setIsDeleteConfirmOpen(true)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#c00', ...ef.serif }}>
-                        Delete
-                      </button>
-                    )}
-                    <button onClick={() => setIsModalOpen(false)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', lineHeight: 1 }}>
-                      <X size={18} />
-                    </button>
-                  </div>
+                  <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <X size={24} strokeWidth={3} />
+                  </button>
                 </div>
-                <h2 style={{ margin: '0 0 8px', fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', color: '#111' }}>
-                  {editingChar ? (editingChar.remark || editingChar.realName) : '创建角色'}.
+                <h2 style={{ margin: '0 0 16px', fontSize: 36, fontWeight: 700, ...ef.serif, fontStyle: 'italic' }}>
+                  {editingChar ? 'Modify Soul.' : 'Create Soul.'}
                 </h2>
                 <div style={ef.rule} />
               </div>
 
-              {/* Modal body */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-                {/* Avatar */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+                {/* Avatar Upload */}
+                <div style={{ alignSelf: 'center' }}>
                   <div
                     onClick={() => fileInputRef.current?.click()}
                     style={{
-                      width: 80, height: 80, border: '1px solid #111',
+                      width: 100, height: 100, border: `3px solid ${T.black}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      cursor: 'pointer', overflow: 'hidden', background: '#eee', position: 'relative',
+                      cursor: 'pointer', overflow: 'hidden', background: T.white,
                     }}
                   >
                     {formData.avatar
                       ? <img src={formData.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                          <ImageIcon size={20} color="#bbb" />
-                          <span style={{ fontSize: 8, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#bbb', ...ef.serif }}>Upload</span>
-                        </div>
+                      : <ImageIcon size={32} />
                     }
                   </div>
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
                 </div>
 
-                {/* Error */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '10px 14px', border: '1px solid #c00', color: '#c00', fontSize: 12, ...ef.serif }}>
-                      <AlertCircle size={14} />
-                      {error}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Fields */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div>
-                    <label style={ef.label}>真实姓名 <span style={{ color: '#c00' }}>*</span></label>
-                    <input style={ef.input} type="text" value={formData.realName} placeholder="例如：星空助手"
+                    <label style={ef.label}>Real Name / 真实姓名</label>
+                    <input style={ef.input} type="text" value={formData.realName} 
                       onChange={(e) => setFormData({ ...formData, realName: e.target.value })} />
                   </div>
                   <div>
-                    <label style={ef.label}>备注</label>
-                    <input style={ef.input} type="text" value={formData.remark} placeholder="例如：我的私人管家"
+                    <label style={ef.label}>Remark / 备注</label>
+                    <input style={ef.input} type="text" value={formData.remark} 
                       onChange={(e) => setFormData({ ...formData, remark: e.target.value })} />
                   </div>
                   <div>
-                    <label style={ef.label}>人设 (Personality) <span style={{ color: '#c00' }}>*</span></label>
-                    <textarea rows={4} value={formData.personality} placeholder="描述该角色的性格、说话方式等..."
+                    <label style={ef.label}>Personality / 人设</label>
+                    <textarea rows={4} value={formData.personality} 
                       onChange={(e) => setFormData({ ...formData, personality: e.target.value })}
-                      style={{ ...ef.input, resize: 'none', lineHeight: 1.7 } as React.CSSProperties} />
+                      style={{ ...ef.input, resize: 'none' }} />
                   </div>
                 </div>
+
+                {editingChar && (
+                  <button onClick={() => setIsDeleteConfirmOpen(true)}
+                    style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#ff0000', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', cursor: 'pointer', letterSpacing: '0.1em' }}>
+                    [ Terminate Soul ]
+                  </button>
+                )}
               </div>
 
-              {/* Modal footer */}
-              <div style={{ padding: '16px 24px 32px', borderTop: '1px solid #111' }}>
+              <div style={{ padding: '24px', background: T.white }}>
                 <button onClick={handleSave}
                   style={{
-                    width: '100%', background: '#111', color: '#ffffff', border: 'none',
-                    padding: '14px', cursor: 'pointer', fontSize: 10,
-                    letterSpacing: '0.3em', textTransform: 'uppercase', ...ef.serif,
+                    width: '100%', background: T.black, color: T.white, border: 'none',
+                    padding: '20px', cursor: 'pointer', fontSize: 12, fontWeight: 800,
+                    letterSpacing: '0.3em', textTransform: 'uppercase'
                   }}>
-                  {editingChar ? '保存修改' : '确认创建'}
+                  {editingChar ? 'Save Changes' : 'Execute Creation'}
                 </button>
               </div>
             </motion.div>
@@ -307,30 +300,27 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
         )}
       </AnimatePresence>
 
-      {/* ── Delete Confirm Modal ── */}
+      {/* ── Delete Confirmation ── */}
       <AnimatePresence>
         {isDeleteConfirmOpen && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsDeleteConfirmOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              style={{ position: 'relative', width: '100%', maxWidth: 320, background: '#ffffff', padding: '28px 24px', ...ef.serif }}>
-              <div style={ef.rule} />
-              <div style={{ padding: '16px 0 20px', textAlign: 'center' }}>
-                <Trash2 size={28} color="#c00" style={{ marginBottom: 12 }} />
-                <h4 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700, color: '#111' }}>确认删除？</h4>
-                <p style={{ margin: 0, fontSize: 12, color: '#aaa', lineHeight: 1.6 }}>删除后聊天记录也将无法找回。</p>
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.9)' }} />
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+              style={{ position: 'relative', width: '100%', maxWidth: 320, background: T.white, padding: '32px 24px', border: `4px solid ${T.black}` }}>
+              <div style={{ textAlign: 'center' }}>
+                <Trash2 size={40} style={{ marginBottom: 16 }} />
+                <h4 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 900, ...ef.serif }}>PERMANENT DELETE?</h4>
+                <p style={{ margin: '0 0 24px', fontSize: 12, fontWeight: 500, lineHeight: 1.5 }}>This action cannot be undone. Data will be purged.</p>
               </div>
-              <div style={ef.rule} />
-              <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-                <button onClick={() => setIsDeleteConfirmOpen(false)}
-                  style={{ flex: 1, padding: '12px', background: 'none', border: '1px solid #ccc', cursor: 'pointer', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#666', ...ef.serif }}>
-                  取消
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <button onClick={handleDelete}
-                  style={{ flex: 1, padding: '12px', background: '#c00', border: 'none', cursor: 'pointer', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff', ...ef.serif }}>
-                  确认删除
+                  style={{ padding: '14px', background: '#ff0000', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 800, color: '#fff', textTransform: 'uppercase' }}>
+                  Confirm Purge
+                </button>
+                <button onClick={() => setIsDeleteConfirmOpen(false)}
+                  style={{ padding: '14px', background: 'none', border: `2px solid ${T.black}`, cursor: 'pointer', fontSize: 11, fontWeight: 800, textTransform: 'uppercase' }}>
+                  Cancel
                 </button>
               </div>
             </motion.div>
