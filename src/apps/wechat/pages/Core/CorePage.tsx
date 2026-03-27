@@ -16,34 +16,28 @@ const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
 /* ── High-Contrast Pure White Luxury Tokens ── */
 const T = {
-  /* Backgrounds — pure white with minimal separation */
   bgPrimary:   '#ffffff',
   bgSubtle:    '#ffffff',
   bgMuted:     '#fafafa',
 
-  /* Text — high contrast black / near-black */
   textPrimary:   '#000000',
   textSecondary: '#2c2c2c',
   textHint:      '#6b6b6b',
 
-  /* Borders — bold black with precise opacity */
   borderHairline: '0.5px solid rgba(0, 0, 0, 0.2)',
   borderSubtle:   '1px solid rgba(0, 0, 0, 0.12)',
   borderBold:     '1px solid rgba(0, 0, 0, 0.28)',
 
-  /* Frosted overlay — retains purity */
   overlayBg:     'rgba(255, 255, 255, 0.92)',
   overlayBorder: '1px solid rgba(0, 0, 0, 0.08)',
   shadowSoft:    '0 8px 24px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02)',
   shadowCard:    '0 1px 2px rgba(0,0,0,0.04)',
 
-  /* Typography — editorial precision */
   fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
   fontSans:  '"DM Sans", "Helvetica Neue", sans-serif',
   fontMono:  '"IBM Plex Mono", "JetBrains Mono", monospace',
 };
 
-/* ── Grain texture — softer, barely visible for tactility ── */
 const GrainOverlay: React.FC = () => (
   <svg
     style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, opacity: 0.018 }}
@@ -57,7 +51,6 @@ const GrainOverlay: React.FC = () => (
   </svg>
 );
 
-/* ── Bold accent line — high-contrast black gradient ── */
 const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   <div style={{
     height: 1,
@@ -66,7 +59,7 @@ const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   }} />
 );
 
-/* ── Menu Item: crisp typography, bold hover, compact spacing ── */
+/* ── 气泡卡片菜单项：无加粗，独立卡片样式 ── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -78,39 +71,42 @@ const MenuItem: React.FC<{
     initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.06 + index * 0.04, duration: 0.35, ease: [0.2, 0, 0, 1] }}
-    whileHover={{ backgroundColor: '#f5f5f5', borderColor: 'rgba(0,0,0,0.2)' }}
-    whileTap={{ scale: 0.998 }}
+    whileHover={{ y: -1, boxShadow: '0 6px 18px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02)' }}
+    whileTap={{ scale: 0.995 }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '14px 0',
+      padding: '14px 18px',
+      marginBottom: 10,
       cursor: 'pointer',
-      borderBottom: T.borderHairline,
-      transition: 'all 0.2s ease',
-      borderRadius: 0,
-      margin: 0,
+      background: '#ffffff',
+      borderRadius: 20,
+      border: '1px solid rgba(0,0,0,0.06)',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.01)',
+      transition: 'all 0.2s cubic-bezier(0.2, 0, 0, 1)',
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-      {/* Icon container — minimal, black-framed */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
       <div style={{
-        width: 32, height: 32,
-        background: T.bgPrimary,
-        borderRadius: 6,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        border: '1px solid rgba(0,0,0,0.18)',
+        width: 36,
+        height: 36,
+        background: '#ffffff',
+        borderRadius: 12,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid rgba(0,0,0,0.12)',
         flexShrink: 0,
-        boxShadow: 'none',
       }}>
         <div style={{ color: '#1a1a1a' }}>{icon}</div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{
-          fontSize: 14,
-          fontWeight: 520,
+          fontSize: 15,
+          fontWeight: 400,
           letterSpacing: '-0.01em',
           color: T.textPrimary,
           fontFamily: T.fontSans,
@@ -130,19 +126,21 @@ const MenuItem: React.FC<{
     </div>
 
     <div style={{
-      width: 24, height: 24,
+      width: 26,
+      height: 26,
       border: '1px solid rgba(0,0,0,0.2)',
       borderRadius: '50%',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: T.bgPrimary,
-      transition: 'all 0.15s',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#ffffff',
     }}>
-      <ChevronRight size={11} strokeWidth={2} color="#2c2c2c" />
+      <ChevronRight size={12} strokeWidth={2} color="#2c2c2c" />
     </div>
   </motion.div>
 );
 
-/* ── Avatar — bold ring, high-contrast interaction ── */
+/* ── 头像：缩小尺寸，紧凑布局 ── */
 const Avatar: React.FC<{
   avatar: string;
   name: string;
@@ -156,25 +154,28 @@ const Avatar: React.FC<{
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       style={{
-        width: 84, height: 84,
+        width: 70,
+        height: 70,
         borderRadius: '50%',
-        border: '2px solid rgba(0,0,0,0.25)',
+        border: '2px solid rgba(0,0,0,0.2)',
         background: T.bgMuted,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         cursor: 'pointer',
         overflow: 'hidden',
         position: 'relative',
-        marginBottom: 18,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+        marginBottom: 12,
+        boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
         transition: 'border 0.2s',
       }}
-      whileHover={{ borderColor: 'rgba(0,0,0,0.5)' }}
+      whileHover={{ borderColor: 'rgba(0,0,0,0.45)' }}
     >
       {avatar ? (
         <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <span style={{
-          fontSize: 34,
+          fontSize: 30,
           color: '#1a1a1a',
           fontFamily: T.fontSerif,
           fontStyle: 'italic',
@@ -190,19 +191,21 @@ const Avatar: React.FC<{
         animate={{ opacity: hovered ? 1 : 0 }}
         transition={{ duration: 0.16 }}
         style={{
-          position: 'absolute', inset: 0,
-          background: 'rgba(0,0,0,0.04)',
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,0,0.03)',
           backdropFilter: 'blur(2px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Upload size={14} color="#1f1f1f" strokeWidth={1.6} />
+        <Upload size={13} strokeWidth={1.6} color="#1f1f1f" />
       </motion.div>
     </motion.div>
   );
 };
 
-/* ── Main CorePage — compact, no scroll, high contrast ── */
 export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite }) => {
   const [showCollections, setShowCollections] = useState(false);
   const [showAppearance, setShowAppearance] = useState(false);
@@ -215,7 +218,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     try {
       const saved = localStorage.getItem(PROFILE_KEY);
       return saved ? { ...DEFAULT_PROFILE, ...JSON.parse(saved) } : DEFAULT_PROFILE;
-    } catch { return DEFAULT_PROFILE; }
+    } catch {
+      return DEFAULT_PROFILE;
+    }
   });
 
   useEffect(() => {
@@ -252,16 +257,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     }}>
       <GrainOverlay />
 
-      {/* Main content container — no overflow scroll, everything fits in viewport */}
       <div style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        padding: '0 28px',
+        padding: '0 24px',
       }}>
         <div style={{
-          maxWidth: 560,
+          maxWidth: 620,
           margin: '0 auto',
           width: '100%',
           height: '100%',
@@ -269,9 +273,8 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           flexDirection: 'column',
           justifyContent: 'space-between',
         }}>
-          {/* Top section — header + profile + menu */}
+          {/* 顶部区域：header + 头像 + 菜单 */}
           <div style={{ flexShrink: 0 }}>
-            {/* Header strip — compact */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -280,8 +283,8 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingTop: 20,
-                paddingBottom: 12,
+                paddingTop: 18,
+                paddingBottom: 10,
               }}
             >
               <span style={{
@@ -300,7 +303,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 textTransform: 'uppercase',
                 color: T.textHint,
                 fontFamily: T.fontMono,
-                display: 'flex', alignItems: 'center', gap: 4,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
               }}>
                 Core Protocol
                 <ArrowUpRight size={8} strokeWidth={1.8} />
@@ -309,9 +314,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent />
 
-            {/* Profile area — tighter vertical spacing */}
+            {/* 头像区域：紧凑且无 bio 行 */}
             <div style={{
-              padding: '28px 0 24px',
+              padding: '20px 0 16px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -329,7 +334,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 style={{ display: 'none' }}
               />
 
-              <div style={{ textAlign: 'center', marginBottom: 4 }}>
+              <div style={{ textAlign: 'center' }}>
                 {editingName ? (
                   <input
                     autoFocus
@@ -341,7 +346,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     style={{
                       fontFamily: T.fontSerif,
-                      fontSize: 28,
+                      fontSize: 26,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       textAlign: 'center',
@@ -363,7 +368,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     style={{
                       margin: 0,
                       fontFamily: T.fontSerif,
-                      fontSize: 28,
+                      fontSize: 26,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       color: T.textPrimary,
@@ -375,33 +380,17 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                   </motion.h2>
                 )}
               </div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.12, duration: 0.4 }}
-                style={{
-                  fontSize: 8,
-                  fontFamily: T.fontMono,
-                  letterSpacing: '0.18em',
-                  color: T.textHint,
-                  textTransform: 'uppercase',
-                }}
-              >
-                {profile.bio || 'Awaiting protocol...'}
-              </motion.div>
             </div>
 
-            <LineAccent style={{ marginBottom: 4 }} />
+            <LineAccent style={{ marginBottom: 8 }} />
 
-            {/* Section label — reduced top spacing */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.04, duration: 0.35 }}
               style={{
-                paddingTop: 12,
-                paddingBottom: 2,
+                paddingTop: 8,
+                paddingBottom: 6,
                 fontSize: 8,
                 letterSpacing: '0.24em',
                 textTransform: 'uppercase',
@@ -412,33 +401,34 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               Navigation
             </motion.div>
 
-            {/* Menu list — compact and crisp */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* 气泡卡片列表 */}
+            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 4 }}>
               {menuItems.map((item, i) => (
                 <MenuItem key={item.label} {...item} index={i} />
               ))}
             </div>
           </div>
 
-          {/* Footer — pinned to bottom with minimal margin */}
+          {/* 底部版本信息，紧凑放置 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.45 }}
-            style={{ marginTop: 28, marginBottom: 28, textAlign: 'center' }}
+            style={{ marginTop: 16, marginBottom: 24, textAlign: 'center' }}
           >
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 10,
-              padding: '8px 18px',
+              gap: 8,
+              padding: '6px 16px',
               border: T.borderBold,
-              borderRadius: 36,
+              borderRadius: 32,
               background: T.bgPrimary,
               boxShadow: T.shadowCard,
             }}>
               <div style={{
-                width: 4, height: 4,
+                width: 4,
+                height: 4,
                 borderRadius: '50%',
                 background: '#000000',
                 opacity: 0.65,
@@ -458,7 +448,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         </div>
       </div>
 
-      {/* Overlay layers — frosted glass with black accents */}
+      {/* 浮层保持不变 */}
       <AnimatePresence>
         {[
           { show: showMasks,       Comp: MasksPage,       close: () => setShowMasks(false)       },
