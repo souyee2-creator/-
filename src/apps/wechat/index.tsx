@@ -88,90 +88,116 @@ const TABS = [
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
-/* ── 底部导航（深色底栏 + 底部细线指示器）────────────────── */
+/* ── 底部导航（悬浮居中，圆角，不贴底）────────────────── */
 const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ active, onChange }) => (
-  <div style={{
-    flexShrink: 0,
-    height: T.navH + 'px',
-    paddingBottom: 'env(safe-area-inset-bottom)',
-    background: T.bgInverse,
-    display: 'flex',
-    alignItems: 'stretch',
-    position: 'relative',
-    zIndex: 20,
-    boxShadow: '0 -2px 12px rgba(0,0,0,0.03)',
-  }}>
-    {TABS.map((tab, i) => {
-      const on = tab.id === active;
-      return (
-        <button
-          key={tab.id}
-          onClick={() => onChange(tab.id)}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 4,
-            background: 'transparent',
-            border: 'none',
-            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.08)` : 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            padding: 0,
-            transition: 'background 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            if (!on) e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          {on && (
-            <motion.div
-              layoutId="nav-indicator"
+  <div
+    style={{
+      position: 'fixed',
+      bottom: 'max(20px, env(safe-area-inset-bottom))',
+      left: 0,
+      right: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 20,
+      pointerEvents: 'none',
+    }}
+  >
+    <div
+      style={{
+        pointerEvents: 'auto',
+        width: 'auto',
+        minWidth: 280,
+        maxWidth: 'calc(100% - 32px)',
+        backdropFilter: 'blur(12px)',
+        background: 'rgba(17, 17, 17, 0.92)',   // 只保留这一行，删除 T.bgInverse
+        borderRadius: 40,
+        boxShadow: '0 8px 24px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(255,255,255,0.05)',
+        padding: '0 8px',
+        height: T.navH + 'px',
+        display: 'flex',
+        alignItems: 'stretch',
+      }}
+    >
+      {TABS.map((tab, i) => {
+        const on = tab.id === active;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => onChange(tab.id)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative',
+              padding: '0 12px',
+              transition: 'background 0.2s',
+              borderRadius: 32,
+              margin: '4px 0',
+            }}
+            onMouseEnter={(e) => {
+              if (!on) e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            {on && (
+              <motion.div
+                layoutId="nav-indicator"
+                style={{
+                  position: 'absolute',
+                  bottom: 8,
+                  left: '25%',
+                  width: '50%',
+                  height: 2,
+                  background: T.white,
+                  borderRadius: 2,
+                }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            )}
+
+            <span
               style={{
-                position: 'absolute',
-                bottom: 12,
-                left: '25%',
-                width: '50%',
-                height: 2,
-                background: T.white,
-                borderRadius: 2,
+                position: 'relative',
+                zIndex: 1,
+                fontFamily: T.fontMono,
+                fontSize: 9,
+                letterSpacing: '0.15em',
+                color: on ? T.white : 'rgba(255,255,255,0.6)',
+                transition: 'color 0.2s',
+                lineHeight: 1,
               }}
-              transition={{ type:'spring', stiffness:500, damping:30 }}
-            />
-          )}
+            >
+              {tab.idx}
+            </span>
 
-          <span style={{
-            position:'relative', zIndex:1,
-            fontFamily: T.fontMono,
-            fontSize: 9,
-            letterSpacing: '0.15em',
-            color: on ? T.white : 'rgba(255,255,255,0.5)',
-            transition: 'color 0.2s',
-            lineHeight: 1,
-          }}>
-            {tab.idx}
-          </span>
-
-          <span style={{
-            position:'relative', zIndex:1,
-            fontFamily: T.fontSans,
-            fontSize: 13,
-            fontWeight: on ? 600 : 450,
-            letterSpacing: on ? '0.02em' : '0.06em',
-            textTransform: 'uppercase',
-            color: on ? T.white : T.textOnDark,
-            transition: 'color 0.2s, font-weight 0.2s',
-          }}>
-            {tab.label}
-          </span>
-        </button>
-      );
-    })}
+            <span
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                fontFamily: T.fontSans,
+                fontSize: 13,
+                fontWeight: on ? 600 : 450,
+                letterSpacing: on ? '0.02em' : '0.06em',
+                textTransform: 'uppercase',
+                color: on ? T.white : T.textOnDark,
+                transition: 'color 0.2s, font-weight 0.2s',
+              }}
+            >
+              {tab.label}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   </div>
 );
 
