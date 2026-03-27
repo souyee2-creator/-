@@ -59,67 +59,61 @@ const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   }} />
 );
 
-/* ── 磨砂气泡卡片菜单项（无缝紧贴，磨砂质感）── */
+/* ── 列表菜单项（内部元素，无缝紧贴，深色主题适配）── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
   desc: string;
   index: number;
+  isLast: boolean;
   onClick: () => void;
-}> = ({ icon, label, desc, index, onClick }) => (
+}> = ({ icon, label, desc, index, isLast, onClick }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.05 + index * 0.03, duration: 0.3 }}
-    whileHover={{ y: -1, backgroundColor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)' }}
-    whileTap={{ scale: 0.99 }}
+    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }} // 悬浮时泛起微光
+    whileTap={{ backgroundColor: 'rgba(255, 255, 255, 0.12)' }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '14px 18px',
-      marginBottom: 0,                     // 无缝紧贴
+      padding: '18px 22px', // 变宽变大：增加上下和左右的内边距
       cursor: 'pointer',
-      background: 'rgba(255, 255, 255, 0.7)',   // 半透白
-      backdropFilter: 'blur(16px)',              // 磨砂模糊
-      WebkitBackdropFilter: 'blur(16px)',
-      borderRadius: 24,
-      border: '1px solid rgba(255, 255, 255, 0.8)', // 淡色边框增加层次
-      boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-      transition: 'all 0.2s ease',
+      borderBottom: isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.08)', // 明确的细线界限
+      transition: 'background-color 0.2s ease',
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
       <div style={{
-        width: 38,
-        height: 38,
-        background: 'rgba(255,255,255,0.9)',
-        borderRadius: 14,
+        width: 42,  // 变大：从 38 增加到 42
+        height: 42,
+        background: 'rgba(255, 255, 255, 0.1)', // 深色模式下的半透白底
+        borderRadius: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: '1px solid rgba(0,0,0,0.05)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+        boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.15)',
       }}>
-        <div style={{ color: '#1a1a1a' }}>{icon}</div>
+        <div style={{ color: '#ffffff' }}>{icon}</div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={{
-          fontSize: 15,
-          fontWeight: 400,
+          fontSize: 16, // 字体稍微放大
+          fontWeight: 450,
           letterSpacing: '-0.01em',
-          color: T.textPrimary,
+          color: '#ffffff', // 纯白文字
           fontFamily: T.fontSans,
         }}>
           {label}
         </span>
         <span style={{
-          fontSize: 8,
-          letterSpacing: '0.1em',
+          fontSize: 9, // 小字说明稍微放大
+          letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: T.textHint,
+          color: 'rgba(255, 255, 255, 0.55)', // 半透白提示字
           fontFamily: T.fontMono,
         }}>
           {desc}
@@ -128,16 +122,15 @@ const MenuItem: React.FC<{
     </div>
 
     <div style={{
-      width: 26,
-      height: 26,
-      border: '1px solid rgba(0,0,0,0.12)',
+      width: 28,
+      height: 28,
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'rgba(255,255,255,0.8)',
+      background: 'rgba(255, 255, 255, 0.06)',
     }}>
-      <ChevronRight size={12} strokeWidth={2} color="#2c2c2c" />
+      <ChevronRight size={14} strokeWidth={2} color="rgba(255, 255, 255, 0.7)" />
     </div>
   </motion.div>
 );
@@ -239,11 +232,11 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
   };
 
   const menuItems = [
-    { icon: <User size={16} strokeWidth={1.6} />,    label: '个人设定', desc: 'Masks / Persona',      onClick: () => setShowMasks(true) },
-    { icon: <Star size={16} strokeWidth={1.6} />,    label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
-    { icon: <Smile size={16} strokeWidth={1.6} />,   label: '表情管理', desc: 'Emoji / Assets',       onClick: () => setShowEmoji(true) },
-    { icon: <Palette size={16} strokeWidth={1.6} />, label: '界面外观', desc: 'Appearance / Theme',   onClick: () => setShowAppearance(true) },
-    { icon: <Settings size={16} strokeWidth={1.6} />,label: '设置',     desc: 'Preferences / API',    onClick: () => {} },
+    { icon: <User size={18} strokeWidth={1.8} />,    label: '个人设定', desc: 'Masks / Persona',      onClick: () => setShowMasks(true) },
+    { icon: <Star size={18} strokeWidth={1.8} />,    label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
+    { icon: <Smile size={18} strokeWidth={1.8} />,   label: '表情管理', desc: 'Emoji / Assets',       onClick: () => setShowEmoji(true) },
+    { icon: <Palette size={18} strokeWidth={1.8} />, label: '界面外观', desc: 'Appearance / Theme',   onClick: () => setShowAppearance(true) },
+    { icon: <Settings size={18} strokeWidth={1.8} />,label: '系统设置', desc: 'Preferences / API',    onClick: () => {} },
   ];
 
   return (
@@ -385,29 +378,28 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               </div>
             </div>
 
-            <LineAccent style={{ marginBottom: 10 }} />
+            <LineAccent style={{ marginBottom: 16 }} />
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.04, duration: 0.35 }}
-              style={{
-                paddingTop: 4,
-                paddingBottom: 6,
-                fontSize: 8,
-                letterSpacing: '0.24em',
-                textTransform: 'uppercase',
-                color: T.textHint,
-                fontFamily: T.fontMono,
-              }}
-            >
-              Navigation
-            </motion.div>
-
-            {/* 气泡卡片列表：无缝紧贴，无间距 */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* 深色磨砂气泡卡片列表容器 */}
+            <div style={{
+              background: 'rgba(28, 28, 30, 0.78)', // 深色磨砂底色
+              backdropFilter: 'blur(24px) saturate(140%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+              borderRadius: 28, // 大圆角
+              overflow: 'hidden', // 裁切内部项悬停的圆角溢出
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(0, 0, 0, 0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              marginTop: 10,
+            }}>
               {menuItems.map((item, i) => (
-                <MenuItem key={item.label} {...item} index={i} />
+                <MenuItem 
+                  key={item.label} 
+                  {...item} 
+                  index={i} 
+                  isLast={i === menuItems.length - 1} 
+                />
               ))}
             </div>
           </div>
