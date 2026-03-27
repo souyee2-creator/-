@@ -12,114 +12,67 @@ interface WeChatAppProps {
   onClose: () => void;
 }
 
-const STORAGE_KEY = 'souyee_os_wechat_characters';
-const FAVORITES_KEY = 'souyee_os_wechat_favorites';
+const STORAGE_KEY    = 'souyee_os_wechat_characters';
+const FAVORITES_KEY  = 'souyee_os_wechat_favorites';
 
-/* ─── Design tokens — B&W high-end INS ──────────────────────── */
-const t = {
-  // Pure black & white core
-  bg:            '#FFFFFF',
-  bgOff:         '#F8F8F8',
-  surface:       'rgba(255,255,255,0.96)',
-  surfaceStrong: '#FFFFFF',
-
-  // Ink scale
-  ink:           '#000000',
-  inkDark:       '#111111',
-  inkMid:        'rgba(0,0,0,0.45)',
-  inkFaint:      'rgba(0,0,0,0.25)',
-  inkGhost:      'rgba(0,0,0,0.10)',
-  inkHair:       'rgba(0,0,0,0.07)',
-
-  // Borders — ultra-thin editorial lines
-  border:        'rgba(0,0,0,0.09)',
-  borderMid:     'rgba(0,0,0,0.18)',
-  borderStrong:  '#000000',
-
-  // Glass
-  glass:         'rgba(255,255,255,0.94)',
-  blur:          'blur(24px) saturate(160%)',
-
-  // Typography — editorial contrast pairing
-  fontDisplay:   '"Didot", "Bodoni MT", "Playfair Display", "Times New Roman", serif',
-  fontSans:      '"Helvetica Neue", Helvetica, Arial, sans-serif',
-  fontMono:      '"SF Mono", "Fira Code", "Courier New", monospace',
-
-  // Spacing rhythm
-  radius:        '0px',   // no radius — stark/editorial
-  radiusSm:      '2px',
+/* ── tokens ─────────────────────────────────────────────────── */
+const T = {
+  white:      '#ffffff',
+  offWhite:   '#f7f7f7',
+  black:      '#000000',
+  ink:        '#0a0a0a',
+  dim:        'rgba(0,0,0,0.38)',
+  ghost:      'rgba(0,0,0,0.10)',
+  rule:       'rgba(0,0,0,0.13)',
+  navH:       80,                          // nav height px
+  fontSerif:  '"Didot", "Bodoni MT", "Playfair Display", Georgia, serif',
+  fontSans:   '"Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontMono:   '"SF Mono", "Fira Code", monospace',
 };
 
-/* ─── Noise grain overlay ────────────────────────────────────── */
-const GrainOverlay: React.FC = () => (
-  <svg
-    aria-hidden
-    style={{
-      position: 'fixed', inset: 0,
-      width: '100%', height: '100%',
-      pointerEvents: 'none',
-      zIndex: 9998,
-      opacity: 0.018,
-      mixBlendMode: 'multiply',
-    }}
-  >
-    <filter id="grain-bw">
-      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" />
-      <feColorMatrix type="saturate" values="0" />
+/* ── Grain ───────────────────────────────────────────────────── */
+const Grain = () => (
+  <svg aria-hidden style={{
+    position:'fixed', inset:0, width:'100%', height:'100%',
+    pointerEvents:'none', zIndex:9999,
+    opacity:0.022, mixBlendMode:'multiply',
+  }}>
+    <filter id="gr">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
     </filter>
-    <rect width="100%" height="100%" filter="url(#grain-bw)" />
+    <rect width="100%" height="100%" filter="url(#gr)"/>
   </svg>
 );
 
-/* ─── Clean white canvas — no blobs, just structure ─────────── */
-const BgCanvas: React.FC = () => (
-  <div
-    aria-hidden
-    style={{
-      position: 'fixed', inset: 0,
-      pointerEvents: 'none',
-      zIndex: 0,
-      background: t.bg,
-    }}
-  >
-    {/* Subtle vertical rhythm lines — INS grid feel */}
-    <div style={{
-      position: 'absolute',
-      inset: 0,
-      backgroundImage: `
-        linear-gradient(90deg, ${t.inkHair} 1px, transparent 1px)
-      `,
-      backgroundSize: '25% 100%',
-      backgroundPosition: '0 0',
-    }} />
-  </div>
-);
-
-/* ─── Tab config ─────────────────────────────────────────────── */
+/* ── Tab config ──────────────────────────────────────────────── */
 const TABS = [
-  { id: 'signals', label: 'Signals', num: '01' },
-  { id: 'souls',   label: 'Souls',   num: '02' },
-  { id: 'orbit',   label: 'Orbit',   num: '03' },
-  { id: 'core',    label: 'Core',    num: '04' },
+  { id:'signals', label:'Signals', idx:'01' },
+  { id:'souls',   label:'Souls',   idx:'02' },
+  { id:'orbit',   label:'Orbit',   idx:'03' },
+  { id:'core',    label:'Core',    idx:'04' },
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
-/* ─── Bottom nav — stark editorial bar ──────────────────────── */
+/* ── Wide bottom nav ─────────────────────────────────────────── */
 const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ active, onChange }) => (
-  <div
-    style={{
-      flexShrink: 0,
-      background: t.surface,
-      backdropFilter: t.blur,
-      WebkitBackdropFilter: t.blur,
-      borderTop: `1px solid ${t.borderStrong}`,
-      paddingBottom: 'env(safe-area-inset-bottom)',
-      display: 'flex',
-      position: 'relative',
-      zIndex: 10,
-    }}
-  >
-    {TABS.map((tab) => {
+  <div style={{
+    flexShrink: 0,
+    height: T.navH + 'px',
+    paddingBottom: 'env(safe-area-inset-bottom)',
+    background: T.black,
+    display: 'flex',
+    alignItems: 'stretch',
+    position: 'relative',
+    zIndex: 20,
+  }}>
+    {/* top border rule */}
+    <div style={{
+      position:'absolute', top:0, left:0, right:0,
+      height:1, background: T.white, opacity:1,
+    }}/>
+
+    {TABS.map((tab, i) => {
       const on = tab.id === active;
       return (
         <button
@@ -130,40 +83,52 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 4,
-            padding: '14px 0 16px',
-            background: on ? t.ink : 'none',
+            background: on ? T.white : 'transparent',
             border: 'none',
-            borderRight: `1px solid ${t.borderMid}`,
+            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.12)` : 'none',
             cursor: 'pointer',
             position: 'relative',
-            transition: 'background 0.22s cubic-bezier(0.4,0,0.2,1)',
+            transition: 'background 0.18s ease',
+            padding: 0,
           }}
         >
-          {/* Number indicator */}
-          <span
-            style={{
-              fontFamily: t.fontMono,
-              fontSize: 7,
-              letterSpacing: '0.20em',
-              color: on ? 'rgba(255,255,255,0.40)' : t.inkGhost,
-              transition: 'color 0.22s',
-            }}
-          >
-            {tab.num}
+          {/* animated fill */}
+          {on && (
+            <motion.div
+              layoutId="nav-fill"
+              style={{
+                position:'absolute', inset:0,
+                background: T.white,
+                zIndex: 0,
+              }}
+              transition={{ type:'spring', stiffness:440, damping:38 }}
+            />
+          )}
+
+          <span style={{
+            position:'relative', zIndex:1,
+            fontFamily: T.fontMono,
+            fontSize: 8,
+            letterSpacing: '0.20em',
+            color: on ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.28)',
+            transition: 'color 0.18s',
+            lineHeight: 1,
+          }}>
+            {tab.idx}
           </span>
-          {/* Label */}
-          <span
-            style={{
-              fontFamily: t.fontSans,
-              fontSize: 9.5,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              fontWeight: on ? 700 : 400,
-              color: on ? '#FFFFFF' : t.inkMid,
-              transition: 'color 0.22s, font-weight 0.22s',
-            }}
-          >
+
+          <span style={{
+            position:'relative', zIndex:1,
+            fontFamily: T.fontSans,
+            fontSize: 13,
+            fontWeight: on ? 700 : 400,
+            letterSpacing: on ? '0.02em' : '0.08em',
+            textTransform: 'uppercase',
+            color: on ? T.black : 'rgba(255,255,255,0.72)',
+            transition: 'color 0.18s, font-weight 0.18s',
+          }}>
             {tab.label}
           </span>
         </button>
@@ -172,218 +137,146 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
   </div>
 );
 
-/* ─── Top bar — magazine masthead style ──────────────────────── */
+/* ── Top bar ─────────────────────────────────────────────────── */
 const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
   const dateStr = new Date()
-    .toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+    .toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
     .toUpperCase();
-  const yearStr = new Date().getFullYear();
 
   return (
-    <div
-      style={{
-        flexShrink: 0,
-        background: t.surface,
-        backdropFilter: t.blur,
-        WebkitBackdropFilter: t.blur,
-        borderBottom: `1px solid ${t.borderStrong}`,
-        paddingTop: 'calc(env(safe-area-inset-top) + 14px)',
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingBottom: 0,
-        zIndex: 10,
-        position: 'relative',
-      }}
-    >
-      {/* Row 1: meta strip */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 12,
-        }}
-      >
+    <div style={{
+      flexShrink: 0,
+      background: T.white,
+      borderBottom: `1px solid ${T.rule}`,
+      paddingTop: 'calc(env(safe-area-inset-top) + 18px)',
+      paddingLeft: 24,
+      paddingRight: 24,
+      paddingBottom: 18,
+      position: 'relative',
+      zIndex: 10,
+    }}>
+
+      {/* row 1 */}
+      <div style={{
+        display:'flex', alignItems:'center',
+        justifyContent:'space-between', marginBottom: 20,
+      }}>
         <button
           onClick={onClose}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            color: t.inkMid,
-            fontFamily: t.fontSans,
-            fontSize: 10,
-            letterSpacing: '0.16em',
+            display:'flex', alignItems:'center', gap:6,
+            background:'none', border:'none', padding:0,
+            cursor:'pointer',
+            fontFamily: T.fontSans,
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
+            color: T.dim,
             transition: 'color 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.color = t.ink)}
-          onMouseLeave={e => (e.currentTarget.style.color = t.inkMid)}
+          onMouseEnter={e => (e.currentTarget.style.color = T.ink)}
+          onMouseLeave={e => (e.currentTarget.style.color = T.dim)}
         >
-          {/* Arrow glyph */}
-          <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-            <path d="M5 1L1 5L5 9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="1" y1="5" x2="13" y2="5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
+          <span style={{ fontSize:16, lineHeight:1, marginTop:-1 }}>←</span>
           Back
         </button>
 
-        {/* Wordmark — SOUYEE · OS */}
-        <span
-          style={{
-            fontFamily: t.fontMono,
-            fontSize: 7.5,
-            letterSpacing: '0.40em',
-            textTransform: 'uppercase',
-            color: t.inkFaint,
-          }}
-        >
-          SOUYEE&nbsp;·&nbsp;OS
-        </span>
-
-        {/* Year */}
-        <span
-          style={{
-            fontFamily: t.fontMono,
-            fontSize: 7.5,
-            letterSpacing: '0.18em',
-            color: t.inkGhost,
-          }}
-        >
-          {yearStr}
+        <span style={{
+          fontFamily: T.fontMono,
+          fontSize: 8,
+          letterSpacing: '0.32em',
+          textTransform: 'uppercase',
+          color: 'rgba(0,0,0,0.22)',
+        }}>
+          SOUYEE · OS
         </span>
       </div>
 
-      {/* Hairline divider */}
-      <div style={{ height: 1, background: t.border, marginBottom: 14 }} />
-
-      {/* Row 2: editorial title block */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          paddingBottom: 16,
-        }}
-      >
+      {/* row 2: big title */}
+      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
         <AnimatePresence mode="wait">
           <motion.h1
             key={title}
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1,  x: 0   }}
-            exit={{    opacity: 0,  x:  8  }}
-            transition={{ duration: 0.18, ease: [0.25, 0, 0, 1] }}
+            initial={{ opacity:0, y:10 }}
+            animate={{ opacity:1, y:0  }}
+            exit={{    opacity:0, y:-6 }}
+            transition={{ duration:0.20, ease:[0.25,0,0,1] }}
             style={{
-              margin: 0,
-              fontFamily: t.fontDisplay,
+              margin:0,
+              fontFamily: T.fontSerif,
               fontSize: 52,
               fontWeight: 700,
               fontStyle: 'italic',
               letterSpacing: '-0.03em',
-              lineHeight: 0.92,
-              color: t.ink,
+              lineHeight: 1,
+              color: T.ink,
             }}
           >
             {title}
           </motion.h1>
         </AnimatePresence>
 
-        {/* Date stamp — rotated editorial feel */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            gap: 4,
-            paddingBottom: 4,
-          }}
-        >
-          <div
-            style={{
-              width: 1,
-              height: 28,
-              background: t.borderMid,
-              marginBottom: 6,
-              alignSelf: 'flex-end',
-            }}
-          />
-          <span
-            style={{
-              fontFamily: t.fontMono,
-              fontSize: 7,
-              letterSpacing: '0.26em',
-              color: t.inkFaint,
-              textTransform: 'uppercase',
-              writingMode: 'vertical-rl',
-              transform: 'rotate(180deg)',
-            }}
-          >
-            {dateStr}
-          </span>
-        </div>
+        <span style={{
+          fontFamily: T.fontMono,
+          fontSize: 8,
+          letterSpacing: '0.20em',
+          color: 'rgba(0,0,0,0.22)',
+          paddingBottom: 5,
+          textTransform: 'uppercase',
+        }}>
+          {dateStr}
+        </span>
       </div>
 
-      {/* Bold bottom border accent */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0, left: 0, right: 0,
-          height: 2,
-          background: t.ink,
-        }}
-      />
+      {/* thick bottom rule */}
+      <div style={{
+        position:'absolute', bottom:0, left:0, right:0,
+        height: 2, background: T.ink,
+      }}/>
     </div>
   );
 };
 
-/* ─── App ────────────────────────────────────────────────────── */
+/* ── App ─────────────────────────────────────────────────────── */
 export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<TabId>('signals');
+  const [activeTab, setActiveTab]   = useState<TabId>('signals');
   const [activeChat, setActiveChat] = useState<any | null>(null);
 
   const [characters, setCharacters] = useState<AICharacter[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    const s = localStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : [];
   });
 
   const [favorites, setFavorites] = useState<FavoriteMessage[]>(() => {
-    const saved = localStorage.getItem(FAVORITES_KEY);
-    return saved ? JSON.parse(saved) : [];
+    const s = localStorage.getItem(FAVORITES_KEY);
+    return s ? JSON.parse(s) : [];
   });
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
-  }, [characters]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEY,   JSON.stringify(characters)); }, [characters]);
+  useEffect(() => { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));  }, [favorites]);
 
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  }, [favorites]);
-
-  const handleAddCharacter    = (c: AICharacter) => setCharacters(p => [c, ...p]);
-  const handleUpdateCharacter = (u: AICharacter) => setCharacters(p => p.map(c => c.id === u.id ? u : c));
-  const handleDeleteCharacter = (id: string)      => setCharacters(p => p.filter(c => c.id !== id));
-  const handleUpdateMessages  = (id: string, messages: any[]) =>
-    setCharacters(p => p.map(c => c.id === id ? { ...c, messages } : c));
+  const handleAddCharacter     = (c: AICharacter) => setCharacters(p => [c, ...p]);
+  const handleUpdateCharacter  = (u: AICharacter) => setCharacters(p => p.map(c => c.id===u.id ? u : c));
+  const handleDeleteCharacter  = (id: string)      => setCharacters(p => p.filter(c => c.id!==id));
+  const handleUpdateMessages   = (id: string, messages: any[]) =>
+    setCharacters(p => p.map(c => c.id===id ? {...c, messages} : c));
   const handleForwardToContact = (contactId: string, msg: any) =>
     setCharacters(p => p.map(c =>
-      c.id !== contactId ? c : { ...c, messages: [...(c.messages ?? []), msg] }
+      c.id!==contactId ? c : {...c, messages:[...(c.messages??[]), msg]}
     ));
   const handleAddFavorite    = (msg: FavoriteMessage) => {
-    if (favorites.some(f => f.id === msg.id)) return;
+    if (favorites.some(f => f.id===msg.id)) return;
     setFavorites(p => [msg, ...p]);
   };
-  const handleRemoveFavorite = (id: string) => setFavorites(p => p.filter(f => f.id !== id));
+  const handleRemoveFavorite = (id: string) => setFavorites(p => p.filter(f => f.id!==id));
 
-  const getTitle = (): string =>
-    ({ signals: 'Signals', souls: 'Souls', orbit: 'Orbit', core: 'Core' }[activeTab] ?? '');
+  const getTitle = () =>
+    ({signals:'Signals', souls:'Souls', orbit:'Orbit', core:'Core'}[activeTab] ?? '');
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'signals': return <SignalsPage characters={characters} onChatClick={setActiveChat} />;
+      case 'signals': return <SignalsPage characters={characters} onChatClick={setActiveChat}/>;
       case 'souls':   return (
         <SoulsPage
           characters={characters}
@@ -392,60 +285,45 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
           onDeleteCharacter={handleDeleteCharacter}
         />
       );
-      case 'orbit':  return <OrbitPage />;
-      case 'core':   return <CorePage favorites={favorites} onRemoveFavorite={handleRemoveFavorite} />;
+      case 'orbit':  return <OrbitPage/>;
+      case 'core':   return <CorePage favorites={favorites} onRemoveFavorite={handleRemoveFavorite}/>;
       default:       return null;
     }
   };
 
   return (
     <motion.div
-      initial={{ y: '100%', opacity: 0 }}
-      animate={{ y: 0,      opacity: 1 }}
-      exit={{    y: '100%', opacity: 0 }}
-      transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+      initial={{ y:'100%', opacity:0 }}
+      animate={{ y:0,      opacity:1 }}
+      exit={{    y:'100%', opacity:0 }}
+      transition={{ type:'spring', damping:30, stiffness:280 }}
       onClick={e => e.stopPropagation()}
       style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 50,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        fontFamily: t.fontSans,
-        background: t.bg,
+        position:'fixed', inset:0, zIndex:50,
+        display:'flex', flexDirection:'column',
+        overflow:'hidden',
+        background: T.offWhite,
+        fontFamily: T.fontSans,
       }}
     >
-      <BgCanvas />
-      <GrainOverlay />
+      <Grain/>
 
-      {activeTab !== 'core' && (
-        <TopBar title={getTitle()} onClose={onClose} />
-      )}
+      {activeTab !== 'core' && <TopBar title={getTitle()} onClose={onClose}/>}
 
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1,  y: 0  }}
-          exit={{    opacity: 0,  y: -10 }}
-          transition={{ duration: 0.22, ease: [0.25, 0, 0, 1] }}
-          style={{
-            flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            zIndex: 1,
-          }}
+          initial={{ opacity:0, y:8  }}
+          animate={{ opacity:1, y:0  }}
+          exit={{    opacity:0, y:-6 }}
+          transition={{ duration:0.18, ease:[0.25,0,0,1] }}
+          style={{ flex:1, overflow:'hidden', display:'flex', flexDirection:'column', position:'relative', zIndex:1 }}
         >
           {renderContent()}
         </motion.div>
       </AnimatePresence>
 
-      <div style={{ position: 'relative', zIndex: 10 }}>
-        <Nav active={activeTab} onChange={setActiveTab} />
-      </div>
+      <Nav active={activeTab} onChange={setActiveTab}/>
 
       <AnimatePresence>
         {activeChat && (
