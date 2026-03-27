@@ -3913,6 +3913,12 @@ ${chatSettings.bubbleControlEnabled
 例如：[REDPACKET:8.88:新年快乐，万事如意] 或 [REDPACKET:66.66]（不写祝福语时默认"恭喜发财，大吉大利"）
 ✅ 适合发红包的时机：节日祝福、表达心意、撒娇哄人、特别纪念日等。
 ⚠️ 金额要合理（0.01~999.99），不要无缘无故发，每轮最多 1 个红包，不要滥用。
+‼️ 格式铁律：
+  · 标签必须单独占一个气泡，不能与任何文字混在同一气泡内
+  · 标签必须全大写 REDPACKET，不能写成 redpacket / RedPacket / 红包 等
+  · 金额只能是数字和小数点，不含 ¥ 符号
+  · 正确：我给你发个红包 || [REDPACKET:88.88:生日快乐]
+  · 错误：[REDPACKET:88.88:生日快乐]给你 / 给你[redpacket:88] / [红包:88]
 
 【转账消息格式】
 你可以发转账给对方，格式：[TRANSFER:金额:备注]（备注可省略）
@@ -3922,12 +3928,23 @@ ${chatSettings.bubbleControlEnabled
 如果对方给你转了账（上下文中出现[转账]），你可以选择：
 - 默认：下次回复时自动收款（系统会处理）
 - 如果你的人设不想要这笔钱、或想退回，在 CHAR_STATE 之前加：[SYSTEM_ACTION:TRANSFER_RETURN]
+‼️ 格式铁律：
+  · 标签必须单独占一个气泡，不能与任何文字混在同一气泡内
+  · 标签必须全大写 TRANSFER，不能写成 transfer / Transfer 等
+  · 金额只能是数字和小数点，不含 ¥ 符号
+  · 正确：还你钱 || [TRANSFER:200.00:上次吃饭]
+  · 错误：[TRANSFER:200]还你 / [transfer:200] / [转账:200]
 
 【定位消息格式】
 你可以发送位置给对方，格式：[LOCATION:地名:详细地址]（地址可省略）
 例如：[LOCATION:咖啡馆:上海市静安区南京西路1038号] 或 [LOCATION:我家楼下]
 ✅ 适合发位置的时机：约见面、告诉对方你在哪、分享某个地方。
 ⚠️ 每轮最多 1 个位置，不要滥用。
+‼️ 格式铁律：
+  · 标签必须单独占一个气泡，不能与任何文字混在同一气泡内
+  · 标签必须全大写 LOCATION，不能写成 location / Location 等
+  · 正确：在这里等你 || [LOCATION:星巴克:北京市朝阳区三里屯路]
+  · 错误：[LOCATION:星巴克]在这里 / [location:星巴克] / [位置:星巴克]
 
 第二部分：心声标记（紧接在对话内容后，中间无空行）
 [CHAR_STATE:{"mood":"2~4字情绪词","emoji":"单个emoji","action":"10~20字动作描写","innerVoice":"25~60字第一人称内心独白，有细节有温度"}]
@@ -4156,23 +4173,27 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         const isImageMsg = !!imageMatch;
         const imageDesc = imageMatch ? imageMatch[1].trim() : undefined;
 
-        // 检查红包标记 [REDPACKET:金额:备注]
-        const redpacketMatch = !isVoiceMsg && !isImageMsg && textForProcessing.match(/^\[REDPACKET:([\d.]+)(?::(.+))?\]$/);
+        // 检查红包标记 [REDPACKET:金额:备注]（大小写不敏感，允许标签前后有少量文字时提取）
+        const redpacketMatch = !isVoiceMsg && !isImageMsg && textForProcessing.match(/\[REDPACKET:([\d.]+)(?::([^\]]*))?\]/i);
         const isRedPacketMsg = !!redpacketMatch;
         const rpAmount = redpacketMatch ? Number(redpacketMatch[1]).toFixed(2) : undefined;
         const rpNote = redpacketMatch ? (redpacketMatch[2]?.trim() || '恭喜发财，大吉大利') : undefined;
+        // 提取后去掉标签，剩余文字如果非空则作为普通文字气泡
+        const rpResidual = isRedPacketMsg ? textForProcessing.replace(/\[REDPACKET:[^\]]*\]/i, '').trim() : '';
 
-        // 检查转账标记 [TRANSFER:金额:备注]
-        const transferMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && textForProcessing.match(/^\[TRANSFER:([\d.]+)(?::(.+))?\]$/);
+        // 检查转账标记 [TRANSFER:金额:备注]（大小写不敏感）
+        const transferMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && textForProcessing.match(/\[TRANSFER:([\d.]+)(?::([^\]]*))?\]/i);
         const isTransferMsg = !!transferMatch;
         const tfAmount = transferMatch ? Number(transferMatch[1]).toFixed(2) : undefined;
         const tfNote = transferMatch ? (transferMatch[2]?.trim() || '') : undefined;
+        const tfResidual = isTransferMsg ? textForProcessing.replace(/\[TRANSFER:[^\]]*\]/i, '').trim() : '';
 
-        // 检查定位标记 [LOCATION:地名:地址]
-        const locationMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && !isTransferMsg && textForProcessing.match(/^\[LOCATION:([^:]+)(?::(.+))?\]$/);
+        // 检查定位标记 [LOCATION:地名:地址]（大小写不敏感）
+        const locationMatch = !isVoiceMsg && !isImageMsg && !isRedPacketMsg && !isTransferMsg && textForProcessing.match(/\[LOCATION:([^\]:]+)(?::([^\]]*))?\]/i);
         const isLocationMsg = !!locationMatch;
         const locName = locationMatch ? locationMatch[1].trim() : undefined;
         const locAddr = locationMatch ? (locationMatch[2]?.trim() || '') : undefined;
+        const locResidual = isLocationMsg ? textForProcessing.replace(/\[LOCATION:[^\]]*\]/i, '').trim() : '';
 
         const finalText = isVoiceMsg ? voiceText
           : isImageMsg ? (imageDesc || '')
@@ -4198,6 +4219,24 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
             ...(isLocationMsg ? { isLocation: true, locationName: locName, locationAddress: locAddr } : {}),
           },
         ]);
+
+        // 如果 AI 将标签和文字混在同一气泡，提取出的残余文字单独追加一条气泡
+        const residual = isRedPacketMsg ? rpResidual : isTransferMsg ? tfResidual : isLocationMsg ? locResidual : '';
+        if (residual) {
+          await new Promise(r => setTimeout(r, 400));
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Math.random().toString(),
+              text: residual,
+              sender: 'other',
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
+              wasWhileBlacklisted: wasBlockedByMe,
+            },
+          ]);
+        }
+
         // AI 自动撤回：发出后 2~4 秒随机延迟
         if (shouldAutoRevoke) {
           const revokeDelay = 2000 + Math.random() * 2000;
