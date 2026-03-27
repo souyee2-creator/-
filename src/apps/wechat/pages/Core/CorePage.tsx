@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, User, Star, Smile, Palette, Settings } from 'lucide-react';
+import { Upload, User, Star, Smile, Palette, Settings, ChevronRight } from 'lucide-react';
 import { MasksPage } from './MasksPage';
 import { CollectionsPage, FavoriteMessage } from './CollectionsPage';
 import { AppearancePage } from './AppearancePage';
@@ -14,88 +14,56 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-// 柔和黑白高对比度设计 tokens
+/* ── 对齐全局的高级黑白质感 Tokens ── */
 const T = {
   white: '#ffffff',
-  bgPrimary: '#ffffff',        // 纯白背景
-  black: '#1a1a1a',            // 深灰而非纯黑
+  bgPrimary: '#fafafa',
+  black: '#000000',
   textPrimary: '#1a1a1a',
   textSecondary: '#5e5e5e',
-  textHint: '#9b9b9b',
-  error: '#e03a3a',
+  textHint: '#8e8e8e',
   
-  fontSerif: `'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif`,
-  fontSans: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`,
-  fontMono: `'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace`,
+  fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
+  fontSans: '"Inter", sans-serif',
+  fontMono: '"JetBrains Mono", monospace',
 
-  borderLight: '1px solid rgba(0,0,0,0.08)',
-  shadowCard: '0 2px 12px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
-  shadowHover: '0 8px 24px rgba(0,0,0,0.06)',
-  radiusCard: '24px',
-  radiusItem: '20px',
-  radiusSm: '16px',
+  borderHairline: '0.5px solid rgba(0,0,0,0.08)',
 };
 
-interface MenuItemProps {
-  icon: React.ReactNode;
-  label: string;
-  desc: string;
-  onClick: () => void;
-}
-
-const MenuItem: React.FC<MenuItemProps> = ({ icon, label, desc, onClick }) => (
+/* ── 列表项组件：去卡片化，增强精致感 ── */
+const MenuItem: React.FC<{ icon: React.ReactNode; label: string; desc: string; onClick: () => void }> = ({ icon, label, desc, onClick }) => (
   <motion.div
-    whileHover={{ y: -2, boxShadow: T.shadowHover }}
-    whileTap={{ scale: 0.98 }}
+    whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
+    whileTap={{ scale: 0.995 }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '20px 24px',
-      marginBottom: '12px',
+      padding: '24px 0',
       cursor: 'pointer',
-      background: T.white,
-      borderRadius: T.radiusItem,
-      boxShadow: T.shadowCard,
-      transition: 'all 0.2s ease',
-      border: T.borderLight,
+      borderBottom: T.borderHairline,
+      transition: 'background 0.2s ease',
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          borderRadius: T.radiusSm,
-          background: '#f5f5f5',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          color: T.black,
-        }}
-      >
-        {icon}
-      </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+      <div style={{ color: T.black, opacity: 0.8 }}>{icon}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 17, fontWeight: 500, color: T.textPrimary, fontFamily: T.fontSans }}>
+        <span style={{ fontSize: 16, fontWeight: 500, color: T.textPrimary, fontFamily: T.fontSans }}>
           {label}
         </span>
-        <span
-          style={{
-            fontSize: 9,
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            color: T.textHint,
-            fontFamily: T.fontMono,
-          }}
-        >
+        <span style={{ 
+          fontSize: 9, 
+          letterSpacing: '0.15em', 
+          textTransform: 'uppercase', 
+          color: T.textHint, 
+          fontFamily: T.fontMono 
+        }}>
           {desc}
         </span>
       </div>
     </div>
-    <span style={{ fontSize: 20, color: T.textHint, fontFamily: T.fontSerif, fontWeight: 300 }}>›</span>
+    <ChevronRight size={14} strokeWidth={1} color={T.textHint} />
   </motion.div>
 );
 
@@ -111,9 +79,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     try {
       const saved = localStorage.getItem(PROFILE_KEY);
       return saved ? { ...DEFAULT_PROFILE, ...JSON.parse(saved) } : DEFAULT_PROFILE;
-    } catch {
-      return DEFAULT_PROFILE;
-    }
+    } catch { return DEFAULT_PROFILE; }
   });
 
   useEffect(() => {
@@ -129,207 +95,126 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     }
   };
 
-  const handleNameSave = (value: string) => {
-    if (value.trim()) setProfile(prev => ({ ...prev, name: value.trim() }));
-    setEditingName(false);
-  };
-
-  const displayInitial = profile.name ? profile.name.charAt(0).toUpperCase() : '·';
-
   const menuItems = [
-    { icon: <User size={22} strokeWidth={1.5} />, label: '个人设定', desc: 'Masks / Persona', onClick: () => setShowMasks(true) },
-    { icon: <Star size={22} strokeWidth={1.5} />, label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
-    { icon: <Smile size={22} strokeWidth={1.5} />, label: '表情管理', desc: 'Emoji / Assets', onClick: () => setShowEmoji(true) },
-    { icon: <Palette size={22} strokeWidth={1.5} />, label: '界面外观', desc: 'Appearance / Theme', onClick: () => setShowAppearance(true) },
-    { icon: <Settings size={22} strokeWidth={1.5} />, label: '设置', desc: 'Preferences / API', onClick: () => console.log('设置') },
+    { icon: <User size={20} strokeWidth={1.2} />, label: '个人设定', desc: 'Masks / Persona', onClick: () => setShowMasks(true) },
+    { icon: <Star size={20} strokeWidth={1.2} />, label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
+    { icon: <Smile size={20} strokeWidth={1.2} />, label: '表情管理', desc: 'Emoji / Assets', onClick: () => setShowEmoji(true) },
+    { icon: <Palette size={20} strokeWidth={1.2} />, label: '界面外观', desc: 'Appearance / Theme', onClick: () => setShowAppearance(true) },
+    { icon: <Settings size={20} strokeWidth={1.2} />, label: '设置', desc: 'Preferences / API', onClick: () => {} },
   ];
 
   return (
-    <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%', background: T.bgPrimary }}>
-      <div style={{ flex: 1, overflowY: 'auto', fontFamily: T.fontSans }}>
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: 'calc(env(safe-area-inset-top) + 32px) 20px 32px' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: T.bgPrimary, overflow: 'hidden' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 120 }}>
           
-          {/* 个人资料卡片 */}
-          <div
-            style={{
-              background: T.white,
-              borderRadius: T.radiusCard,
-              padding: '24px',
-              marginBottom: '32px',
-              boxShadow: T.shadowCard,
-              border: T.borderLight,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              {/* 头像 */}
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: T.radiusSm,
-                  border: T.borderLight,
-                  background: '#f5f5f5',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
-                {profile.avatar ? (
-                  <img src={profile.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ fontSize: 36, color: T.black, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
-                    {displayInitial}
-                  </span>
-                )}
-                <div
-                  className="avatar-hover"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'rgba(0,0,0,0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: 0,
-                    transition: 'opacity 0.2s',
-                    backdropFilter: 'blur(2px)',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
-                >
-                  <Upload size={18} color={T.white} strokeWidth={1.5} />
-                </div>
+          {/* ── 个人资料头部：更像个人名片 ── */}
+          <div style={{ 
+            padding: '64px 0 48px', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center',
+            borderBottom: T.borderHairline,
+            marginBottom: 20
+          }}>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                width: 100,
+                height: 100,
+                border: T.borderHairline,
+                background: T.white,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                overflow: 'hidden',
+                position: 'relative',
+                marginBottom: 24
+              }}
+            >
+              {profile.avatar ? (
+                <img src={profile.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ fontSize: 40, color: T.black, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
+                  {profile.name ? profile.name[0].toUpperCase() : '·'}
+                </span>
+              )}
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0 }} onMouseEnter={e => e.currentTarget.style.opacity='1'} onMouseLeave={e => e.currentTarget.style.opacity='0'}>
+                <Upload size={18} color={T.black} strokeWidth={1} />
               </div>
-              <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" style={{ display: 'none' }} />
+            </div>
+            <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" style={{ display: 'none' }} />
 
-              {/* 昵称区域 */}
-              <div style={{ flex: 1 }}>
-                {editingName ? (
-                  <input
-                    autoFocus
-                    defaultValue={profile.name}
-                    onBlur={e => handleNameSave(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleNameSave(e.currentTarget.value)}
-                    placeholder="输入昵称"
-                    style={{
-                      fontFamily: T.fontSerif,
-                      fontSize: 26,
-                      fontWeight: 400,
-                      letterSpacing: '-0.01em',
-                      color: T.black,
-                      background: 'transparent',
-                      border: 'none',
-                      borderBottom: `1px solid ${T.textHint}`,
-                      outline: 'none',
-                      width: '100%',
-                      padding: '4px 0',
-                    }}
-                  />
-                ) : (
-                  <h2
-                    onClick={() => setEditingName(true)}
-                    title="点击修改昵称"
-                    style={{
-                      margin: 0,
-                      fontSize: 26,
-                      fontWeight: 400,
-                      letterSpacing: '-0.01em',
-                      color: profile.name ? T.textPrimary : T.textHint,
-                      fontFamily: T.fontSerif,
-                      lineHeight: 1.2,
-                      cursor: 'text',
-                      borderBottom: '1px dotted transparent',
-                      transition: 'border-color 0.2s',
-                      display: 'inline-block',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.borderBottomColor = T.textHint)}
-                    onMouseLeave={e => (e.currentTarget.style.borderBottomColor = 'transparent')}
-                  >
-                    {profile.name || '点击设置昵称'}
-                  </h2>
-                )}
-                {/* 可选：加入 bio/location 占位 */}
-                <div style={{ marginTop: 8, fontSize: 12, color: T.textHint, fontFamily: T.fontMono }}>
-                  {profile.bio || '未设置简介'}
-                </div>
+            <div style={{ textAlign: 'center' }}>
+              {editingName ? (
+                <input
+                  autoFocus
+                  defaultValue={profile.name}
+                  onBlur={e => { setProfile({...profile, name: e.target.value}); setEditingName(false); }}
+                  style={{
+                    fontFamily: T.fontSerif, fontSize: 32, fontStyle: 'italic', textAlign: 'center',
+                    background: 'transparent', border: 'none', borderBottom: '1px solid black', outline: 'none'
+                  }}
+                />
+              ) : (
+                <h2 
+                  onClick={() => setEditingName(true)}
+                  style={{ margin: 0, fontFamily: T.fontSerif, fontSize: 32, fontStyle: 'italic', fontWeight: 500, color: T.textPrimary, cursor: 'text' }}
+                >
+                  {profile.name || 'Undefined Identity'}
+                </h2>
+              )}
+              <div style={{ 
+                marginTop: 8, fontSize: 10, fontFamily: T.fontMono, 
+                letterSpacing: '0.2em', color: T.textHint, textTransform: 'uppercase' 
+              }}>
+                {profile.bio || 'Waiting for protocol...'}
               </div>
             </div>
           </div>
 
-          {/* 菜单卡片列表 */}
-          <div>
+          {/* ── 极简菜单列表 ── */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {menuItems.map(item => (
               <MenuItem key={item.label} {...item} />
             ))}
           </div>
 
-          {/* Footer */}
-          <div style={{ marginTop: 48, paddingTop: 24, textAlign: 'center' }}>
-            <span
-              style={{
-                fontSize: 9,
-                letterSpacing: '0.3em',
-                textTransform: 'uppercase',
-                color: T.textHint,
-                fontFamily: T.fontMono,
-              }}
-            >
-              V 1.0.2 — SOUYEE
+          {/* ── 页脚版本号 ── */}
+          <div style={{ marginTop: 64, textAlign: 'center' }}>
+            <span style={{
+              fontSize: 8, letterSpacing: '0.4em', textTransform: 'uppercase',
+              color: T.textHint, fontFamily: T.fontMono, opacity: 0.6
+            }}>
+              Core Protocol v1.0.2 / Souyee OS
             </span>
           </div>
         </div>
       </div>
 
+      {/* ── 全屏覆盖层：磨砂质感 ── */}
       <AnimatePresence>
-        {showMasks && (
+        {[
+          { show: showMasks, Comp: MasksPage, close: () => setShowMasks(false) },
+          { show: showCollections, Comp: CollectionsPage, close: () => setShowCollections(false), extra: { favorites, onRemove: onRemoveFavorite } },
+          { show: showAppearance, Comp: AppearancePage, close: () => setShowAppearance(false) },
+          { show: showEmoji, Comp: EmojiManagerPage, close: () => setShowEmoji(false) }
+        ].map(({ show, Comp, close, extra }) => show && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'fixed', inset: 0, zIndex: 100, overflow: 'hidden', background: T.white }}
+            key={Comp.name}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            style={{ 
+              position: 'fixed', inset: 0, zIndex: 100, 
+              background: T.white, overflow: 'hidden' 
+            }}
           >
-            <MasksPage onBack={() => setShowMasks(false)} />
+            <Comp onBack={close} {...extra} />
           </motion.div>
-        )}
-        {showCollections && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: T.white }}
-          >
-            <CollectionsPage favorites={favorites} onRemove={onRemoveFavorite} onBack={() => setShowCollections(false)} />
-          </motion.div>
-        )}
-        {showAppearance && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'absolute', inset: 0, zIndex: 50, overflow: 'hidden', background: T.white }}
-          >
-            <AppearancePage onBack={() => setShowAppearance(false)} />
-          </motion.div>
-        )}
-        {showEmoji && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            style={{ position: 'fixed', inset: 0, zIndex: 200, overflow: 'hidden', background: T.white }}
-          >
-            <EmojiManagerPage onBack={() => setShowEmoji(false)} />
-          </motion.div>
-        )}
+        ))}
       </AnimatePresence>
     </div>
   );
