@@ -14,24 +14,24 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-/* ── 极简黑白高对比度 iOS 设计 Token ── */
+/* ── 极简黑白高对比度 iOS 设计 Token，升级字体为秀丽高级感 ── */
 const T = {
-  bgPrimary:   '#ffffff', // 纯白底色
-  bgActive:    '#f2f2f7', // iOS 经典的点击高亮灰色
+  bgPrimary:   '#ffffff',
+  bgActive:    '#f2f2f7',
 
-  textPrimary:   '#000000', // 纯黑文字
-  textSecondary: '#666666', // 深灰色辅助文字，保证高对比
-  textHint:      '#8e8e93', // iOS 经典提示灰
+  textPrimary:   '#000000',
+  textSecondary: '#666666',
+  textHint:      '#8e8e93',
 
-  borderStark:    '1.5px solid #000000', // 高对比纯黑边框
-  borderSubtle:   '0.5px solid rgba(0, 0, 0, 0.15)', // 分割线
+  borderStark:    '1.5px solid #000000',
+  borderSubtle:   '0.5px solid rgba(0, 0, 0, 0.15)',
 
-  overlayBg:     'rgba(255, 255, 255, 0.75)', // 磨砂玻璃白色背景
-  blurEffect:    'blur(40px) saturate(150%)', // 强效磨砂毛玻璃
+  overlayBg:     'rgba(255, 255, 255, 0.75)',
+  blurEffect:    'blur(40px) saturate(150%)',
 
-  // 默认使用系统苹方/SF Pro字体，辅以衬线体提升高级感
-  fontSans:  '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
-  fontSerif: '"Playfair Display", "Times New Roman", serif',
+  // 高级感字体组合：标题与正文使用秀丽衬线体 + 现代无衬线辅助
+  fontSerif: '"Cormorant Garamond", "Playfair Display", "Times New Roman", serif',
+  fontSans:  '"Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
   fontMono:  'ui-monospace, "SF Mono", Menlo, Monaco, monospace',
 };
 
@@ -62,12 +62,11 @@ const MenuItem: React.FC<{
     }}
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      {/* 黑底白图标：极强对比度 */}
       <div style={{
         width: 36,
         height: 36,
         background: '#000000',
-        borderRadius: 10, // iOS 圆角
+        borderRadius: 10,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -77,15 +76,17 @@ const MenuItem: React.FC<{
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* 菜单标签使用秀丽衬线体 */}
         <span style={{
-          fontSize: 17, // iOS 标准列表字号
+          fontSize: 17,
           fontWeight: 600,
           color: T.textPrimary,
-          fontFamily: T.fontSans,
-          letterSpacing: '-0.02em',
+          fontFamily: T.fontSerif,
+          letterSpacing: '-0.01em',
         }}>
           {label}
         </span>
+        {/* 描述使用清晰现代无衬线 */}
         <span style={{
           fontSize: 12,
           color: T.textSecondary,
@@ -119,7 +120,7 @@ const Avatar: React.FC<{
         width: 110,
         height: 110,
         borderRadius: '50%',
-        border: T.borderStark, // 纯黑描边
+        border: T.borderStark,
         background: '#ffffff',
         display: 'flex',
         alignItems: 'center',
@@ -127,7 +128,7 @@ const Avatar: React.FC<{
         cursor: 'pointer',
         overflow: 'hidden',
         position: 'relative',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.06)', // 干净的浅阴影
+        boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
       }}
     >
       {avatar ? (
@@ -144,7 +145,6 @@ const Avatar: React.FC<{
         </span>
       )}
 
-      {/* 头像悬浮磨砂遮罩 */}
       <motion.div
         animate={{ opacity: hovered ? 1 : 0 }}
         transition={{ duration: 0.2 }}
@@ -194,6 +194,17 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
   }, [profile]);
 
+  // 动态加载高级感字体 (Cormorant Garamond + Inter)
+  useEffect(() => {
+    const link1 = document.createElement('link');
+    link1.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap';
+    link1.rel = 'stylesheet';
+    document.head.appendChild(link1);
+    return () => {
+      document.head.removeChild(link1);
+    };
+  }, []);
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -218,11 +229,10 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
       background: T.bgPrimary,
       color: T.textPrimary,
       fontFamily: T.fontSans,
-      overflowY: 'auto',
-      overflowX: 'hidden',
+      overflow: 'hidden',          // 禁止滚动
       position: 'relative',
     }}>
-      {/* 顶部磨砂导航栏 (模拟 iOS Sticky Header) */}
+      {/* 顶部磨砂导航栏 */}
       <div style={{
         position: 'sticky',
         top: 0,
@@ -237,29 +247,32 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         WebkitBackdropFilter: T.blurEffect,
         borderBottom: T.borderSubtle,
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', fontFamily: T.fontSerif }}>
           Souyee OS
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, fontFamily: T.fontSans }}>
           Core Protocol <ArrowUpRight size={14} strokeWidth={2.5} />
         </span>
       </div>
 
+      {/* 主内容区域：上移且固定，无滚动 */}
       <div style={{
         maxWidth: 680,
         margin: '0 auto',
-        padding: '40px 20px 80px',
+        padding: '20px 20px 40px',   // 上padding减少，整体上移
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        height: 'calc(100% - 60px)',  // 填满剩余空间但不触发滚动
+        overflow: 'hidden',           // 禁止滚动
       }}>
         
-        {/* 头像与身份区域 */}
+        {/* 头像与身份区域 - 上移间距缩小 */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 48 }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}
         >
           <Avatar
             avatar={profile.avatar}
@@ -285,7 +298,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 }}
                 onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                 style={{
-                  fontFamily: T.fontSans,
+                  fontFamily: T.fontSerif,
                   fontSize: 32,
                   fontWeight: 800,
                   textAlign: 'center',
@@ -303,10 +316,10 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 onClick={() => setEditingName(true)}
                 style={{
                   margin: 0,
-                  fontFamily: T.fontSans,
+                  fontFamily: T.fontSerif,
                   fontSize: 32,
                   fontWeight: 800,
-                  letterSpacing: '-0.03em',
+                  letterSpacing: '-0.02em',
                   color: T.textPrimary,
                   cursor: 'text',
                 }}
@@ -314,9 +327,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 {profile.name || 'Undefined'}
               </h2>
             )}
-            <p style={{ marginTop: 8, color: T.textHint, fontSize: 14, fontWeight: 500 }}>
-              Tap to edit identity
-            </p>
+            {/* 已删除 "Tap to edit identity" 提示行 */}
           </div>
         </motion.div>
 
@@ -327,7 +338,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           borderRadius: 20,
           border: T.borderStark,
           overflow: 'hidden',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.04)', // 增加一点呼吸感
+          boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
         }}>
           {menuItems.map((item, i) => (
             <MenuItem 
@@ -339,16 +350,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           ))}
         </div>
 
-        {/* 底部版本 */}
-        <div style={{ marginTop: 40 }}>
+        {/* 底部版本：灰色细字体，无黑色背景 */}
+        <div style={{ marginTop: 24 }}>
           <span style={{
-            padding: '6px 14px',
-            background: '#000000',
-            color: '#ffffff',
-            borderRadius: 20,
+            padding: '0',
+            background: 'transparent',
+            color: '#8e8e93',
             fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
+            fontWeight: 400,
+            letterSpacing: '0.05em',
             fontFamily: T.fontMono,
           }}>
             VERSION 1.0.2
@@ -366,7 +376,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         ].map(({ show, Comp, close, extra }) => show && (
           <motion.div
             key={Comp.name}
-            initial={{ opacity: 0, y: '100%' }} // iOS 经典的自下而上弹出
+            initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
@@ -374,14 +384,13 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               position: 'fixed', 
               inset: 0, 
               zIndex: 100,
-              background: T.overlayBg, // 半透明白
-              backdropFilter: T.blurEffect, // 强效磨砂
+              background: T.overlayBg,
+              backdropFilter: T.blurEffect,
               WebkitBackdropFilter: T.blurEffect,
               display: 'flex', 
               flexDirection: 'column',
             }}
           >
-            {/* 子页面的内部容器 */}
             <div style={{
               flex: 1,
               background: 'transparent', 
@@ -390,7 +399,6 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               flexDirection: 'column',
               overflow: 'auto',
             }}>
-              {/* 这里假设你的 Comp 组件内部有自己的背景，建议在它们里面也设为透明以透出外层的毛玻璃效果 */}
               <Comp onBack={close} {...extra} />
             </div>
           </motion.div>
