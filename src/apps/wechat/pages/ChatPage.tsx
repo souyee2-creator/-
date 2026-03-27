@@ -4948,7 +4948,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         ref={scrollRef}
         onClick={() => { if (showPlusPanel) setShowPlusPanel(false); }}
         className="flex-1 overflow-y-auto p-4 pt-4 no-scrollbar flex flex-col"
-        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: 'linear-gradient(145deg, #dde6f5 0%, #ead9f5 45%, #d5edf5 100%)' }}
+        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: 'linear-gradient(160deg, #e8e8ec 0%, #f0f0f4 50%, #e4e4ea 100%)' }}
       >
         {effectiveBubbleCss && <style>{effectiveBubbleCss}</style>}
         {effectiveThemeCss && <style>{effectiveThemeCss}</style>}
@@ -5179,7 +5179,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   else if (isFirstInGroup) radius = '22px 22px 8px 22px';
                                   else if (isLastInGroup) radius = '22px 8px 6px 22px';
                                   else radius = '22px 8px 8px 22px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(88, 86, 214, 0.80)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(88,86,214,0.22), inset 0 0.5px 0 rgba(255,255,255,0.25)', border: '0.5px solid rgba(255,255,255,0.22)' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(30,30,30,0.84)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(0,0,0,0.18), inset 0 0.5px 0 rgba(255,255,255,0.12)', border: '0.5px solid rgba(255,255,255,0.10)' };
                                 } else {
                                   if (isFirstInGroup && isLastInGroup) radius = '22px 22px 22px 6px';
                                   else if (isFirstInGroup) radius = '22px 22px 22px 8px';
@@ -5621,10 +5621,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5856D6', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(88,86,214,0.10)', transition: 'background 0.12s' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', transition: 'background 0.12s' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#6e6e8e', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5645,10 +5645,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5856D6', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(88,86,214,0.10)' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#6e6e8e', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
