@@ -15,30 +15,30 @@ interface WeChatAppProps {
 const STORAGE_KEY    = 'souyee_os_wechat_characters';
 const FAVORITES_KEY  = 'souyee_os_wechat_favorites';
 
-/* ── tokens ─────────────────────────────────────────────────── */
+/* ── tokens (极致黑白灰调色板) ────────────────────────────────── */
 const T = {
   white:      '#ffffff',
-  offWhite:   '#f7f7f7',
+  offWhite:   '#f0f0f2',                   // 偏冷调的哑光白，作为全局底色
   black:      '#000000',
-  ink:        '#0a0a0a',
-  dim:        'rgba(0,0,0,0.38)',
-  ghost:      'rgba(0,0,0,0.10)',
-  rule:       'rgba(0,0,0,0.13)',
-  navH:       80,                          // nav height px
+  ink:        '#121212',                   // 哑光黑，比纯黑更具高级感
+  dim:        'rgba(0,0,0,0.45)',
+  ghost:      'rgba(0,0,0,0.06)',
+  rule:       'rgba(0,0,0,0.06)',          // 极弱的分割线
+  navH:       80,                          
   fontSerif:  '"Didot", "Bodoni MT", "Playfair Display", Georgia, serif',
-  fontSans:   '"Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSans:   '"Helvetica Neue", "Inter", Helvetica, Arial, sans-serif',
   fontMono:   '"SF Mono", "Fira Code", monospace',
 };
 
-/* ── Grain ───────────────────────────────────────────────────── */
+/* ── Grain (强化胶片颗粒质感) ─────────────────────────────────── */
 const Grain = () => (
   <svg aria-hidden style={{
     position:'fixed', inset:0, width:'100%', height:'100%',
     pointerEvents:'none', zIndex:9999,
-    opacity:0.022, mixBlendMode:'multiply',
+    opacity: 0.045, mixBlendMode: 'multiply', // 提升透明度，强化物理质感
   }}>
     <filter id="gr">
-      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
     </filter>
     <rect width="100%" height="100%" filter="url(#gr)"/>
@@ -54,24 +54,21 @@ const TABS = [
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
-/* ── Wide bottom nav ─────────────────────────────────────────── */
+/* ── Wide bottom nav (深色磨砂底栏) ──────────────────────────── */
 const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ active, onChange }) => (
   <div style={{
     flexShrink: 0,
     height: T.navH + 'px',
     paddingBottom: 'env(safe-area-inset-bottom)',
-    background: T.black,
+    background: 'rgba(18, 18, 18, 0.82)', // 哑光黑半透明
+    backdropFilter: 'blur(24px) saturate(1.2)', // 毛玻璃磨砂滤镜
+    WebkitBackdropFilter: 'blur(24px) saturate(1.2)',
     display: 'flex',
     alignItems: 'stretch',
     position: 'relative',
     zIndex: 20,
+    borderTop: '1px solid rgba(255,255,255,0.08)', // 顶部微光边缘
   }}>
-    {/* top border rule */}
-    <div style={{
-      position:'absolute', top:0, left:0, right:0,
-      height:1, background: T.white, opacity:1,
-    }}/>
-
     {TABS.map((tab, i) => {
       const on = tab.id === active;
       return (
@@ -85,25 +82,24 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
-            background: on ? T.white : 'transparent',
+            background: 'transparent',
             border: 'none',
-            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.12)` : 'none',
+            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.04)` : 'none',
             cursor: 'pointer',
             position: 'relative',
-            transition: 'background 0.18s ease',
             padding: 0,
           }}
         >
-          {/* animated fill */}
+          {/* animated fill - 柔和的白色滑块 */}
           {on && (
             <motion.div
               layoutId="nav-fill"
               style={{
                 position:'absolute', inset:0,
-                background: T.white,
+                background: 'rgba(255, 255, 255, 0.95)', 
                 zIndex: 0,
               }}
-              transition={{ type:'spring', stiffness:440, damping:38 }}
+              transition={{ type:'spring', stiffness:400, damping:35 }}
             />
           )}
 
@@ -112,8 +108,8 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             fontFamily: T.fontMono,
             fontSize: 8,
             letterSpacing: '0.20em',
-            color: on ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.28)',
-            transition: 'color 0.18s',
+            color: on ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)',
+            transition: 'color 0.3s ease',
             lineHeight: 1,
           }}>
             {tab.idx}
@@ -123,11 +119,11 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             position:'relative', zIndex:1,
             fontFamily: T.fontSans,
             fontSize: 13,
-            fontWeight: on ? 700 : 400,
-            letterSpacing: on ? '0.02em' : '0.08em',
+            fontWeight: on ? 600 : 400,
+            letterSpacing: on ? '0.04em' : '0.08em',
             textTransform: 'uppercase',
-            color: on ? T.black : 'rgba(255,255,255,0.72)',
-            transition: 'color 0.18s, font-weight 0.18s',
+            color: on ? T.ink : 'rgba(255,255,255,0.6)',
+            transition: 'color 0.3s ease, font-weight 0.3s ease',
           }}>
             {tab.label}
           </span>
@@ -137,7 +133,7 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
   </div>
 );
 
-/* ── Top bar ─────────────────────────────────────────────────── */
+/* ── Top bar (浅色磨砂顶栏) ──────────────────────────────────── */
 const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
   const dateStr = new Date()
     .toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
@@ -146,8 +142,10 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
   return (
     <div style={{
       flexShrink: 0,
-      background: T.white,
-      borderBottom: `1px solid ${T.rule}`,
+      background: 'rgba(240, 240, 242, 0.65)', // 配合全局底色的半透明白
+      backdropFilter: 'blur(24px) saturate(1.2)', // 核心磨砂效果
+      WebkitBackdropFilter: 'blur(24px) saturate(1.2)',
+      borderBottom: `1px solid rgba(0,0,0,0.04)`,
       paddingTop: 'calc(env(safe-area-inset-top) + 18px)',
       paddingLeft: 24,
       paddingRight: 24,
@@ -187,7 +185,7 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
           fontSize: 8,
           letterSpacing: '0.32em',
           textTransform: 'uppercase',
-          color: 'rgba(0,0,0,0.22)',
+          color: 'rgba(0,0,0,0.3)',
         }}>
           SOUYEE · OS
         </span>
@@ -201,12 +199,12 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
             initial={{ opacity:0, y:10 }}
             animate={{ opacity:1, y:0  }}
             exit={{    opacity:0, y:-6 }}
-            transition={{ duration:0.20, ease:[0.25,0,0,1] }}
+            transition={{ duration:0.25, ease:[0.25,0,0,1] }}
             style={{
               margin:0,
               fontFamily: T.fontSerif,
               fontSize: 52,
-              fontWeight: 700,
+              fontWeight: 600, // 稍微降低字重，增加优雅感
               fontStyle: 'italic',
               letterSpacing: '-0.03em',
               lineHeight: 1,
@@ -221,7 +219,7 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
           fontFamily: T.fontMono,
           fontSize: 8,
           letterSpacing: '0.20em',
-          color: 'rgba(0,0,0,0.22)',
+          color: 'rgba(0,0,0,0.3)',
           paddingBottom: 5,
           textTransform: 'uppercase',
         }}>
@@ -229,10 +227,10 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
         </span>
       </div>
 
-      {/* thick bottom rule */}
+      {/* thick bottom rule - 柔和的黑色分割线 */}
       <div style={{
         position:'absolute', bottom:0, left:0, right:0,
-        height: 2, background: T.ink,
+        height: 1.5, background: T.ink, opacity: 0.9
       }}/>
     </div>
   );
@@ -296,13 +294,13 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       initial={{ y:'100%', opacity:0 }}
       animate={{ y:0,      opacity:1 }}
       exit={{    y:'100%', opacity:0 }}
-      transition={{ type:'spring', damping:30, stiffness:280 }}
+      transition={{ type:'spring', damping:32, stiffness:260 }}
       onClick={e => e.stopPropagation()}
       style={{
         position:'fixed', inset:0, zIndex:50,
         display:'flex', flexDirection:'column',
         overflow:'hidden',
-        background: T.offWhite,
+        background: T.offWhite, // 全局底色切换为带有灰度的冷调白
         fontFamily: T.fontSans,
       }}
     >
@@ -313,10 +311,10 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity:0, y:8  }}
+          initial={{ opacity:0, y:10  }}
           animate={{ opacity:1, y:0  }}
-          exit={{    opacity:0, y:-6 }}
-          transition={{ duration:0.18, ease:[0.25,0,0,1] }}
+          exit={{    opacity:0, y:-8 }}
+          transition={{ duration:0.25, ease:[0.22,1,0.36,1] }} // 更顺滑的阻尼动画
           style={{ flex:1, overflow:'hidden', display:'flex', flexDirection:'column', position:'relative', zIndex:1 }}
         >
           {renderContent()}
