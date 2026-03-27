@@ -59,7 +59,7 @@ const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   }} />
 );
 
-/* ── 气泡卡片菜单项（无加粗，独立浅灰卡片）── */
+/* ── 气泡卡片菜单项（紧凑间距，无加粗）── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -78,35 +78,34 @@ const MenuItem: React.FC<{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '16px 20px',
-      marginBottom: 12,
+      padding: '14px 18px',
+      marginBottom: 6,                // 紧凑间距，连在一起
       cursor: 'pointer',
-      background: '#fafafa',   // 浅灰卡片背景
+      background: '#fafafa',
       borderRadius: 24,
       border: '1px solid rgba(0,0,0,0.04)',
       boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
       transition: 'all 0.2s ease',
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
       <div style={{
-        width: 40,
-        height: 40,
+        width: 38,
+        height: 38,
         background: '#ffffff',
-        borderRadius: 16,
+        borderRadius: 14,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         border: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
       }}>
         <div style={{ color: '#1a1a1a' }}>{icon}</div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{
-          fontSize: 16,
-          fontWeight: 400,      // 无加粗
+          fontSize: 15,
+          fontWeight: 400,
           letterSpacing: '-0.01em',
           color: T.textPrimary,
           fontFamily: T.fontSans,
@@ -114,7 +113,7 @@ const MenuItem: React.FC<{
           {label}
         </span>
         <span style={{
-          fontSize: 9,
+          fontSize: 8,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
           color: T.textHint,
@@ -126,8 +125,8 @@ const MenuItem: React.FC<{
     </div>
 
     <div style={{
-      width: 28,
-      height: 28,
+      width: 26,
+      height: 26,
       border: '1px solid rgba(0,0,0,0.15)',
       borderRadius: '50%',
       display: 'flex',
@@ -135,12 +134,12 @@ const MenuItem: React.FC<{
       justifyContent: 'center',
       background: '#ffffff',
     }}>
-      <ChevronRight size={13} strokeWidth={2} color="#2c2c2c" />
+      <ChevronRight size={12} strokeWidth={2} color="#2c2c2c" />
     </div>
   </motion.div>
 );
 
-/* ── 头像：明显缩小到 60px ── */
+/* ── 头像：80px，适中大小，紧凑留白 ── */
 const Avatar: React.FC<{
   avatar: string;
   name: string;
@@ -154,8 +153,8 @@ const Avatar: React.FC<{
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       style={{
-        width: 60,
-        height: 60,
+        width: 80,
+        height: 80,
         borderRadius: '50%',
         border: '2px solid rgba(0,0,0,0.25)',
         background: T.bgMuted,
@@ -165,7 +164,7 @@ const Avatar: React.FC<{
         cursor: 'pointer',
         overflow: 'hidden',
         position: 'relative',
-        marginBottom: 12,
+        marginBottom: 10,
         boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
         transition: 'border 0.2s',
       }}
@@ -175,7 +174,7 @@ const Avatar: React.FC<{
         <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <span style={{
-          fontSize: 26,
+          fontSize: 34,
           color: '#1a1a1a',
           fontFamily: T.fontSerif,
           fontStyle: 'italic',
@@ -200,7 +199,7 @@ const Avatar: React.FC<{
           justifyContent: 'center',
         }}
       >
-        <Upload size={12} strokeWidth={1.6} color="#1f1f1f" />
+        <Upload size={14} strokeWidth={1.6} color="#1f1f1f" />
       </motion.div>
     </motion.div>
   );
@@ -263,9 +262,10 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         flexDirection: 'column',
         overflow: 'hidden',
         padding: '0 20px',
+        paddingTop: 32,               // 整体下移一点，不贴顶
       }}>
         <div style={{
-          maxWidth: 680,         // 明显加宽
+          maxWidth: 680,
           margin: '0 auto',
           width: '100%',
           height: '100%',
@@ -283,7 +283,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingTop: 18,
+                paddingTop: 0,
                 paddingBottom: 10,
               }}
             >
@@ -314,9 +314,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent />
 
-            {/* 头像区域：极度压缩，无 bio */}
+            {/* 头像区域：压缩上下内边距，紧凑 */}
             <div style={{
-              padding: '16px 0 12px',
+              padding: '12px 0 8px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -346,7 +346,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     style={{
                       fontFamily: T.fontSerif,
-                      fontSize: 24,
+                      fontSize: 26,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       textAlign: 'center',
@@ -368,7 +368,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     style={{
                       margin: 0,
                       fontFamily: T.fontSerif,
-                      fontSize: 24,
+                      fontSize: 26,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       color: T.textPrimary,
@@ -382,15 +382,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               </div>
             </div>
 
-            <LineAccent style={{ marginBottom: 12 }} />
+            <LineAccent style={{ marginBottom: 10 }} />
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.04, duration: 0.35 }}
               style={{
-                paddingTop: 6,
-                paddingBottom: 8,
+                paddingTop: 4,
+                paddingBottom: 6,
                 fontSize: 8,
                 letterSpacing: '0.24em',
                 textTransform: 'uppercase',
@@ -401,20 +401,20 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               Navigation
             </motion.div>
 
-            {/* 气泡卡片列表 */}
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 4 }}>
+            {/* 气泡卡片列表：紧凑连在一起 */}
+            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
               {menuItems.map((item, i) => (
                 <MenuItem key={item.label} {...item} index={i} />
               ))}
             </div>
           </div>
 
-          {/* 底部版本信息 */}
+          {/* 底部版本信息，留白减小 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.45 }}
-            style={{ marginTop: 12, marginBottom: 20, textAlign: 'center' }}
+            style={{ marginTop: 8, marginBottom: 24, textAlign: 'center' }}
           >
             <div style={{
               display: 'inline-flex',
