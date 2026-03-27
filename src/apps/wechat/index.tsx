@@ -54,8 +54,8 @@ const T = {
   fontMono:  '"JetBrains Mono", "SF Mono", monospace',
 
   // 尺寸
-  navH: 64,
-  topBarPadding: 20,
+  navH: 60,
+  topBarPadding: 12,
 };
 
 /* ── 优化后的胶片颗粒（更细腻，混合模式为 overlay）────────────────── */
@@ -204,91 +204,101 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
 /* ── 顶栏（纯白浮层，阴影替代粗边框）────────────────── */
 const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
   const dateStr = new Date()
-    .toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+    .toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
     .toUpperCase();
 
   return (
     <div style={{
       flexShrink: 0,
-      background: T.bgElevated,
-      boxShadow: T.shadowSm,
-      paddingTop: `calc(env(safe-area-inset-top) + 16px)`,
-      paddingLeft: 24,
-      paddingRight: 24,
-      paddingBottom: 20,
+      background: 'rgba(255, 255, 255, 0.8)', // 半透明背景
+      backdropFilter: 'blur(20px) saturate(180%)', // 磨砂质感
+      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      borderBottom: '0.5px solid rgba(0,0,0,0.08)', // 极细发丝线
+      paddingTop: `calc(env(safe-area-inset-top) + 12px)`,
+      paddingLeft: 20,
+      paddingRight: 20,
+      paddingBottom: 12,
       position: 'relative',
       zIndex: 10,
     }}>
+      {/* 顶层辅助信息行 */}
       <div style={{
         display:'flex', alignItems:'center',
-        justifyContent:'space-between', marginBottom: 18,
+        justifyContent:'space-between', marginBottom: 8,
       }}>
         <button
           onClick={onClose}
           style={{
-            display:'flex', alignItems:'center', gap:6,
+            display:'flex', alignItems:'center', gap:4,
             background:'none', border:'none', padding:0,
             cursor:'pointer',
             fontFamily: T.fontSans,
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
             color: T.textSecondary,
-            transition: 'color 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
-          onMouseLeave={e => e.currentTarget.style.color = T.textSecondary}
         >
-          <span style={{ fontSize:16, lineHeight:1, marginTop:-1 }}>←</span>
-          BACK
+          <span style={{ fontSize:14 }}>←</span>
+          EXIT
         </button>
 
-        <span style={{
-          fontFamily: T.fontMono,
-          fontSize: 9,
-          fontWeight: 500,
-          letterSpacing: '0.32em',
-          textTransform: 'uppercase',
-          color: T.textHint,
-        }}>
-          SOUYEE·OS
-        </span>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <span style={{
+            fontFamily: T.fontMono,
+            fontSize: 8,
+            letterSpacing: '0.2em',
+            color: T.textHint,
+            opacity: 0.6
+          }}>
+            {dateStr}
+          </span>
+          <div style={{ width: 1, height: 8, background: 'rgba(0,0,0,0.1)' }} />
+          <span style={{
+            fontFamily: T.fontMono,
+            fontSize: 8,
+            fontWeight: 600,
+            letterSpacing: '0.2em',
+            color: T.textHint,
+          }}>
+            V.02
+          </span>
+        </div>
       </div>
 
-      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
+      {/* 主标题行：显著缩小字号 */}
+      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between' }}>
         <AnimatePresence mode="wait">
           <motion.h1
             key={title}
-            initial={{ opacity:0, y:10 }}
-            animate={{ opacity:1, y:0  }}
-            exit={{    opacity:0, y:-6 }}
-            transition={{ duration:0.25, ease:[0.2, 0.9, 0.4, 1.1] }}
+            initial={{ opacity:0, x:-5 }}
+            animate={{ opacity:1, x:0  }}
+            exit={{    opacity:0, x:5 }}
+            transition={{ duration:0.3 }}
             style={{
               margin:0,
               fontFamily: T.fontSerif,
-              fontSize: 52,
+              fontSize: 32, // 从 52px 缩减到 32px
               fontWeight: 500,
               fontStyle: 'italic',
-              letterSpacing: '-0.02em',
-              lineHeight: 1,
+              letterSpacing: '-0.01em',
+              lineHeight: 1.1,
               color: T.textPrimary,
             }}
           >
             {title}
+            <span style={{ color: T.textHint, fontSize: 14, marginLeft: 4, fontStyle: 'normal' }}>.</span>
           </motion.h1>
         </AnimatePresence>
 
         <span style={{
           fontFamily: T.fontMono,
-          fontSize: 9,
-          fontWeight: 400,
-          letterSpacing: '0.20em',
+          fontSize: 8,
+          letterSpacing: '0.15em',
           color: T.textHint,
-          paddingBottom: 5,
           textTransform: 'uppercase',
         }}>
-          {dateStr}
+          Protocol-01
         </span>
       </div>
     </div>
