@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload } from 'lucide-react';
+import { Upload, User, Star, Smile, Palette, Settings } from 'lucide-react';
 import { MasksPage } from './MasksPage';
 import { CollectionsPage, FavoriteMessage } from './CollectionsPage';
 import { AppearancePage } from './AppearancePage';
@@ -17,68 +17,69 @@ const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 // 柔和黑白高对比度设计 tokens
 const T = {
   white: '#ffffff',
-  bgPrimary: '#f8f8f8',       // 极浅灰背景，温和不刺眼
-  black: '#1a1a1a',           // 深灰而非纯黑，降低硬度
+  bgPrimary: '#ffffff',        // 纯白背景
+  black: '#1a1a1a',            // 深灰而非纯黑
   textPrimary: '#1a1a1a',
   textSecondary: '#5e5e5e',
   textHint: '#9b9b9b',
   error: '#e03a3a',
   
-  // 字体：标题用优雅衬线，正文用现代无衬线，提升可读性与温度
-  fontSerif: '"Cormorant Garamond", "Playfair Display", Georgia, serif',
-  fontSans: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif',
-  fontMono: '"JetBrains Mono", monospace',
+  fontSerif: `'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif`,
+  fontSans: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`,
+  fontMono: `'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace`,
 
   borderLight: '1px solid rgba(0,0,0,0.08)',
-  shadowSm: '0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03)',
-  shadowMd: '0 4px 12px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)',
-  radiusMd: '16px',
-  radiusSm: '12px',
-  radiusXs: '8px',
+  shadowCard: '0 2px 12px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
+  shadowHover: '0 8px 24px rgba(0,0,0,0.06)',
+  radiusCard: '24px',
+  radiusItem: '20px',
+  radiusSm: '16px',
 };
 
 interface MenuItemProps {
-  symbol: string;
+  icon: React.ReactNode;
   label: string;
   desc: string;
   onClick: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ symbol, label, desc, onClick }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ icon, label, desc, onClick }) => (
   <motion.div
-    whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
+    whileHover={{ y: -2, boxShadow: T.shadowHover }}
+    whileTap={{ scale: 0.98 }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '16px 0',
+      padding: '20px 24px',
+      marginBottom: '12px',
       cursor: 'pointer',
-      borderBottom: T.borderLight,
-      transition: 'background-color 0.2s ease',
+      background: T.white,
+      borderRadius: T.radiusItem,
+      boxShadow: T.shadowCard,
+      transition: 'all 0.2s ease',
+      border: T.borderLight,
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
       <div
         style={{
-          width: 44,
-          height: 44,
+          width: 48,
+          height: 48,
           borderRadius: T.radiusSm,
-          backgroundColor: T.white,
-          border: T.borderLight,
+          background: '#f5f5f5',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: T.shadowSm,
+          color: T.black,
         }}
       >
-        <span style={{ fontSize: 20, color: T.black, fontFamily: T.fontSerif, lineHeight: 1 }}>
-          {symbol}
-        </span>
+        {icon}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 17, fontWeight: 450, color: T.textPrimary, fontFamily: T.fontSans }}>
+        <span style={{ fontSize: 17, fontWeight: 500, color: T.textPrimary, fontFamily: T.fontSans }}>
           {label}
         </span>
         <span
@@ -94,7 +95,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ symbol, label, desc, onClick }) => 
         </span>
       </div>
     </div>
-    <span style={{ fontSize: 18, color: T.textHint, fontFamily: T.fontSerif, fontWeight: 300 }}>›</span>
+    <span style={{ fontSize: 20, color: T.textHint, fontFamily: T.fontSerif, fontWeight: 300 }}>›</span>
   </motion.div>
 );
 
@@ -136,44 +137,39 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
   const displayInitial = profile.name ? profile.name.charAt(0).toUpperCase() : '·';
 
   const menuItems = [
-    { symbol: '◈', label: '个人设定', desc: 'Masks / Persona', onClick: () => setShowMasks(true) },
-    { symbol: '☆', label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
-    { symbol: '☺', label: '表情管理', desc: 'Emoji / Assets', onClick: () => setShowEmoji(true) },
-    { symbol: '◆', label: '界面外观', desc: 'Appearance / Theme', onClick: () => setShowAppearance(true) },
-    { symbol: '◎', label: '设置', desc: 'Preferences / API', onClick: () => console.log('设置') },
+    { icon: <User size={22} strokeWidth={1.5} />, label: '个人设定', desc: 'Masks / Persona', onClick: () => setShowMasks(true) },
+    { icon: <Star size={22} strokeWidth={1.5} />, label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
+    { icon: <Smile size={22} strokeWidth={1.5} />, label: '表情管理', desc: 'Emoji / Assets', onClick: () => setShowEmoji(true) },
+    { icon: <Palette size={22} strokeWidth={1.5} />, label: '界面外观', desc: 'Appearance / Theme', onClick: () => setShowAppearance(true) },
+    { icon: <Settings size={22} strokeWidth={1.5} />, label: '设置', desc: 'Preferences / API', onClick: () => console.log('设置') },
   ];
 
   return (
     <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%', background: T.bgPrimary }}>
       <div style={{ flex: 1, overflowY: 'auto', fontFamily: T.fontSans }}>
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: 'calc(env(safe-area-inset-top) + 32px) 24px 32px' }}>
-          {/* Identity block */}
-          <div style={{ marginBottom: 48 }}>
-            <div style={{ height: 1, background: T.black, width: '100%', marginBottom: 10, opacity: 0.3 }} />
-            <div style={{ padding: '4px 0' }}>
-              <span
-                style={{
-                  fontSize: 9,
-                  letterSpacing: '0.3em',
-                  textTransform: 'uppercase',
-                  color: T.textHint,
-                  fontFamily: T.fontMono,
-                }}
-              >
-                Core Identity
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 24, padding: '20px 0 24px' }}>
-              {/* Avatar */}
+        <div style={{ maxWidth: 600, margin: '0 auto', padding: 'calc(env(safe-area-inset-top) + 32px) 20px 32px' }}>
+          
+          {/* 个人资料卡片 */}
+          <div
+            style={{
+              background: T.white,
+              borderRadius: T.radiusCard,
+              padding: '24px',
+              marginBottom: '32px',
+              boxShadow: T.shadowCard,
+              border: T.borderLight,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+              {/* 头像 */}
               <div
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  width: 84,
-                  height: 84,
-                  borderRadius: T.radiusMd,
+                  width: 80,
+                  height: 80,
+                  borderRadius: T.radiusSm,
                   border: T.borderLight,
-                  backgroundColor: T.white,
+                  background: '#f5f5f5',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -181,13 +177,12 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                   cursor: 'pointer',
                   overflow: 'hidden',
                   position: 'relative',
-                  boxShadow: T.shadowSm,
                 }}
               >
                 {profile.avatar ? (
                   <img src={profile.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <span style={{ fontSize: 34, color: T.black, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 36, color: T.black, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
                     {displayInitial}
                   </span>
                 )}
@@ -212,8 +207,8 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               </div>
               <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" style={{ display: 'none' }} />
 
-              {/* Name */}
-              <div style={{ flex: 1, minWidth: 0 }}>
+              {/* 昵称区域 */}
+              <div style={{ flex: 1 }}>
                 {editingName ? (
                   <input
                     autoFocus
@@ -223,7 +218,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     placeholder="输入昵称"
                     style={{
                       fontFamily: T.fontSerif,
-                      fontSize: 34,
+                      fontSize: 26,
                       fontWeight: 400,
                       letterSpacing: '-0.01em',
                       color: T.black,
@@ -241,7 +236,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     title="点击修改昵称"
                     style={{
                       margin: 0,
-                      fontSize: 34,
+                      fontSize: 26,
                       fontWeight: 400,
                       letterSpacing: '-0.01em',
                       color: profile.name ? T.textPrimary : T.textHint,
@@ -250,25 +245,31 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                       cursor: 'text',
                       borderBottom: '1px dotted transparent',
                       transition: 'border-color 0.2s',
+                      display: 'inline-block',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.borderBottomColor = T.textHint)}
                     onMouseLeave={e => (e.currentTarget.style.borderBottomColor = 'transparent')}
                   >
-                    {profile.name ? `${profile.name}.` : '点击设置昵称'}
+                    {profile.name || '点击设置昵称'}
                   </h2>
                 )}
+                {/* 可选：加入 bio/location 占位 */}
+                <div style={{ marginTop: 8, fontSize: 12, color: T.textHint, fontFamily: T.fontMono }}>
+                  {profile.bio || '未设置简介'}
+                </div>
               </div>
             </div>
-            <div style={{ height: 1, background: T.black, width: '100%', opacity: 0.3 }} />
           </div>
 
-          {/* Menu */}
-          {menuItems.map(item => (
-            <MenuItem key={item.label} {...item} />
-          ))}
+          {/* 菜单卡片列表 */}
+          <div>
+            {menuItems.map(item => (
+              <MenuItem key={item.label} {...item} />
+            ))}
+          </div>
 
           {/* Footer */}
-          <div style={{ marginTop: 56, paddingTop: 24, borderTop: T.borderLight, textAlign: 'center' }}>
+          <div style={{ marginTop: 48, paddingTop: 24, textAlign: 'center' }}>
             <span
               style={{
                 fontSize: 9,
