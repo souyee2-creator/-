@@ -5173,18 +5173,18 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                               style={(() => {
                                 if (msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord || msg.isImage) return {};
 
-                                let radius = '22px';
+                                let radius = '18px';
                                 if (msg.sender === 'me') {
-                                  if (isFirstInGroup && isLastInGroup) radius = '22px 22px 6px 22px';
-                                  else if (isFirstInGroup) radius = '22px 22px 8px 22px';
-                                  else if (isLastInGroup) radius = '22px 8px 6px 22px';
-                                  else radius = '22px 8px 8px 22px';
+                                  if (isFirstInGroup && isLastInGroup) radius = '18px';
+                                  else if (isFirstInGroup) radius = '18px';
+                                  else if (isLastInGroup) radius = '18px';
+                                  else radius = '18px';
                                   return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(30,30,30,0.84)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(0,0,0,0.18), inset 0 0.5px 0 rgba(255,255,255,0.12)', border: '0.5px solid rgba(255,255,255,0.10)' };
                                 } else {
-                                  if (isFirstInGroup && isLastInGroup) radius = '22px 22px 22px 6px';
-                                  else if (isFirstInGroup) radius = '22px 22px 22px 8px';
-                                  else if (isLastInGroup) radius = '8px 22px 22px 6px';
-                                  else radius = '8px 22px 22px 8px';
+                                  if (isFirstInGroup && isLastInGroup) radius = '18px';
+                                  else if (isFirstInGroup) radius = '18px';
+                                  else if (isLastInGroup) radius = '18px';
+                                  else radius = '18px';
                                   return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(0,0,0,0.07), inset 0 0.5px 0 rgba(255,255,255,0.9)', border: '0.5px solid rgba(255,255,255,0.60)' };
                                 }
                               })()}
@@ -5568,12 +5568,15 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     }}
                     disabled={isAiThinking}
                     style={{
-                      width: 34, height: 34,
-                      borderRadius: '50%',
-                      background: (inputText.trim() || quotingMsg) ? '#111' : '#e5e5ea',
+                      height: 34,
+                      padding: (inputText.trim() || quotingMsg) ? '0 14px' : '0 12px',
+                      borderRadius: 10,
+                      background: (inputText.trim() || quotingMsg) ? 'rgba(30,30,30,0.84)' : 'rgba(255,255,255,0.60)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
                       color: (inputText.trim() || quotingMsg) ? '#fff' : '#8e8e93',
-                      border: 'none',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      border: (inputText.trim() || quotingMsg) ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.10)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                       cursor: isAiThinking ? 'not-allowed' : 'pointer',
                       opacity: isAiThinking ? 0.5 : 1,
                       transition: 'all 0.15s',
@@ -5581,11 +5584,12 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                       fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
                       fontSize: 13,
                       fontWeight: 600,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {(inputText.trim() || quotingMsg)
-                      ? <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                      : <span style={{ fontSize: 11, fontWeight: 600 }}>{isAiThinking ? '…' : '回'}</span>
+                      ? <><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg><span>发送</span></>
+                      : <span style={{ fontSize: 13, fontWeight: 600 }}>{isAiThinking ? '…' : '回复'}</span>
                     }
                   </button>
                 </div>
