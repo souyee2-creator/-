@@ -14,26 +14,35 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-/* ── 对齐全局的高级黑白质感 Tokens ── */
+/* ── 黑白高对比度高级质感 Tokens ── */
 const T = {
-  white: '#ffffff',
-  bgPrimary: '#fafafa',
   black: '#000000',
-  textPrimary: '#1a1a1a',
-  textSecondary: '#5e5e5e',
-  textHint: '#8e8e8e',
+  white: '#ffffff',
   
+  bgPrimary: '#000000', // 主背景改为深黑
+  bgSubtle: '#0a0a0a',   // 微妙背景
+  bgCard: '#111111',     // 卡片背景（如果需要）
+  
+  textPrimary: '#ffffff', // 主文字改为纯白
+  textSecondary: 'rgba(255, 255, 255, 0.7)', // 次要文字
+  textHint: 'rgba(255, 255, 255, 0.5)',     // 提示文字
+
   fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
   fontSans: '"Inter", sans-serif',
   fontMono: '"JetBrains Mono", monospace',
 
-  borderHairline: '0.5px solid rgba(0,0,0,0.08)',
+  // 边框：在深色背景下使用半透明白
+  borderHairline: '0.5px solid rgba(255, 255, 255, 0.1)',
+  
+  // 磨砂质感 (Glassmorphism)
+  overlayBg: 'rgba(10, 10, 10, 0.7)', // 半透明深色背景
+  overlayBorder: '1px solid rgba(255, 255, 255, 0.08)', // 微妙边框
 };
 
-/* ── 列表项组件：去卡片化，增强精致感 ── */
+/* ── 列表项组件：黑白高对比度，精致感 ── */
 const MenuItem: React.FC<{ icon: React.ReactNode; label: string; desc: string; onClick: () => void }> = ({ icon, label, desc, onClick }) => (
   <motion.div
-    whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
+    whileHover={{ backgroundColor: 'rgba(255,255,255,0.04)' }} // 在深色背景上 hover 变亮
     whileTap={{ scale: 0.995 }}
     onClick={onClick}
     style={{
@@ -47,7 +56,7 @@ const MenuItem: React.FC<{ icon: React.ReactNode; label: string; desc: string; o
     }}
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-      <div style={{ color: T.black, opacity: 0.8 }}>{icon}</div>
+      <div style={{ color: T.white, opacity: 0.9 }}>{icon}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={{ fontSize: 16, fontWeight: 500, color: T.textPrimary, fontFamily: T.fontSans }}>
           {label}
@@ -104,11 +113,11 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
   ];
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: T.bgPrimary, overflow: 'hidden' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: T.bgPrimary, color: T.textPrimary, overflow: 'hidden' }}>
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px' }}>
         <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 120 }}>
           
-          {/* ── 个人资料头部：更像个人名片 ── */}
+          {/* ── 个人资料头部：高级黑白质感，强调排版 ── */}
           <div style={{ 
             padding: '64px 0 48px', 
             display: 'flex', 
@@ -123,7 +132,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 width: 100,
                 height: 100,
                 border: T.borderHairline,
-                background: T.white,
+                background: T.bgSubtle,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -136,12 +145,12 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               {profile.avatar ? (
                 <img src={profile.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ fontSize: 40, color: T.black, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
+                <span style={{ fontSize: 40, color: T.white, fontFamily: T.fontSerif, fontStyle: 'italic' }}>
                   {profile.name ? profile.name[0].toUpperCase() : '·'}
                 </span>
               )}
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0 }} onMouseEnter={e => e.currentTarget.style.opacity='1'} onMouseLeave={e => e.currentTarget.style.opacity='0'}>
-                <Upload size={18} color={T.black} strokeWidth={1} />
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} onMouseEnter={e => e.currentTarget.style.opacity='1'} onMouseLeave={e => e.currentTarget.style.opacity='0'}>
+                <Upload size={18} color={T.white} strokeWidth={1} />
               </div>
             </div>
             <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" style={{ display: 'none' }} />
@@ -154,7 +163,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                   onBlur={e => { setProfile({...profile, name: e.target.value}); setEditingName(false); }}
                   style={{
                     fontFamily: T.fontSerif, fontSize: 32, fontStyle: 'italic', textAlign: 'center',
-                    background: 'transparent', border: 'none', borderBottom: '1px solid black', outline: 'none'
+                    background: 'transparent', border: 'none', borderBottom: '1px solid white', color: T.textPrimary, outline: 'none'
                   }}
                 />
               ) : (
@@ -193,7 +202,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         </div>
       </div>
 
-      {/* ── 全屏覆盖层：磨砂质感 ── */}
+      {/* ── 全屏覆盖层：磨砂质感 (Glassmorphism) ── */}
       <AnimatePresence>
         {[
           { show: showMasks, Comp: MasksPage, close: () => setShowMasks(false) },
@@ -209,10 +218,17 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
             transition={{ duration: 0.25, ease: 'easeOut' }}
             style={{ 
               position: 'fixed', inset: 0, zIndex: 100, 
-              background: T.white, overflow: 'hidden' 
+              background: T.overlayBg, 
+              backdropFilter: 'blur(30px) saturate(180%)', // 高级磨砂效果
+              WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+              border: T.overlayBorder,
+              overflow: 'hidden',
+              display: 'flex', flexDirection: 'column'
             }}
           >
-            <Comp onBack={close} {...extra} />
+            <div style={{ flex: 1, background: T.bgPrimary, color: T.textPrimary, display: 'flex', flexDirection: 'column' }}>
+              <Comp onBack={close} {...extra} />
+            </div>
           </motion.div>
         ))}
       </AnimatePresence>
