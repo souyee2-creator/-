@@ -14,24 +14,23 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-/* ── High-Contrast Pure White Luxury Tokens ── */
+/* ── Monochrome iOS Luxury Tokens ── */
 const T = {
   bgPrimary:   '#ffffff',
-  bgSubtle:    '#ffffff',
-  bgMuted:     '#f8f8f8',
+  bgSubtle:    '#f5f5f5', // 更微妙的灰色，增加层次
+  bgMuted:     '#f0f0f0', // 稍深的灰色
 
   textPrimary:   '#000000',
-  textSecondary: '#2c2c2c',
-  textHint:      '#6b6b6b',
+  textSecondary: '#333333', // 稍深的灰色，增加质感
+  textHint:      '#666666', // 稍浅的灰色，作为提示
 
-  borderHairline: '0.5px solid rgba(0, 0, 0, 0.2)',
-  borderSubtle:   '1px solid rgba(0, 0, 0, 0.12)',
-  borderBold:     '1px solid rgba(0, 0, 0, 0.28)',
+  borderHairline: '0.5px solid rgba(0, 0, 0, 0.1)', // 更细，更微妙
+  borderSubtle:   '1px solid rgba(0, 0, 0, 0.08)', // 更微妙的边框
+  borderBold:     '1px solid rgba(0, 0, 0, 0.2)', // 稍微降低对比，更高级
 
-  overlayBg:     'rgba(255, 255, 255, 0.92)',
-  overlayBorder: '1px solid rgba(0, 0, 0, 0.08)',
-  shadowSoft:    '0 8px 24px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02)',
-  shadowCard:    '0 1px 2px rgba(0,0,0,0.04)',
+  overlayBg:     'rgba(255, 255, 255, 0.95)', // 更不透明，增加质感
+  shadowSoft:    '0 8px 30px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.01)', // 更柔和的阴影
+  shadowCard:    '0 1px 3px rgba(0,0,0,0.02)', // 更微妙的阴影
 
   fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
   fontSans:  '"DM Sans", "Helvetica Neue", sans-serif',
@@ -40,7 +39,7 @@ const T = {
 
 const GrainOverlay: React.FC = () => (
   <svg
-    style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, opacity: 0.018 }}
+    style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, opacity: 0.015 }} // 稍微降低透明度，更微妙
     xmlns="http://www.w3.org/2000/svg"
   >
     <filter id="grain">
@@ -54,12 +53,12 @@ const GrainOverlay: React.FC = () => (
 const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   <div style={{
     height: 1,
-    background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.6) 80%, transparent)',
+    background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.18) 20%, rgba(0,0,0,0.18) 80%, transparent)', // 修改渐变颜色为浅灰色
     ...style
   }} />
 );
 
-/* ── 列表菜单项（内部元素，无缝紧贴，深色主题适配）── */
+/* ── 列表菜单项 (优化为 iOS 风) ── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -72,48 +71,48 @@ const MenuItem: React.FC<{
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.05 + index * 0.03, duration: 0.3 }}
-    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }} // 悬浮时泛起微光
-    whileTap={{ backgroundColor: 'rgba(255, 255, 255, 0.12)' }}
+    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }} // 优化悬浮背景色，更微妙
+    whileTap={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }} // 优化点击背景色
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '18px 22px', // 变宽变大：增加上下和左右的内边距
+      padding: '18px 22px', // 维持原大小
       cursor: 'pointer',
-      borderBottom: isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.08)', // 明确的细线界限
+      borderBottom: isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.04)', // 更细更微妙的浅灰色分割线
       transition: 'background-color 0.2s ease',
     }}
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
       <div style={{
-        width: 42,  // 变大：从 38 增加到 42
+        width: 42,
         height: 42,
-        background: 'rgba(255, 255, 255, 0.1)', // 深色模式下的半透白底
+        background: 'rgba(255, 255, 255, 0.06)', // 更精致的灰色背景
         borderRadius: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.15)',
+        boxShadow: 'inset 0 1px 0.5px rgba(255,255,255,0.08)', // 优化内高光，更微妙
       }}>
-        <div style={{ color: '#ffffff' }}>{icon}</div>
+        <div style={{ color: '#ffffff' }}>{icon}</div> {/* 图标反转为白色 */}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={{
-          fontSize: 16, // 字体稍微放大
+          fontSize: 16,
           fontWeight: 450,
           letterSpacing: '-0.01em',
-          color: '#ffffff', // 纯白文字
+          color: '#f0f0f0', // 修改主标题颜色为微妙的浅灰色
           fontFamily: T.fontSans,
         }}>
           {label}
         </span>
         <span style={{
-          fontSize: 9, // 小字说明稍微放大
+          fontSize: 9,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: 'rgba(255, 255, 255, 0.55)', // 半透白提示字
+          color: 'rgba(255, 255, 255, 0.45)', // 修改副标题颜色，更暗更通透
           fontFamily: T.fontMono,
         }}>
           {desc}
@@ -128,14 +127,14 @@ const MenuItem: React.FC<{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'rgba(255, 255, 255, 0.06)',
+      background: 'rgba(255, 255, 255, 0.03)', // 修改右侧箭头背景，更暗
     }}>
-      <ChevronRight size={14} strokeWidth={2} color="rgba(255, 255, 255, 0.7)" />
+      <ChevronRight size={14} strokeWidth={2} color="rgba(255, 255, 255, 0.6)" /> {/* 箭头颜色修改为浅灰色 */}
     </div>
   </motion.div>
 );
 
-/* ── 头像：80px，适中 ── */
+/* ── 头像: 80px，优化细节 ── */
 const Avatar: React.FC<{
   avatar: string;
   name: string;
@@ -152,7 +151,7 @@ const Avatar: React.FC<{
         width: 80,
         height: 80,
         borderRadius: '50%',
-        border: '2px solid rgba(0,0,0,0.25)',
+        border: '2px solid rgba(0,0,0,0.18)', // 优化边框颜色，更细致
         background: T.bgMuted,
         display: 'flex',
         alignItems: 'center',
@@ -164,14 +163,14 @@ const Avatar: React.FC<{
         boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
         transition: 'border 0.2s',
       }}
-      whileHover={{ borderColor: 'rgba(0,0,0,0.5)' }}
+      whileHover={{ borderColor: 'rgba(0,0,0,0.4)' }} // 优化悬浮边框颜色
     >
       {avatar ? (
         <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <span style={{
           fontSize: 34,
-          color: '#1a1a1a',
+          color: '#000000', // 修改姓名首字母颜色为纯黑
           fontFamily: T.fontSerif,
           fontStyle: 'italic',
           lineHeight: 1,
@@ -188,8 +187,9 @@ const Avatar: React.FC<{
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(0,0,0,0.04)',
-          backdropFilter: 'blur(2px)',
+          background: 'rgba(0,0,0,0.06)', // 增加遮罩透明度
+          backdropFilter: 'blur(3px)', // 优化模糊，更柔和
+          WebkitBackdropFilter: 'blur(3px)', // 优化模糊，更柔和
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -310,7 +310,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent />
 
-            {/* 头像区域：紧凑 */}
+            {/* 头像区域: 精致 */}
             <div style={{
               padding: '12px 0 8px',
               display: 'flex',
@@ -380,15 +380,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent style={{ marginBottom: 16 }} />
 
-            {/* 深色磨砂气泡卡片列表容器 */}
+            {/* 深色磨砂气泡卡片列表容器 (优化质感) */}
             <div style={{
-              background: 'rgba(28, 28, 30, 0.78)', // 深色磨砂底色
-              backdropFilter: 'blur(24px) saturate(140%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(140%)',
-              borderRadius: 28, // 大圆角
+              background: 'rgba(10, 10, 10, 0.92)', // 更深的背景，更高级的质感
+              backdropFilter: 'blur(30px) saturate(180%) brightness(0.95)', // 优化模糊和饱和度，降低亮度，增加景深
+              WebkitBackdropFilter: 'blur(30px) saturate(180%) brightness(0.95)', // 优化模糊和饱和度，降低亮度，增加景深
+              borderRadius: 30, // 大圆角
               overflow: 'hidden', // 裁切内部项悬停的圆角溢出
-              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0.5px rgba(255, 255, 255, 0.1)', // 更深的阴影，更微妙的内高光
+              border: '1px solid rgba(0, 0, 0, 0.05)', // 更细更微妙的边框
               display: 'flex',
               flexDirection: 'column',
               marginTop: 10,
@@ -416,9 +416,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               alignItems: 'center',
               gap: 8,
               padding: '6px 16px',
-              border: T.borderBold,
+              border: T.borderSubtle, // 修改为微妙边框
               borderRadius: 32,
-              background: T.bgPrimary,
+              background: T.bgSubtle, // 修改为微妙背景
               boxShadow: T.shadowCard,
             }}>
               <div style={{
@@ -426,7 +426,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 height: 4,
                 borderRadius: '50%',
                 background: '#000000',
-                opacity: 0.65,
+                opacity: 0.5, // 优化不透明度，更柔和
               }} />
               <span style={{
                 fontSize: 7,
@@ -459,8 +459,8 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
             style={{
               position: 'fixed', inset: 0, zIndex: 100,
               background: T.overlayBg,
-              backdropFilter: 'blur(32px) saturate(180%) brightness(1.01)',
-              WebkitBackdropFilter: 'blur(32px) saturate(180%) brightness(1.01)',
+              backdropFilter: 'blur(35px) saturate(180%) brightness(1.01)', // 优化子页面模糊和景深
+              WebkitBackdropFilter: 'blur(35px) saturate(180%) brightness(1.01)', // 优化子页面模糊和景深
               border: 'none',
               borderLeft: '1px solid rgba(0,0,0,0.06)',
               borderRight: '1px solid rgba(0,0,0,0.06)',
