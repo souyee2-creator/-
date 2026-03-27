@@ -103,15 +103,23 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     <div style={{ flex: 1, height: '100%', background: T.bgPrimary, overflowY: 'auto', padding: '24px' }}>
       <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 120 }}>
         
-        {/* ── 初始化按钮：极简线框 ── */}
+        {/* ── 初始化按钮：黑底白字，悬停加深 ── */}
         <motion.button
-          whileHover={{ backgroundColor: T.black, color: T.white }}
+          whileHover={{ backgroundColor: '#2c2c2c' }}
           onClick={openCreateModal}
           style={{
-            width: '100%', background: 'transparent', color: T.black,
-            border: T.borderHairline, padding: '20px', display: 'flex', 
-            alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            marginBottom: '40px', gap: '8px', transition: 'all 0.2s'
+            width: '100%',
+            background: T.black,
+            color: T.white,
+            border: '1px solid rgba(255,255,255,0.2)',
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            marginBottom: '40px',
+            gap: '8px',
+            transition: 'all 0.2s'
           }}
         >
           <span style={{ fontSize: '10px', fontFamily: T.fontMono, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
@@ -120,28 +128,43 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
           <Plus size={14} />
         </motion.button>
 
-        {/* ── 列表部分 ── */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* ── 列表部分：柔和卡片风格 ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {characters.map((char, i) => (
             <motion.div
               layout
               key={char.id}
               onClick={() => openEditModal(char)}
               style={{
-                display: 'flex', alignItems: 'center', padding: '20px 0',
-                borderBottom: T.borderHairline, cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '12px 16px',
+                background: T.white,
+                borderRadius: '16px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              whileHover={{
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
               }}
             >
               <div style={{
-                width: 48, height: 48, flexShrink: 0, marginRight: 20,
-                background: T.white, border: T.borderHairline, overflow: 'hidden'
+                width: 44,
+                height: 44,
+                flexShrink: 0,
+                marginRight: 16,
+                background: '#f5f5f5',
+                borderRadius: '12px',
+                overflow: 'hidden'
               }}>
                 {char.avatar ? (
                   <img src={char.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ 
                     width: '100%', height: '100%', display: 'flex', alignItems: 'center', 
-                    justifyContent: 'center', fontSize: 16, fontFamily: T.fontSerif, fontStyle: 'italic' 
+                    justifyContent: 'center', fontSize: 16, fontFamily: T.fontSerif, fontStyle: 'italic',
+                    color: T.textHint
                   }}>
                     {(char.remark || char.realName)?.[0]}
                   </div>
@@ -149,20 +172,35 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
               </div>
 
               <div style={{ flex: 1 }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 500, fontFamily: T.fontSerif, color: T.textPrimary }}>
+                <h3 style={{ 
+                  margin: 0, 
+                  fontSize: '16px', 
+                  fontWeight: 400, 
+                  fontFamily: T.fontSerif, 
+                  color: T.textPrimary,
+                  lineHeight: 1.3
+                }}>
                   {char.remark || char.realName}
                 </h3>
                 <p style={{ 
-                  margin: '2px 0 0', fontSize: '9px', fontFamily: T.fontMono, 
-                  letterSpacing: '0.05em', color: T.textHint, textTransform: 'uppercase' 
+                  margin: '4px 0 0', 
+                  fontSize: '10px', 
+                  fontFamily: T.fontMono, 
+                  letterSpacing: '0.05em', 
+                  color: T.textHint, 
+                  textTransform: 'uppercase' 
                 }}>
                   {char.remark ? char.realName : 'Undefined Soul'}
                 </p>
               </div>
               
               <div style={{ 
-                fontFamily: T.fontMono, fontSize: '9px', color: T.textHint, 
-                display: 'flex', alignItems: 'center', gap: 4 
+                fontFamily: T.fontMono, 
+                fontSize: '8px', 
+                color: T.textHint, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 4 
               }}>
                 <span>EDIT</span>
                 <ArrowUpRight size={10} />
@@ -225,7 +263,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
                 <div 
                   onClick={() => fileInputRef.current?.click()}
                   style={{
-                    width: 64, height: 64, border: T.borderHairline,
+                    width: 64, height: 64, border: T.borderHairline, borderRadius: '12px',
                     alignSelf: 'flex-start', display: 'flex', alignItems: 'center', 
                     justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', background: T.white
                   }}
