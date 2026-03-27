@@ -15,33 +15,67 @@ interface WeChatAppProps {
 const STORAGE_KEY    = 'souyee_os_wechat_characters';
 const FAVORITES_KEY  = 'souyee_os_wechat_favorites';
 
-/* ── tokens (极致黑白高对比度) ────────────────────────────────── */
+/* ── 高级黑白质感 tokens（保留高对比，增加灰度层次与细腻阴影）────────────────── */
 const T = {
+  // 基础色（兼容旧代码）
   white:      '#ffffff',
-  offWhite:   '#ffffff',                   // 舍弃灰调，全局纯白底色
+  offWhite:   '#fafafa',
   black:      '#000000',
-  ink:        '#000000',                   // 纯黑文字与线条
-  dim:        '#666666',                   // 次级信息使用高对比度的深灰
-  ghost:      'rgba(0,0,0,0.1)',
-  rule:       '#000000',                   // 分割线全部改为纯黑实线
-  navH:       60,                          // 【调整】底栏高度从 80px 缩减为 60px
-  fontSerif:  '"Didot", "Bodoni MT", "Playfair Display", Georgia, serif',
-  fontSans:   '"Helvetica Neue", "Inter", Helvetica, Arial, sans-serif',
-  fontMono:   '"SF Mono", "Fira Code", monospace',
+  ink:        '#1a1a1a',
+
+  // 灰度系统
+  bgPrimary:    '#fafafa',
+  bgElevated:   '#ffffff',
+  bgInverse:    '#111111',
+
+  textPrimary:  '#1a1a1a',
+  textSecondary:'#5e5e5e',
+  textHint:     '#8e8e8e',
+  textOnDark:   '#eeeeee',
+
+  borderLight:  '#eaeef2',
+  borderStrong: '#dddddd',
+
+  hoverBg:      'rgba(0,0,0,0.04)',
+  activeBg:     'rgba(0,0,0,0.08)',
+
+  // 阴影
+  shadowSm: '0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03)',
+  shadowMd: '0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02)',
+  shadowLg: '0 20px 32px -12px rgba(0,0,0,0.1)',
+
+  // 颗粒纹理
+  grainOpacity: 0.03,
+  grainBlend:   'overlay' as const,   // 修复：使用 as const 确保字面量类型
+
+  // 字体系统
+  fontSerif: '"Cormorant Garamond", "Playfair Display", Georgia, serif',
+  fontSans:  '"Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+  fontMono:  '"JetBrains Mono", "SF Mono", monospace',
+
+  // 尺寸
+  navH: 64,
+  topBarPadding: 20,
 };
 
-/* ── Grain (保留胶片颗粒，增加高对比风格的质感) ────────────────── */
+/* ── 优化后的胶片颗粒（更细腻，混合模式为 overlay）────────────────── */
 const Grain = () => (
   <svg aria-hidden style={{
     position:'fixed', inset:0, width:'100%', height:'100%',
     pointerEvents:'none', zIndex:9999,
-    opacity: 0.05, mixBlendMode: 'multiply',
+    opacity: T.grainOpacity,
+    mixBlendMode: T.grainBlend, // 现在类型正确
   }}>
-    <filter id="gr">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+    <filter id="grainFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="2" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.5" intercept="0"/>
+        <feFuncG type="linear" slope="0.5" intercept="0"/>
+        <feFuncB type="linear" slope="0.5" intercept="0"/>
+      </feComponentTransfer>
     </filter>
-    <rect width="100%" height="100%" filter="url(#gr)"/>
+    <rect width="100%" height="100%" filter="url(#grainFilter)"/>
   </svg>
 );
 
@@ -54,18 +88,18 @@ const TABS = [
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
-/* ── Wide bottom nav (纯黑底栏，更窄) ────────────────────────── */
+/* ── 底部导航（深色底栏 + 底部细线指示器）────────────────── */
 const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ active, onChange }) => (
   <div style={{
     flexShrink: 0,
     height: T.navH + 'px',
     paddingBottom: 'env(safe-area-inset-bottom)',
-    background: T.black, // 纯黑背景
+    background: T.bgInverse,
     display: 'flex',
     alignItems: 'stretch',
     position: 'relative',
     zIndex: 20,
-    borderTop: `2px solid ${T.black}`, // 强化顶部边缘
+    boxShadow: '0 -2px 12px rgba(0,0,0,0.03)',
   }}>
     {TABS.map((tab, i) => {
       const on = tab.id === active;
@@ -76,28 +110,38 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
           style={{
             flex: 1,
             display: 'flex',
-            flexDirection: 'column', // 改为横向排布可以更省空间，但保持原设计堆叠
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 2, // 缩小间距以适应更窄的高度
+            gap: 4,
             background: 'transparent',
             border: 'none',
-            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.2)` : 'none', // 锐利的白色分割线
+            borderRight: i < TABS.length - 1 ? `1px solid rgba(255,255,255,0.08)` : 'none',
             cursor: 'pointer',
             position: 'relative',
             padding: 0,
+            transition: 'background 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            if (!on) e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
           }}
         >
-          {/* animated fill - 纯白滑块 */}
           {on && (
             <motion.div
-              layoutId="nav-fill"
+              layoutId="nav-indicator"
               style={{
-                position:'absolute', inset:0,
-                background: T.white, 
-                zIndex: 0,
+                position: 'absolute',
+                bottom: 12,
+                left: '25%',
+                width: '50%',
+                height: 2,
+                background: T.white,
+                borderRadius: 2,
               }}
-              transition={{ type:'spring', stiffness:400, damping:35 }}
+              transition={{ type:'spring', stiffness:500, damping:30 }}
             />
           )}
 
@@ -106,7 +150,7 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
             fontFamily: T.fontMono,
             fontSize: 9,
             letterSpacing: '0.15em',
-            color: on ? T.black : 'rgba(255,255,255,0.5)',
+            color: on ? T.white : 'rgba(255,255,255,0.5)',
             transition: 'color 0.2s',
             lineHeight: 1,
           }}>
@@ -116,11 +160,11 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
           <span style={{
             position:'relative', zIndex:1,
             fontFamily: T.fontSans,
-            fontSize: 12, // 字体略微缩小以适应底栏
-            fontWeight: on ? 700 : 500,
-            letterSpacing: on ? '0.04em' : '0.08em',
+            fontSize: 13,
+            fontWeight: on ? 600 : 450,
+            letterSpacing: on ? '0.02em' : '0.06em',
             textTransform: 'uppercase',
-            color: on ? T.ink : T.white, // 高对比：选中为纯黑，未选中为纯白
+            color: on ? T.white : T.textOnDark,
             transition: 'color 0.2s, font-weight 0.2s',
           }}>
             {tab.label}
@@ -131,7 +175,7 @@ const Nav: React.FC<{ active: TabId; onChange: (id: TabId) => void }> = ({ activ
   </div>
 );
 
-/* ── Top bar (纯白高对比顶栏) ────────────────────────────────── */
+/* ── 顶栏（纯白浮层，阴影替代粗边框）────────────────── */
 const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
   const dateStr = new Date()
     .toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
@@ -140,20 +184,18 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
   return (
     <div style={{
       flexShrink: 0,
-      background: T.white, // 纯白背景
-      borderBottom: `2px solid ${T.black}`, // 粗重纯黑分割线，强化高对比
-      paddingTop: 'calc(env(safe-area-inset-top) + 16px)',
+      background: T.bgElevated,
+      boxShadow: T.shadowSm,
+      paddingTop: `calc(env(safe-area-inset-top) + 16px)`,
       paddingLeft: 24,
       paddingRight: 24,
-      paddingBottom: 16,
+      paddingBottom: 20,
       position: 'relative',
       zIndex: 10,
     }}>
-
-      {/* row 1 */}
       <div style={{
         display:'flex', alignItems:'center',
-        justifyContent:'space-between', marginBottom: 16,
+        justifyContent:'space-between', marginBottom: 18,
       }}>
         <button
           onClick={onClose}
@@ -163,11 +205,14 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
             cursor:'pointer',
             fontFamily: T.fontSans,
             fontSize: 11,
-            fontWeight: 700, // 加粗 Back 按钮
+            fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: T.black,
+            color: T.textSecondary,
+            transition: 'color 0.2s',
           }}
+          onMouseEnter={e => e.currentTarget.style.color = T.textPrimary}
+          onMouseLeave={e => e.currentTarget.style.color = T.textSecondary}
         >
           <span style={{ fontSize:16, lineHeight:1, marginTop:-1 }}>←</span>
           BACK
@@ -176,16 +221,15 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
         <span style={{
           fontFamily: T.fontMono,
           fontSize: 9,
-          fontWeight: 700,
+          fontWeight: 500,
           letterSpacing: '0.32em',
           textTransform: 'uppercase',
-          color: T.black,
+          color: T.textHint,
         }}>
           SOUYEE·OS
         </span>
       </div>
 
-      {/* row 2: big title */}
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
         <AnimatePresence mode="wait">
           <motion.h1
@@ -193,16 +237,16 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
             initial={{ opacity:0, y:10 }}
             animate={{ opacity:1, y:0  }}
             exit={{    opacity:0, y:-6 }}
-            transition={{ duration:0.20, ease:[0.25,0,0,1] }}
+            transition={{ duration:0.25, ease:[0.2, 0.9, 0.4, 1.1] }}
             style={{
               margin:0,
               fontFamily: T.fontSerif,
               fontSize: 52,
-              fontWeight: 700,
+              fontWeight: 500,
               fontStyle: 'italic',
-              letterSpacing: '-0.03em',
+              letterSpacing: '-0.02em',
               lineHeight: 1,
-              color: T.ink,
+              color: T.textPrimary,
             }}
           >
             {title}
@@ -212,9 +256,9 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
         <span style={{
           fontFamily: T.fontMono,
           fontSize: 9,
-          fontWeight: 700,
+          fontWeight: 400,
           letterSpacing: '0.20em',
-          color: T.black,
+          color: T.textHint,
           paddingBottom: 5,
           textTransform: 'uppercase',
         }}>
@@ -225,7 +269,7 @@ const TopBar: React.FC<{ title: string; onClose: () => void }> = ({ title, onClo
   );
 };
 
-/* ── App ─────────────────────────────────────────────────────── */
+/* ── 主应用 ─────────────────────────────────────────────────── */
 export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
   const [activeTab, setActiveTab]   = useState<TabId>('signals');
   const [activeChat, setActiveChat] = useState<any | null>(null);
@@ -243,7 +287,6 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
   useEffect(() => { localStorage.setItem(STORAGE_KEY,   JSON.stringify(characters)); }, [characters]);
   useEffect(() => { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));  }, [favorites]);
 
-  // ... (状态处理函数与之前相同，为了简洁在此略去，保持原代码逻辑即可) ...
   const handleAddCharacter     = (c: AICharacter) => setCharacters(p => [c, ...p]);
   const handleUpdateCharacter  = (u: AICharacter) => setCharacters(p => p.map(c => c.id===u.id ? u : c));
   const handleDeleteCharacter  = (id: string)      => setCharacters(p => p.filter(c => c.id!==id));
@@ -290,7 +333,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
         position:'fixed', inset:0, zIndex:50,
         display:'flex', flexDirection:'column',
         overflow:'hidden',
-        background: T.offWhite, // 纯白全局底色
+        background: T.bgPrimary,
         fontFamily: T.fontSans,
       }}
     >
@@ -304,7 +347,7 @@ export const WeChatApp: React.FC<WeChatAppProps> = ({ onClose }) => {
           initial={{ opacity:0, y:8  }}
           animate={{ opacity:1, y:0  }}
           exit={{    opacity:0, y:-6 }}
-          transition={{ duration:0.18, ease:[0.25,0,0,1] }}
+          transition={{ duration:0.2, ease:[0.2, 0.9, 0.4, 1.1] }}
           style={{ flex:1, overflow:'hidden', display:'flex', flexDirection:'column', position:'relative', zIndex:1 }}
         >
           {renderContent()}
