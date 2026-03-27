@@ -4841,11 +4841,12 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
 
       {/* 顶部导航 */}
       <div style={{
-        background: 'rgba(255,255,255,0.82)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'rgba(255,255,255,0.62)',
+        backdropFilter: 'blur(32px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(32px) saturate(180%)',
         paddingTop: 'env(safe-area-inset-top)',
-        borderBottom: '0.5px solid rgba(0,0,0,0.10)',
+        borderBottom: '0.5px solid rgba(255,255,255,0.55)',
+        boxShadow: '0 1px 0 rgba(0,0,0,0.06)',
         zIndex: 20,
         flexShrink: 0,
       }}>
@@ -4947,7 +4948,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
         ref={scrollRef}
         onClick={() => { if (showPlusPanel) setShowPlusPanel(false); }}
         className="flex-1 overflow-y-auto p-4 pt-4 no-scrollbar flex flex-col"
-        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: '#f2f2f7' }}
+        style={effectiveBg ? { background: `url(${effectiveBg}) center/cover no-repeat fixed` } : { background: 'linear-gradient(145deg, #dde6f5 0%, #ead9f5 45%, #d5edf5 100%)' }}
       >
         {effectiveBubbleCss && <style>{effectiveBubbleCss}</style>}
         {effectiveThemeCss && <style>{effectiveThemeCss}</style>}
@@ -5165,8 +5166,8 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                 } ${(msg.isRedPacket || msg.isTransfer || msg.isLocation || msg.isForwardRecord)
                                   ? ''
                                   : msg.sender === 'me'
-                                    ? 'bg-black text-white'
-                                    : 'bg-white text-black'
+                                    ? 'text-white'
+                                    : 'text-black'
                                 } ${menuConfig?.msgId === msg.id ? 'brightness-90' : ''} ${isMultiSelect && selectedMsgIds.has(msg.id) ? 'opacity-60 scale-[0.97]' : ''
                                 }`}
                               style={(() => {
@@ -5178,13 +5179,13 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                                   else if (isFirstInGroup) radius = '22px 22px 8px 22px';
                                   else if (isLastInGroup) radius = '22px 8px 6px 22px';
                                   else radius = '22px 8px 8px 22px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, boxShadow: 'none' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(88, 86, 214, 0.80)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(88,86,214,0.22), inset 0 0.5px 0 rgba(255,255,255,0.25)', border: '0.5px solid rgba(255,255,255,0.22)' };
                                 } else {
                                   if (isFirstInGroup && isLastInGroup) radius = '22px 22px 22px 6px';
                                   else if (isFirstInGroup) radius = '22px 22px 22px 8px';
                                   else if (isLastInGroup) radius = '8px 22px 22px 6px';
                                   else radius = '8px 22px 22px 8px';
-                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, border: '0.5px solid rgba(0,0,0,0.10)', boxShadow: 'none' };
+                                  return { fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', borderRadius: radius, background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 2px 16px rgba(0,0,0,0.07), inset 0 0.5px 0 rgba(255,255,255,0.9)', border: '0.5px solid rgba(255,255,255,0.60)' };
                                 }
                               })()}
                             >
@@ -5471,7 +5472,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
       </div>
 
       {/* 输入框区域 / 多选工具栏 */}
-      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
+      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.55)', background: 'rgba(255,255,255,0.62)', backdropFilter: 'blur(32px) saturate(180%)', WebkitBackdropFilter: 'blur(32px) saturate(180%)', boxShadow: '0 -1px 0 rgba(0,0,0,0.04)', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0 }}>
         <AnimatePresence mode="wait">
           {isMultiSelect ? (
             <motion.div
@@ -5536,7 +5537,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                   }}>
                   <Smile size={22} />
                 </button>
-                <div style={{ flex: '1 1 0%', minWidth: 0, maxWidth: 'calc(100% - 130px)', background: '#f2f2f7', borderRadius: 22, padding: '8px 14px', display: 'flex', alignItems: 'center', minHeight: 38 }}>
+                <div style={{ flex: '1 1 0%', minWidth: 0, maxWidth: 'calc(100% - 130px)', background: 'rgba(255,255,255,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.7)', borderRadius: 22, padding: '8px 14px', display: 'flex', alignItems: 'center', minHeight: 38 }}>
                   <textarea
                     ref={textareaRef}
                     rows={1}
@@ -5599,7 +5600,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(255,255,255,0.50)', background: 'rgba(248,248,255,0.70)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
                   >
                     {/* 第一行 */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '16px 8px 4px' }}>
@@ -5620,10 +5621,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2', transition: 'background 0.12s' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5856D6', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(88,86,214,0.10)', transition: 'background 0.12s' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#6e6e8e', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5644,10 +5645,10 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                           }}
                           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '10px 4px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          <div style={{ width: 50, height: 50, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111', background: '#f2f2f2' }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5856D6', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.8)', boxShadow: '0 2px 10px rgba(88,86,214,0.10)' }}>
                             {item.icon}
                           </div>
-                          <span style={{ fontSize: 10, color: '#8e8e93', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
+                          <span style={{ fontSize: 10, color: '#6e6e8e', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>{item.label}</span>
                         </button>
                       ))}
                     </div>
@@ -5662,7 +5663,7 @@ B. 你在本次对话中已发出过至少一次明确警告，用户无视后�
                     animate={{ height: 220, opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(0,0,0,0.08)', background: '#fff' }}
+                    style={{ overflow: 'hidden', borderTop: '0.5px solid rgba(255,255,255,0.50)', background: 'rgba(248,248,255,0.70)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
                   >
                     <EmojiPanel
                       contactId={contact.id}
