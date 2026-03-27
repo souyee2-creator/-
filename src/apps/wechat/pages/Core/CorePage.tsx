@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, User, Star, Smile, Palette, Settings, ChevronRight } from 'lucide-react';
+import { Upload, User, Star, Smile, Palette, Settings, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { MasksPage } from './MasksPage';
 import { CollectionsPage, FavoriteMessage } from './CollectionsPage';
 import { AppearancePage } from './AppearancePage';
@@ -14,75 +14,188 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-/* ── 黑白简约磨砂风 Tokens (纯白底色) ── */
+/* ── Pure White Luxury Tokens ── */
 const T = {
-  white: '#ffffff',
-  black: '#111111',          // 深灰，避免刺眼
-  
-  bgPrimary: '#ffffff',      // 纯白主背景
-  bgSubtle: '#fafafa',       // 极浅灰（头像、卡片背景）
-  
-  textPrimary: '#111111',    // 深色主文字
-  textSecondary: '#5e5e5e',  // 次要文字
-  textHint: '#9b9b9b',       // 提示文字
-  
-  fontSerif: '"Cormorant Garamond", "Playfair Display", Georgia, serif',
-  fontSans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  fontMono: '"JetBrains Mono", "SF Mono", monospace',
-  
-  borderHairline: '0.5px solid rgba(0, 0, 0, 0.08)',   // 极淡边框
-  shadowSm: '0 1px 2px rgba(0, 0, 0, 0.02), 0 1px 1px rgba(0, 0, 0, 0.02)',
-  
-  // 磨砂覆盖层（模态框背景）
-  overlayBg: 'rgba(255, 255, 255, 0.85)',
-  overlayBorder: '1px solid rgba(255, 255, 255, 0.3)',
-  blurAmount: 'blur(20px) saturate(180%)',
+  /* Backgrounds */
+  bgPrimary:   '#ffffff',
+  bgSubtle:    '#f8f8f6',
+  bgMuted:     '#f2f2ef',
+
+  /* Text */
+  textPrimary:   '#0a0a0a',
+  textSecondary: 'rgba(10, 10, 10, 0.55)',
+  textHint:      'rgba(10, 10, 10, 0.35)',
+
+  /* Borders */
+  borderHairline: '0.5px solid rgba(0, 0, 0, 0.08)',
+  borderSubtle:   '1px solid rgba(0, 0, 0, 0.06)',
+
+  /* Frosted overlay */
+  overlayBg:     'rgba(255, 255, 255, 0.75)',
+  overlayBorder: '1px solid rgba(255, 255, 255, 0.9)',
+  shadowSoft:    '0 8px 48px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04)',
+  shadowCard:    '0 1px 3px rgba(0,0,0,0.05)',
+
+  /* Typography */
+  fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
+  fontSans:  '"DM Sans", "Helvetica Neue", sans-serif',
+  fontMono:  '"IBM Plex Mono", "JetBrains Mono", monospace',
 };
 
-/* ── 菜单项：极简线框 + 细腻悬停 ── */
-const MenuItem: React.FC<{ icon: React.ReactNode; label: string; desc: string; onClick: () => void }> = ({
-  icon,
-  label,
-  desc,
-  onClick,
-}) => (
+/* ── Grain texture overlay for tactile luxury feel ── */
+const GrainOverlay: React.FC = () => (
+  <svg
+    style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, opacity: 0.025 }}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain)" />
+  </svg>
+);
+
+/* ── Decorative line accent ── */
+const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
+  <div style={{
+    height: 1,
+    background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.12) 30%, rgba(0,0,0,0.12) 70%, transparent)',
+    ...style
+  }} />
+);
+
+/* ── Menu Item: white surface, editorial typographic hierarchy ── */
+const MenuItem: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  desc: string;
+  index: number;
+  onClick: () => void;
+}> = ({ icon, label, desc, index, onClick }) => (
   <motion.div
-    whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
-    whileTap={{ scale: 0.995 }}
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.08 + index * 0.05, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    whileHover={{ backgroundColor: 'rgba(0,0,0,0.018)' }}
+    whileTap={{ scale: 0.998 }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '24px 0',
+      padding: '22px 0',
       cursor: 'pointer',
       borderBottom: T.borderHairline,
       transition: 'background 0.2s ease',
+      borderRadius: 2,
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-      <div style={{ color: T.textSecondary, opacity: 0.8 }}>{icon}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 16, fontWeight: 500, color: T.textPrimary, fontFamily: T.fontSans }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+      {/* Icon pill */}
+      <div style={{
+        width: 36, height: 36,
+        background: T.bgMuted,
+        borderRadius: 8,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        border: T.borderSubtle,
+        flexShrink: 0,
+      }}>
+        <div style={{ color: T.textSecondary }}>{icon}</div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <span style={{
+          fontSize: 15,
+          fontWeight: 500,
+          letterSpacing: '-0.01em',
+          color: T.textPrimary,
+          fontFamily: T.fontSans,
+        }}>
           {label}
         </span>
-        <span
-          style={{
-            fontSize: 9,
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: T.textHint,
-            fontFamily: T.fontMono,
-          }}
-        >
+        <span style={{
+          fontSize: 9,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: T.textHint,
+          fontFamily: T.fontMono,
+        }}>
           {desc}
         </span>
       </div>
     </div>
-    <ChevronRight size={14} strokeWidth={1} color={T.textHint} />
+
+    <div style={{
+      width: 24, height: 24,
+      border: T.borderSubtle,
+      borderRadius: '50%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: T.bgSubtle,
+    }}>
+      <ChevronRight size={11} strokeWidth={1.5} color={T.textHint} />
+    </div>
   </motion.div>
 );
 
+/* ── Avatar ── */
+const Avatar: React.FC<{
+  avatar: string;
+  name: string;
+  onClick: () => void;
+}> = ({ avatar, name, onClick }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.div
+      onClick={onClick}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      style={{
+        width: 96, height: 96,
+        borderRadius: '50%',
+        border: '1.5px solid rgba(0,0,0,0.08)',
+        background: T.bgSubtle,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer',
+        overflow: 'hidden',
+        position: 'relative',
+        marginBottom: 24,
+        boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
+      }}
+    >
+      {avatar ? (
+        <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      ) : (
+        <span style={{
+          fontSize: 38,
+          color: T.textSecondary,
+          fontFamily: T.fontSerif,
+          fontStyle: 'italic',
+          lineHeight: 1,
+          userSelect: 'none',
+        }}>
+          {name ? name[0].toUpperCase() : '·'}
+        </span>
+      )}
+
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.18 }}
+        style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <Upload size={16} color={T.textSecondary} strokeWidth={1.5} />
+      </motion.div>
+    </motion.div>
+  );
+};
+
+/* ── Main ── */
 export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite }) => {
   const [showCollections, setShowCollections] = useState(false);
   const [showAppearance, setShowAppearance] = useState(false);
@@ -95,9 +208,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     try {
       const saved = localStorage.getItem(PROFILE_KEY);
       return saved ? { ...DEFAULT_PROFILE, ...JSON.parse(saved) } : DEFAULT_PROFILE;
-    } catch {
-      return DEFAULT_PROFILE;
-    }
+    } catch { return DEFAULT_PROFILE; }
   });
 
   useEffect(() => {
@@ -108,248 +219,250 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setProfile((prev) => ({ ...prev, avatar: reader.result as string }));
+      reader.onloadend = () => setProfile(prev => ({ ...prev, avatar: reader.result as string }));
       reader.readAsDataURL(file);
     }
   };
 
   const menuItems = [
-    {
-      icon: <User size={20} strokeWidth={1.2} />,
-      label: '个人设定',
-      desc: 'Masks / Persona',
-      onClick: () => setShowMasks(true),
-    },
-    {
-      icon: <Star size={20} strokeWidth={1.2} />,
-      label: '收藏列表',
-      desc: 'Stations / Dialogues',
-      onClick: () => setShowCollections(true),
-    },
-    {
-      icon: <Smile size={20} strokeWidth={1.2} />,
-      label: '表情管理',
-      desc: 'Emoji / Assets',
-      onClick: () => setShowEmoji(true),
-    },
-    {
-      icon: <Palette size={20} strokeWidth={1.2} />,
-      label: '界面外观',
-      desc: 'Appearance / Theme',
-      onClick: () => setShowAppearance(true),
-    },
-    {
-      icon: <Settings size={20} strokeWidth={1.2} />,
-      label: '设置',
-      desc: 'Preferences / API',
-      onClick: () => {},
-    },
+    { icon: <User size={17} strokeWidth={1.4} />,    label: '个人设定', desc: 'Masks / Persona',      onClick: () => setShowMasks(true) },
+    { icon: <Star size={17} strokeWidth={1.4} />,    label: '收藏列表', desc: 'Stations / Dialogues', onClick: () => setShowCollections(true) },
+    { icon: <Smile size={17} strokeWidth={1.4} />,   label: '表情管理', desc: 'Emoji / Assets',       onClick: () => setShowEmoji(true) },
+    { icon: <Palette size={17} strokeWidth={1.4} />, label: '界面外观', desc: 'Appearance / Theme',   onClick: () => setShowAppearance(true) },
+    { icon: <Settings size={17} strokeWidth={1.4} />,label: '设置',     desc: 'Preferences / API',    onClick: () => {} },
   ];
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: T.bgPrimary,
-        color: T.textPrimary,
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px' }}>
-        <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 120 }}>
-          {/* 个人资料头部：极简排版，柔边 */}
-          <div
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column',
+      background: T.bgPrimary,
+      color: T.textPrimary,
+      overflow: 'hidden',
+      position: 'relative',
+    }}>
+      <GrainOverlay />
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 28px' }}>
+        <div style={{ maxWidth: 560, margin: '0 auto', paddingBottom: 120 }}>
+
+          {/* ── Header strip ── */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             style={{
-              padding: '64px 0 48px',
               display: 'flex',
-              flexDirection: 'column',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: T.borderHairline,
-              marginBottom: 20,
+              paddingTop: 32,
+              paddingBottom: 20,
             }}
           >
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                width: 100,
-                height: 100,
-                border: T.borderHairline,
-                background: T.bgSubtle,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                overflow: 'hidden',
-                position: 'relative',
-                marginBottom: 24,
-                borderRadius: '50%',      // 圆形头像更柔和
-                boxShadow: T.shadowSm,
-              }}
-            >
-              {profile.avatar ? (
-                <img src={profile.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <span
-                  style={{
-                    fontSize: 40,
-                    color: T.textPrimary,
-                    fontFamily: T.fontSerif,
-                    fontStyle: 'italic',
-                  }}
-                >
-                  {profile.name ? profile.name[0].toUpperCase() : '·'}
-                </span>
-              )}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'rgba(0,0,0,0.04)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: 0,
-                  transition: 'opacity 0.2s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = '0')}
-              >
-                <Upload size={18} color={T.textPrimary} strokeWidth={1} />
-              </div>
-            </div>
-            <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" style={{ display: 'none' }} />
+            <span style={{
+              fontSize: 8,
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
+              color: T.textHint,
+              fontFamily: T.fontMono,
+            }}>
+              Souyee OS
+            </span>
+            <span style={{
+              fontSize: 8,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: T.textHint,
+              fontFamily: T.fontMono,
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              Core Protocol
+              <ArrowUpRight size={9} strokeWidth={1.5} />
+            </span>
+          </motion.div>
 
-            <div style={{ textAlign: 'center' }}>
+          <LineAccent />
+
+          {/* ── Profile ── */}
+          <div style={{
+            padding: '56px 0 40px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+            <Avatar
+              avatar={profile.avatar}
+              name={profile.name}
+              onClick={() => fileInputRef.current?.click()}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              accept="image/*"
+              style={{ display: 'none' }}
+            />
+
+            <div style={{ textAlign: 'center', marginBottom: 8 }}>
               {editingName ? (
                 <input
                   autoFocus
                   defaultValue={profile.name}
-                  onBlur={(e) => {
+                  onBlur={e => {
                     setProfile({ ...profile, name: e.target.value });
                     setEditingName(false);
                   }}
+                  onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                   style={{
                     fontFamily: T.fontSerif,
-                    fontSize: 32,
+                    fontSize: 34,
                     fontStyle: 'italic',
+                    fontWeight: 400,
                     textAlign: 'center',
                     background: 'transparent',
                     border: 'none',
-                    borderBottom: T.borderHairline,
+                    borderBottom: `1px solid rgba(0,0,0,0.2)`,
                     color: T.textPrimary,
                     outline: 'none',
                     width: '100%',
+                    letterSpacing: '-0.01em',
                   }}
                 />
               ) : (
-                <h2
+                <motion.h2
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.5 }}
                   onClick={() => setEditingName(true)}
                   style={{
                     margin: 0,
                     fontFamily: T.fontSerif,
-                    fontSize: 32,
+                    fontSize: 34,
                     fontStyle: 'italic',
-                    fontWeight: 500,
+                    fontWeight: 400,
                     color: T.textPrimary,
                     cursor: 'text',
-                    borderBottom: '1px dotted transparent',
-                    transition: 'border-color 0.2s',
+                    letterSpacing: '-0.01em',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = T.textHint)}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = 'transparent')}
                 >
                   {profile.name || 'Undefined Identity'}
-                </h2>
+                </motion.h2>
               )}
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: 10,
-                  fontFamily: T.fontMono,
-                  letterSpacing: '0.2em',
-                  color: T.textHint,
-                  textTransform: 'uppercase',
-                }}
-              >
-                {profile.bio || 'Waiting for protocol...'}
-              </div>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              style={{
+                fontSize: 9,
+                fontFamily: T.fontMono,
+                letterSpacing: '0.2em',
+                color: T.textHint,
+                textTransform: 'uppercase',
+              }}
+            >
+              {profile.bio || 'Awaiting protocol...'}
+            </motion.div>
           </div>
 
-          {/* 极简菜单列表 */}
+          <LineAccent style={{ marginBottom: 8 }} />
+
+          {/* ── Section label ── */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.06, duration: 0.4 }}
+            style={{
+              paddingTop: 20,
+              paddingBottom: 4,
+              fontSize: 8,
+              letterSpacing: '0.25em',
+              textTransform: 'uppercase',
+              color: T.textHint,
+              fontFamily: T.fontMono,
+            }}
+          >
+            Navigation
+          </motion.div>
+
+          {/* ── Menu ── */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {menuItems.map((item) => (
-              <MenuItem key={item.label} {...item} />
+            {menuItems.map((item, i) => (
+              <MenuItem key={item.label} {...item} index={i} />
             ))}
           </div>
 
-          {/* 页脚版本号 */}
-          <div style={{ marginTop: 64, textAlign: 'center' }}>
-            <span
-              style={{
+          {/* ── Footer ── */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.5 }}
+            style={{ marginTop: 72, textAlign: 'center' }}
+          >
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '10px 20px',
+              border: T.borderSubtle,
+              borderRadius: 40,
+              background: T.bgSubtle,
+            }}>
+              <div style={{
+                width: 5, height: 5,
+                borderRadius: '50%',
+                background: 'rgba(0,0,0,0.2)',
+              }} />
+              <span style={{
                 fontSize: 8,
-                letterSpacing: '0.4em',
+                letterSpacing: '0.3em',
                 textTransform: 'uppercase',
                 color: T.textHint,
                 fontFamily: T.fontMono,
-                opacity: 0.6,
-              }}
-            >
-              Core Protocol v1.0.2 / Souyee OS
-            </span>
-          </div>
+              }}>
+                v1.0.2
+              </span>
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* 磨砂覆盖层 (Glassmorphism) - 纯白磨砂效果 */}
+      {/* ── Overlay layers: frosted white glass ── */}
       <AnimatePresence>
         {[
-          { show: showMasks, Comp: MasksPage, close: () => setShowMasks(false) },
-          {
-            show: showCollections,
-            Comp: CollectionsPage,
-            close: () => setShowCollections(false),
-            extra: { favorites, onRemove: onRemoveFavorite },
-          },
-          { show: showAppearance, Comp: AppearancePage, close: () => setShowAppearance(false) },
-          { show: showEmoji, Comp: EmojiManagerPage, close: () => setShowEmoji(false) },
-        ].map(({ show, Comp, close, extra }) =>
-          show ? (
-            <motion.div
-              key={Comp.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 100,
-                background: T.overlayBg,
-                backdropFilter: T.blurAmount,
-                WebkitBackdropFilter: T.blurAmount,
-                border: T.overlayBorder,
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  background: T.bgPrimary,
-                  color: T.textPrimary,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Comp onBack={close} {...extra} />
-              </div>
-            </motion.div>
-          ) : null
-        )}
+          { show: showMasks,       Comp: MasksPage,       close: () => setShowMasks(false)       },
+          { show: showCollections, Comp: CollectionsPage, close: () => setShowCollections(false), extra: { favorites, onRemove: onRemoveFavorite } },
+          { show: showAppearance,  Comp: AppearancePage,  close: () => setShowAppearance(false)  },
+          { show: showEmoji,       Comp: EmojiManagerPage,close: () => setShowEmoji(false)       },
+        ].map(({ show, Comp, close, extra }) => show && (
+          <motion.div
+            key={Comp.name}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 100,
+              background: T.overlayBg,
+              backdropFilter: 'blur(40px) saturate(160%) brightness(1.02)',
+              WebkitBackdropFilter: 'blur(40px) saturate(160%) brightness(1.02)',
+              border: T.overlayBorder,
+              overflow: 'hidden',
+              display: 'flex', flexDirection: 'column',
+              boxShadow: '0 0 0 1px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
+            }}
+          >
+            <div style={{
+              flex: 1,
+              background: T.bgPrimary,
+              color: T.textPrimary,
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              <Comp onBack={close} {...extra} />
+            </div>
+          </motion.div>
+        ))}
       </AnimatePresence>
     </div>
   );
