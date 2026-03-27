@@ -18,7 +18,7 @@ const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 const T = {
   bgPrimary:   '#ffffff',
   bgSubtle:    '#ffffff',
-  bgMuted:     '#fafafa',
+  bgMuted:     '#f8f8f8',
 
   textPrimary:   '#000000',
   textSecondary: '#2c2c2c',
@@ -59,7 +59,7 @@ const LineAccent: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   }} />
 );
 
-/* ── 气泡卡片菜单项：无加粗，独立卡片样式 ── */
+/* ── 气泡卡片菜单项（无加粗，独立浅灰卡片）── */
 const MenuItem: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -68,45 +68,45 @@ const MenuItem: React.FC<{
   onClick: () => void;
 }> = ({ icon, label, desc, index, onClick }) => (
   <motion.div
-    initial={{ opacity: 0, y: 6 }}
+    initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.06 + index * 0.04, duration: 0.35, ease: [0.2, 0, 0, 1] }}
-    whileHover={{ y: -1, boxShadow: '0 6px 18px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02)' }}
-    whileTap={{ scale: 0.995 }}
+    transition={{ delay: 0.05 + index * 0.03, duration: 0.3 }}
+    whileHover={{ y: -2, backgroundColor: '#f2f2f2', boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }}
+    whileTap={{ scale: 0.99 }}
     onClick={onClick}
     style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '14px 18px',
-      marginBottom: 10,
+      padding: '16px 20px',
+      marginBottom: 12,
       cursor: 'pointer',
-      background: '#ffffff',
-      borderRadius: 20,
-      border: '1px solid rgba(0,0,0,0.06)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.01)',
-      transition: 'all 0.2s cubic-bezier(0.2, 0, 0, 1)',
+      background: '#fafafa',   // 浅灰卡片背景
+      borderRadius: 24,
+      border: '1px solid rgba(0,0,0,0.04)',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+      transition: 'all 0.2s ease',
     }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
       <div style={{
-        width: 36,
-        height: 36,
+        width: 40,
+        height: 40,
         background: '#ffffff',
-        borderRadius: 12,
+        borderRadius: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: '1px solid rgba(0,0,0,0.12)',
-        flexShrink: 0,
+        border: '1px solid rgba(0,0,0,0.08)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
       }}>
         <div style={{ color: '#1a1a1a' }}>{icon}</div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <span style={{
-          fontSize: 15,
-          fontWeight: 400,
+          fontSize: 16,
+          fontWeight: 400,      // 无加粗
           letterSpacing: '-0.01em',
           color: T.textPrimary,
           fontFamily: T.fontSans,
@@ -114,8 +114,8 @@ const MenuItem: React.FC<{
           {label}
         </span>
         <span style={{
-          fontSize: 8,
-          letterSpacing: '0.12em',
+          fontSize: 9,
+          letterSpacing: '0.1em',
           textTransform: 'uppercase',
           color: T.textHint,
           fontFamily: T.fontMono,
@@ -126,21 +126,21 @@ const MenuItem: React.FC<{
     </div>
 
     <div style={{
-      width: 26,
-      height: 26,
-      border: '1px solid rgba(0,0,0,0.2)',
+      width: 28,
+      height: 28,
+      border: '1px solid rgba(0,0,0,0.15)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       background: '#ffffff',
     }}>
-      <ChevronRight size={12} strokeWidth={2} color="#2c2c2c" />
+      <ChevronRight size={13} strokeWidth={2} color="#2c2c2c" />
     </div>
   </motion.div>
 );
 
-/* ── 头像：缩小尺寸，紧凑布局 ── */
+/* ── 头像：明显缩小到 60px ── */
 const Avatar: React.FC<{
   avatar: string;
   name: string;
@@ -154,10 +154,10 @@ const Avatar: React.FC<{
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       style={{
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         borderRadius: '50%',
-        border: '2px solid rgba(0,0,0,0.2)',
+        border: '2px solid rgba(0,0,0,0.25)',
         background: T.bgMuted,
         display: 'flex',
         alignItems: 'center',
@@ -169,13 +169,13 @@ const Avatar: React.FC<{
         boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
         transition: 'border 0.2s',
       }}
-      whileHover={{ borderColor: 'rgba(0,0,0,0.45)' }}
+      whileHover={{ borderColor: 'rgba(0,0,0,0.5)' }}
     >
       {avatar ? (
         <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <span style={{
-          fontSize: 30,
+          fontSize: 26,
           color: '#1a1a1a',
           fontFamily: T.fontSerif,
           fontStyle: 'italic',
@@ -193,14 +193,14 @@ const Avatar: React.FC<{
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(0,0,0,0.03)',
+          background: 'rgba(0,0,0,0.04)',
           backdropFilter: 'blur(2px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Upload size={13} strokeWidth={1.6} color="#1f1f1f" />
+        <Upload size={12} strokeWidth={1.6} color="#1f1f1f" />
       </motion.div>
     </motion.div>
   );
@@ -262,10 +262,10 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        padding: '0 24px',
+        padding: '0 20px',
       }}>
         <div style={{
-          maxWidth: 620,
+          maxWidth: 680,         // 明显加宽
           margin: '0 auto',
           width: '100%',
           height: '100%',
@@ -273,7 +273,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           flexDirection: 'column',
           justifyContent: 'space-between',
         }}>
-          {/* 顶部区域：header + 头像 + 菜单 */}
+          {/* 顶部区域 */}
           <div style={{ flexShrink: 0 }}>
             <motion.div
               initial={{ opacity: 0 }}
@@ -314,9 +314,9 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
 
             <LineAccent />
 
-            {/* 头像区域：紧凑且无 bio 行 */}
+            {/* 头像区域：极度压缩，无 bio */}
             <div style={{
-              padding: '20px 0 16px',
+              padding: '16px 0 12px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -346,7 +346,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     style={{
                       fontFamily: T.fontSerif,
-                      fontSize: 26,
+                      fontSize: 24,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       textAlign: 'center',
@@ -368,7 +368,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                     style={{
                       margin: 0,
                       fontFamily: T.fontSerif,
-                      fontSize: 26,
+                      fontSize: 24,
                       fontStyle: 'italic',
                       fontWeight: 420,
                       color: T.textPrimary,
@@ -382,15 +382,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               </div>
             </div>
 
-            <LineAccent style={{ marginBottom: 8 }} />
+            <LineAccent style={{ marginBottom: 12 }} />
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.04, duration: 0.35 }}
               style={{
-                paddingTop: 8,
-                paddingBottom: 6,
+                paddingTop: 6,
+                paddingBottom: 8,
                 fontSize: 8,
                 letterSpacing: '0.24em',
                 textTransform: 'uppercase',
@@ -409,12 +409,12 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
             </div>
           </div>
 
-          {/* 底部版本信息，紧凑放置 */}
+          {/* 底部版本信息 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.45 }}
-            style={{ marginTop: 16, marginBottom: 24, textAlign: 'center' }}
+            style={{ marginTop: 12, marginBottom: 20, textAlign: 'center' }}
           >
             <div style={{
               display: 'inline-flex',
@@ -448,7 +448,6 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         </div>
       </div>
 
-      {/* 浮层保持不变 */}
       <AnimatePresence>
         {[
           { show: showMasks,       Comp: MasksPage,       close: () => setShowMasks(false)       },
