@@ -14,7 +14,7 @@ interface CorePageProps {
 const PROFILE_KEY = 'souyee_os_core_identity';
 const DEFAULT_PROFILE = { name: '', id: '', bio: '', location: '', avatar: '' };
 
-/* ── 极简黑白高对比度 iOS 设计 Token，升级字体为秀丽高级感 ── */
+/* ── 极简黑白高对比度设计，升级为柔和磨砂质感 ── */
 const T = {
   bgPrimary:   '#ffffff',
   bgActive:    '#f2f2f7',
@@ -24,10 +24,11 @@ const T = {
   textHint:      '#8e8e93',
 
   borderStark:    '1.5px solid #000000',
-  borderSubtle:   '0.5px solid rgba(0, 0, 0, 0.15)',
+  borderSubtle:   '0.5px solid rgba(0, 0, 0, 0.12)',      // 更柔和的细边框
 
-  overlayBg:     'rgba(255, 255, 255, 0.75)',
-  blurEffect:    'blur(40px) saturate(150%)',
+  // 柔和磨砂质感：提高透明度，降低模糊强度，增加亮度与饱和度
+  overlayBg:     'rgba(255, 255, 255, 0.88)',             // 稍高的不透明度，更干净
+  blurEffect:    'blur(28px) saturate(180%) brightness(1.02)',
 
   // 高级感字体组合：标题与正文使用秀丽衬线体 + 现代无衬线辅助
   fontSerif: '"Cormorant Garamond", "Playfair Display", "Times New Roman", serif',
@@ -76,7 +77,6 @@ const MenuItem: React.FC<{
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* 菜单标签使用秀丽衬线体 */}
         <span style={{
           fontSize: 17,
           fontWeight: 600,
@@ -86,7 +86,6 @@ const MenuItem: React.FC<{
         }}>
           {label}
         </span>
-        {/* 描述使用清晰现代无衬线 */}
         <span style={{
           fontSize: 12,
           color: T.textSecondary,
@@ -229,10 +228,10 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
       background: T.bgPrimary,
       color: T.textPrimary,
       fontFamily: T.fontSans,
-      overflow: 'hidden',          // 禁止滚动
+      overflow: 'hidden',
       position: 'relative',
     }}>
-      {/* 顶部磨砂导航栏 */}
+      {/* 顶部磨砂导航栏 - 使用柔和的半透背景与细腻模糊 */}
       <div style={{
         position: 'sticky',
         top: 0,
@@ -242,7 +241,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: 'rgba(255, 255, 255, 0.8)',
+        background: 'rgba(252, 252, 252, 0.85)',      // 柔和暖白，提升磨砂质感
         backdropFilter: T.blurEffect,
         WebkitBackdropFilter: T.blurEffect,
         borderBottom: T.borderSubtle,
@@ -259,15 +258,15 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
       <div style={{
         maxWidth: 680,
         margin: '0 auto',
-        padding: '20px 20px 40px',   // 上padding减少，整体上移
+        padding: '20px 20px 40px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: 'calc(100% - 60px)',  // 填满剩余空间但不触发滚动
-        overflow: 'hidden',           // 禁止滚动
+        height: 'calc(100% - 60px)',
+        overflow: 'hidden',
       }}>
         
-        {/* 头像与身份区域 - 上移间距缩小 */}
+        {/* 头像与身份区域 */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -327,7 +326,6 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
                 {profile.name || 'Undefined'}
               </h2>
             )}
-            {/* 已删除 "Tap to edit identity" 提示行 */}
           </div>
         </motion.div>
 
@@ -350,7 +348,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
           ))}
         </div>
 
-        {/* 底部版本：灰色细字体，无黑色背景 */}
+        {/* 底部版本 */}
         <div style={{ marginTop: 24 }}>
           <span style={{
             padding: '0',
@@ -366,7 +364,7 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
         </div>
       </div>
 
-      {/* 弹窗/子页面：强效磨砂玻璃 iOS 风 */}
+      {/* 弹窗/子页面：柔和磨砂玻璃 + 细腻阴影与边框 */}
       <AnimatePresence>
         {[
           { show: showMasks,       Comp: MasksPage,       close: () => setShowMasks(false)       },
@@ -389,6 +387,8 @@ export const CorePage: React.FC<CorePageProps> = ({ favorites, onRemoveFavorite 
               WebkitBackdropFilter: T.blurEffect,
               display: 'flex', 
               flexDirection: 'column',
+              // 增加柔和阴影与极细光边，提升玻璃质感
+              boxShadow: '0 0 0 1px rgba(255,255,255,0.3), 0 20px 40px -12px rgba(0,0,0,0.15)',
             }}
           >
             <div style={{
