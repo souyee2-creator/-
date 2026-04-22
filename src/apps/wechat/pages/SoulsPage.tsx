@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Image as ImageIcon, Trash2, Plus, ArrowUpRight } from 'lucide-react';
+import { X, Image as ImageIcon, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AICharacter } from '../types';
 
@@ -10,44 +10,53 @@ interface SoulsPageProps {
   onDeleteCharacter: (id: string) => void;
 }
 
-/* ── 对齐 index.tsx 的高级黑白质感 Tokens ── */
+/* ── Design Tokens (aligned with index.tsx) ── */
 const T = {
-  white: '#ffffff',
-  bgPrimary: '#fafafa',
-  black: '#000000',
-  textPrimary: '#1a1a1a',
-  textSecondary: '#5e5e5e',
-  textHint: '#8e8e8e',
-  error: '#ff3b30',
-  
-  // 字体系统
-  fontSerif: '"Cormorant Garamond", "Playfair Display", serif',
-  fontSans: '"Inter", sans-serif',
-  fontMono: '"JetBrains Mono", monospace',
+  paper:      '#f5f4f1',
+  ink:        '#111110',
+  inkFaint:   '#8a8984',
+  inkGhost:   '#c4c3c0',
+  surface:    '#ffffff',
+  line:       'rgba(17,17,16,0.10)',
+  lineStrong: 'rgba(17,17,16,0.20)',
+  error:      '#c0392b',
 
-  borderHairline: '0.5px solid rgba(0,0,0,0.1)',
-  shadowLg: '0 20px 40px rgba(0,0,0,0.1)',
+  serif: '"Cormorant Garamond", "Playfair Display", Georgia, serif',
+  mono:  '"DM Mono", "JetBrains Mono", "SF Mono", monospace',
+  sans:  '"Helvetica Neue", "Helvetica", Arial, sans-serif',
+
+  ease: [0.22, 1, 0.36, 1] as const,
 };
 
-const ef = {
-  glass: {
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-    background: 'rgba(255, 255, 255, 0.75)',
-  },
-  input: {
-    fontFamily: T.fontSans,
-    width: '100%',
-    background: 'transparent',
-    border: 'none',
-    borderBottom: T.borderHairline,
-    outline: 'none',
-    fontSize: '14px',
-    color: T.black,
-    padding: '10px 0',
-    transition: 'all 0.3s ease',
-  }
+const inputBase: React.CSSProperties = {
+  fontFamily: T.sans,
+  fontSize: 14,
+  fontWeight: 400,
+  letterSpacing: '0.01em',
+  width: '100%',
+  background: 'transparent',
+  border: 'none',
+  borderBottom: `0.5px solid ${T.lineStrong}`,
+  outline: 'none',
+  color: T.ink,
+  padding: '10px 0',
+  transition: 'border-color 0.2s',
 };
+
+const labelBase: React.CSSProperties = {
+  fontFamily: T.mono,
+  fontSize: 9,
+  letterSpacing: '0.22em',
+  textTransform: 'uppercase',
+  color: T.inkGhost,
+  display: 'block',
+  marginBottom: 2,
+};
+
+/* ── Hairline Rule ── */
+const Rule = () => (
+  <div style={{ height: '0.5px', background: T.line, flexShrink: 0 }} />
+);
 
 export const SoulsPage: React.FC<SoulsPageProps> = ({
   characters,
@@ -55,9 +64,9 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
   onUpdateCharacter,
   onDeleteCharacter,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen]           = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [editingChar, setEditingChar] = useState<AICharacter | null>(null);
+  const [editingChar, setEditingChar]           = useState<AICharacter | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<Partial<AICharacter>>({
@@ -80,7 +89,7 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setFormData({ ...formData, avatar: reader.result as string });
+      reader.onloadend = () => setFormData(prev => ({ ...prev, avatar: reader.result as string }));
       reader.readAsDataURL(file);
     }
   };
@@ -100,215 +109,330 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
   };
 
   return (
-    <div style={{ flex: 1, height: '100%', background: T.bgPrimary, overflowY: 'auto', padding: '24px' }}>
-      <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 120 }}>
-        
-        {/* ── 初始化按钮：黑底白字，悬停加深 ── */}
+    <div style={{
+      flex: 1,
+      height: '100%',
+      background: T.paper,
+      overflowY: 'auto',
+      fontFamily: T.sans,
+    }}>
+      <div style={{ maxWidth: 560, margin: '0 auto', padding: '32px 24px 140px' }}>
+
+        {/* ── Add Button: architectural, full-width, ink on paper ── */}
         <motion.button
-          whileHover={{ backgroundColor: '#2c2c2c' }}
           onClick={openCreateModal}
+          whileHover={{ background: T.ink, color: T.paper }}
           style={{
             width: '100%',
-            background: T.black,
-            color: T.white,
-            border: '1px solid rgba(255,255,255,0.2)',
-            padding: '20px',
+            background: 'transparent',
+            color: T.ink,
+            border: `0.5px solid ${T.lineStrong}`,
+            padding: '18px 24px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             cursor: 'pointer',
-            marginBottom: '40px',
-            gap: '8px',
-            transition: 'all 0.2s'
+            marginBottom: 40,
+            transition: 'background 0.3s, color 0.3s',
+            borderRadius: 0,
           }}
         >
-          <span style={{ fontSize: '10px', fontFamily: T.fontMono, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+          <span style={{
+            fontFamily: T.mono,
+            fontSize: 9,
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+          }}>
             Initialize New Soul
           </span>
-          <Plus size={14} />
+          <Plus size={13} strokeWidth={1.5} />
         </motion.button>
 
-        {/* ── 列表部分：柔和卡片风格 ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* ── Character List ── */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {characters.map((char, i) => (
-            <motion.div
-              layout
-              key={char.id}
-              onClick={() => openEditModal(char)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '12px 16px',
-                background: T.white,
-                borderRadius: '16px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              whileHover={{
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              }}
-            >
-              <div style={{
-                width: 44,
-                height: 44,
-                flexShrink: 0,
-                marginRight: 16,
-                background: '#f5f5f5',
-                borderRadius: '12px',
-                overflow: 'hidden'
-              }}>
-                {char.avatar ? (
-                  <img src={char.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ 
-                    width: '100%', height: '100%', display: 'flex', alignItems: 'center', 
-                    justifyContent: 'center', fontSize: 16, fontFamily: T.fontSerif, fontStyle: 'italic',
-                    color: T.textHint
-                  }}>
-                    {(char.remark || char.realName)?.[0]}
-                  </div>
-                )}
-              </div>
+            <React.Fragment key={char.id}>
+              {i === 0 && <Rule />}
+              <motion.div
+                layout
+                onClick={() => openEditModal(char)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: T.ease }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '20px 0',
+                  cursor: 'pointer',
+                  gap: 20,
+                  transition: 'opacity 0.2s',
+                }}
+                whileHover={{ opacity: 0.65 }}
+              >
+                {/* Avatar: square, no radius */}
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  flexShrink: 0,
+                  background: T.surface,
+                  border: `0.5px solid ${T.line}`,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  {char.avatar ? (
+                    <img src={char.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{
+                      fontFamily: T.serif,
+                      fontStyle: 'italic',
+                      fontSize: 22,
+                      fontWeight: 400,
+                      color: T.inkGhost,
+                    }}>
+                      {(char.remark || char.realName)?.[0]}
+                    </span>
+                  )}
+                </div>
 
-              <div style={{ flex: 1 }}>
-                <h3 style={{ 
-                  margin: 0, 
-                  fontSize: '16px', 
-                  fontWeight: 400, 
-                  fontFamily: T.fontSerif, 
-                  color: T.textPrimary,
-                  lineHeight: 1.3
-                }}>
-                  {char.remark || char.realName}
-                </h3>
-                <p style={{ 
-                  margin: '4px 0 0', 
-                  fontSize: '10px', 
-                  fontFamily: T.fontMono, 
-                  letterSpacing: '0.05em', 
-                  color: T.textHint, 
-                  textTransform: 'uppercase' 
-                }}>
-                  {char.remark ? char.realName : 'Undefined Soul'}
-                </p>
-              </div>
-              
-              <div style={{ 
-                fontFamily: T.fontMono, 
-                fontSize: '8px', 
-                color: T.textHint, 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 4 
-              }}>
-                <span>EDIT</span>
-                <ArrowUpRight size={10} />
-              </div>
-            </motion.div>
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontFamily: T.serif,
+                    fontStyle: 'italic',
+                    fontSize: 20,
+                    fontWeight: 400,
+                    color: T.ink,
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1.2,
+                    marginBottom: 4,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {char.remark || char.realName}
+                  </div>
+                  <div style={{
+                    fontFamily: T.mono,
+                    fontSize: 9,
+                    letterSpacing: '0.18em',
+                    color: T.inkGhost,
+                    textTransform: 'uppercase',
+                  }}>
+                    {char.remark ? char.realName : 'Undefined Soul'}
+                  </div>
+                </div>
+
+                {/* Arrow mark */}
+                <svg width="16" height="10" viewBox="0 0 16 10" fill="none" style={{ flexShrink: 0 }}>
+                  <line x1="0" y1="5" x2="14" y2="5" stroke={T.inkGhost} strokeWidth="0.8"/>
+                  <polyline points="10,1 14,5 10,9" fill="none" stroke={T.inkGhost} strokeWidth="0.8"/>
+                </svg>
+              </motion.div>
+              <Rule />
+            </React.Fragment>
           ))}
         </div>
+
+        {/* Empty state */}
+        {characters.length === 0 && (
+          <div style={{
+            paddingTop: 48,
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontFamily: T.serif,
+              fontStyle: 'italic',
+              fontSize: 28,
+              color: T.inkGhost,
+              fontWeight: 300,
+              marginBottom: 12,
+            }}>
+              No souls yet.
+            </div>
+            <div style={{
+              fontFamily: T.mono,
+              fontSize: 9,
+              letterSpacing: '0.2em',
+              color: T.inkGhost,
+              textTransform: 'uppercase',
+            }}>
+              Initialize to begin
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* ── 磨砂质感 Modal ── */}
+      {/* ── Edit / Create Modal ── */}
       <AnimatePresence>
         {isModalOpen && (
-          <div style={{ 
-            position: 'fixed', inset: 0, zIndex: 100, 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 100,
+            display: 'flex', alignItems: 'flex-end',
           }}>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
               onClick={() => setIsModalOpen(false)}
-              style={{ 
-                position: 'absolute', inset: 0, 
-                background: 'rgba(255,255,255,0.2)', 
-                backdropFilter: 'blur(8px)' 
+              style={{
+                position: 'absolute', inset: 0,
+                background: 'rgba(17,17,16,0.5)',
               }}
             />
-            
+
+            {/* Sheet */}
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.4, ease: T.ease }}
               style={{
-                position: 'relative', width: '100%', maxWidth: '400px',
-                border: T.borderHairline, padding: '40px',
-                boxShadow: T.shadowLg, ...ef.glass
+                position: 'relative',
+                width: '100%',
+                maxHeight: '90vh',
+                background: T.paper,
+                overflowY: 'auto',
+                padding: '40px 28px 48px',
+                borderTop: `0.5px solid ${T.lineStrong}`,
               }}
             >
-              <button 
+              {/* Close */}
+              <button
                 onClick={() => setIsModalOpen(false)}
-                style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+                style={{
+                  position: 'absolute', top: 20, right: 24,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  opacity: 0.4, padding: 4,
+                }}
               >
-                <X size={18} strokeWidth={1} />
+                <X size={16} strokeWidth={1} />
               </button>
 
-              <header style={{ marginBottom: 32 }}>
-                <div style={{ 
-                  fontFamily: T.fontMono, fontSize: 8, letterSpacing: '0.3em', 
-                  textTransform: 'uppercase', color: T.textHint, marginBottom: 8 
-                }}>
-                  {editingChar ? 'Identity Modification' : 'New consciousness'}
+              {/* Header */}
+              <header style={{ marginBottom: 36 }}>
+                <div style={{ ...labelBase, marginBottom: 10 }}>
+                  {editingChar ? 'Identity Modification' : 'New Consciousness'}
                 </div>
-                <h2 style={{ 
-                  margin: 0, fontSize: 28, fontFamily: T.fontSerif, 
-                  fontStyle: 'italic', fontWeight: 500, color: T.textPrimary 
+                <h2 style={{
+                  margin: 0,
+                  fontFamily: T.serif,
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: 34,
+                  color: T.ink,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1,
                 }}>
                   {editingChar ? 'Refine Soul.' : 'Initial Soul.'}
                 </h2>
               </header>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                <div 
+              {/* Avatar Upload */}
+              <div style={{ marginBottom: 36 }}>
+                <div style={{ ...labelBase, marginBottom: 10 }}>Avatar</div>
+                <div
                   onClick={() => fileInputRef.current?.click()}
                   style={{
-                    width: 64, height: 64, border: T.borderHairline, borderRadius: '12px',
-                    alignSelf: 'flex-start', display: 'flex', alignItems: 'center', 
-                    justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', background: T.white
+                    width: 64,
+                    height: 64,
+                    border: `0.5px solid ${T.lineStrong}`,
+                    background: T.surface,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
                   }}
                 >
-                  {formData.avatar ? <img src={formData.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <ImageIcon size={16} strokeWidth={1} opacity={0.3} />}
+                  {formData.avatar
+                    ? <img src={formData.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <ImageIcon size={16} strokeWidth={1} color={T.inkGhost} />
+                  }
                 </div>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+              </div>
 
+              {/* Fields */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
                 <div>
-                  <label style={{ fontFamily: T.fontMono, fontSize: 9, color: T.textHint, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Real Name / 姓名</label>
-                  <input style={ef.input} type="text" value={formData.realName} onChange={e => setFormData({ ...formData, realName: e.target.value })} />
+                  <label style={labelBase}>Real Name</label>
+                  <input
+                    style={inputBase}
+                    type="text"
+                    value={formData.realName}
+                    onChange={e => setFormData(p => ({ ...p, realName: e.target.value }))}
+                    placeholder="—"
+                  />
                 </div>
-
                 <div>
-                  <label style={{ fontFamily: T.fontMono, fontSize: 9, color: T.textHint, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Remark / 备注</label>
-                  <input style={ef.input} type="text" value={formData.remark} onChange={e => setFormData({ ...formData, remark: e.target.value })} />
+                  <label style={labelBase}>Remark</label>
+                  <input
+                    style={inputBase}
+                    type="text"
+                    value={formData.remark}
+                    onChange={e => setFormData(p => ({ ...p, remark: e.target.value }))}
+                    placeholder="—"
+                  />
                 </div>
-
                 <div>
-                  <label style={{ fontFamily: T.fontMono, fontSize: 9, color: T.textHint, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Personality / 设定</label>
-                  <textarea 
-                    rows={2} 
-                    style={{ ...ef.input, resize: 'none' }} 
-                    value={formData.personality} 
-                    onChange={e => setFormData({ ...formData, personality: e.target.value })} 
+                  <label style={labelBase}>Personality / 设定</label>
+                  <textarea
+                    rows={3}
+                    style={{ ...inputBase, resize: 'none', lineHeight: 1.6 }}
+                    value={formData.personality}
+                    onChange={e => setFormData(p => ({ ...p, personality: e.target.value }))}
+                    placeholder="—"
                   />
                 </div>
               </div>
 
-              <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <button onClick={handleSave} style={{
-                  background: T.black, color: T.white, border: 'none', padding: '14px',
-                  fontFamily: T.fontMono, fontSize: '10px', fontWeight: 600, 
-                  letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer'
-                }}>
+              {/* Actions */}
+              <div style={{ marginTop: 44, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* Save */}
+                <motion.button
+                  onClick={handleSave}
+                  whileHover={{ background: '#2a2a28' }}
+                  style={{
+                    background: T.ink,
+                    color: T.paper,
+                    border: 'none',
+                    padding: '16px 24px',
+                    fontFamily: T.mono,
+                    fontSize: 9,
+                    letterSpacing: '0.25em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    borderRadius: 0,
+                  }}
+                >
                   {editingChar ? 'Save Changes' : 'Execute Creation'}
-                </button>
-                
+                </motion.button>
+
+                {/* Delete */}
                 {editingChar && (
-                  <button onClick={() => setIsDeleteConfirmOpen(true)} style={{
-                    background: 'none', border: 'none', color: T.error, fontFamily: T.fontMono,
-                    fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', 
-                    cursor: 'pointer', opacity: 0.6, marginTop: 8
-                  }}>
-                    [ Terminate Consciousness ]
+                  <button
+                    onClick={() => setIsDeleteConfirmOpen(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: T.inkGhost,
+                      fontFamily: T.mono,
+                      fontSize: 9,
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      padding: '8px 0',
+                      textAlign: 'center',
+                      transition: 'color 0.2s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = T.error)}
+                    onMouseLeave={e => (e.currentTarget.style.color = T.inkGhost)}
+                  >
+                    Terminate Consciousness
                   </button>
                 )}
               </div>
@@ -317,23 +441,77 @@ export const SoulsPage: React.FC<SoulsPageProps> = ({
         )}
       </AnimatePresence>
 
-      {/* ── 删除确认 ── */}
+      {/* ── Delete Confirm ── */}
       <AnimatePresence>
         {isDeleteConfirmOpen && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }} />
-            <motion.div initial={{ scale: 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{
-              position: 'relative', width: '100%', maxWidth: 280, background: T.white, padding: 32, textAlign: 'center'
-            }}>
-              <h4 style={{ fontFamily: T.fontSerif, fontSize: 20, fontStyle: 'italic', marginBottom: 8 }}>Purge?</h4>
-              <p style={{ fontSize: 11, color: T.textSecondary, marginBottom: 24, fontFamily: T.fontSans }}>This action will dissolve the soul permanently.</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <button onClick={() => { onDeleteCharacter(editingChar!.id); setIsDeleteConfirmOpen(false); setIsModalOpen(false); }}
-                  style={{ background: T.black, color: T.white, border: 'none', padding: '12px', fontFamily: T.fontMono, fontSize: 9, textTransform: 'uppercase', cursor: 'pointer' }}>
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 110,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32,
+          }}>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(17,17,16,0.72)' }}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.3, ease: T.ease }}
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: 300,
+                background: T.paper,
+                padding: '40px 32px 32px',
+                borderTop: `0.5px solid ${T.lineStrong}`,
+                textAlign: 'center',
+              }}
+            >
+              <div style={{
+                fontFamily: T.serif,
+                fontStyle: 'italic',
+                fontSize: 30,
+                fontWeight: 400,
+                color: T.ink,
+                letterSpacing: '-0.01em',
+                marginBottom: 12,
+              }}>
+                Purge?
+              </div>
+              <p style={{
+                fontFamily: T.sans,
+                fontSize: 12,
+                color: T.inkFaint,
+                lineHeight: 1.6,
+                marginBottom: 32,
+              }}>
+                This will dissolve the soul permanently.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <motion.button
+                  whileHover={{ background: '#2a2a28' }}
+                  onClick={() => {
+                    onDeleteCharacter(editingChar!.id);
+                    setIsDeleteConfirmOpen(false);
+                    setIsModalOpen(false);
+                  }}
+                  style={{
+                    background: T.ink, color: T.paper, border: 'none',
+                    padding: '14px', fontFamily: T.mono, fontSize: 9,
+                    letterSpacing: '0.22em', textTransform: 'uppercase',
+                    cursor: 'pointer', transition: 'background 0.2s',
+                  }}
+                >
                   Confirm
-                </button>
-                <button onClick={() => setIsDeleteConfirmOpen(false)}
-                  style={{ background: 'none', border: T.borderHairline, padding: '12px', fontFamily: T.fontMono, fontSize: 9, textTransform: 'uppercase', cursor: 'pointer' }}>
+                </motion.button>
+                <button
+                  onClick={() => setIsDeleteConfirmOpen(false)}
+                  style={{
+                    background: 'none',
+                    border: `0.5px solid ${T.lineStrong}`,
+                    padding: '14px', fontFamily: T.mono, fontSize: 9,
+                    letterSpacing: '0.22em', textTransform: 'uppercase',
+                    cursor: 'pointer', color: T.inkFaint,
+                  }}
+                >
                   Cancel
                 </button>
               </div>
